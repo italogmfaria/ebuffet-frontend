@@ -1,0 +1,13 @@
+<ion-app>
+  <ion-header>
+    <ion-toolbar color="light">
+      <ion-title>
+        <img [src]="logoUrl" alt="Logo do Buffet" height="32" />
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [style.backgroundImage]="'url(' + backgroundImage + ')'" class="ion-padding">
+    <ion-router-outlet></ion-router-outlet>
+  </ion-content>
+</ion-app>

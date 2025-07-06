@@ -1,0 +1,10 @@
+ion-toolbar {
+  --background: var(--secondary-color);
+  --color: var(--primary-color);
+}
+
+ion-content {
+  --background: transparent;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
