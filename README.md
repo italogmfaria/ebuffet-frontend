@@ -1,30 +1,35 @@
+# eBuffet Frontend
+
+## Estrutura do Projeto (Feature Sliced Design)
+
+```
 src/
-└── app/
-├── core/                    # Serviços e utilitários globais
-│   ├── services/            # Ex: auth.service.ts, api.service.ts
-│   ├── guards/              # Route guards (ex: auth.guard.ts)
-│   ├── interceptors/        # HTTP interceptors
-│   └── core.config.ts       # Importações globais standalone (ex: HttpClientModule)
+├── app/                     # App Layer - configuração global, routing, providers
+│   ├── app.component.*      # Root component
+│   ├── app.routes.ts        # Routing principal
+│   └── main.ts             # Entry point
 │
-├── shared/                  # Componentes e pipes reutilizáveis
-│   ├── components/          # Navbar, Footer, etc.
-│   ├── pipes/               # Ex: date-format.pipe.ts
-│   ├── directives/          # Ex: autofocus.directive.ts
-│   └── shared.config.ts     # Declarações e imports standalone
+├── pages/                   # Pages Layer - páginas completas (rotas)
+│   ├── global/             # Páginas globais
+│   ├── client/             # Páginas do cliente
+│   └── admin/              # Páginas do admin
 │
-├── features/                # Funcionalidades específicas (autonomia, escopo limitado)
-│   ├── auth/                # Login, registro, recuperação de senha
-│   ├── buffet/              # Gerenciamento de buffets
-│   └── cliente/             # Visualização de pacotes e reservas
+├── widgets/                 # Widgets Layer - blocos de UI complexos
 │
-├── pages/                   # Páginas completas (rotas)
-│   ├── dashboard/           # Página de dashboard do admin
-│   ├── home/                # Página inicial pública ou de cliente
-│   └── pages.config.ts      # Imports de páginas principais
+├── features/               # Features Layer - lógica de negócio (services)
+│
+├── entities/               # Entities Layer - entidades + API + Models
+│
+└── shared/                 # Shared Layer - código reutilizável
+    ├── api/                # Configurações de API base
+    ├── config/             # Configurações globais
+    ├── lib/                # Bibliotecas e utilitários
+    └── ui/                 # Componentes UI genéricos
+```
 
+## Comandos de Build
 
-
-
+```bash
 ionic build
 npx cap add android
 npx cap open android
@@ -32,3 +37,4 @@ npx cap open android
 ionic build
 npx cap copy
 npx cap run android
+```
