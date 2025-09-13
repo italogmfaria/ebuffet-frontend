@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 export class WelcomeComponent implements OnInit {
   primaryColor = '';
   secondaryColor = '';
+  textColor = '';
   bannerUrl = '';
 
   async ngOnInit() {
@@ -20,6 +21,7 @@ export class WelcomeComponent implements OnInit {
 
     this.primaryColor = theme.primaryColor;
     this.secondaryColor = theme.secondaryColor;
+    this.textColor = theme.textColor;
     this.bannerUrl = theme.banner;
 
     document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
