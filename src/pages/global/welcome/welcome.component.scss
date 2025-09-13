@@ -1,0 +1,72 @@
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.banner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 20px 30px 20px;
+}
+
+.banner-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: contain;
+}
+
+.content-card {
+  padding: 40px 60px;
+}
+
+.text-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.text-section h1 {
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 30px 0;
+  line-height: 1.2;
+}
+
+.text-section p {
+  font-size: 15px;
+  color: white;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  padding: 0;
+}
+
+.buttons-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 80px;
+  gap: 15px;
+}
+
+.create-account-btn,
+.login-btn {
+  height: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none;
+  --border-radius: 100px;
+}
+
+.create-account-btn {
+  --border-width: 2px;
+  --border-color: var(--ion-color-secondary);
+  --border-style: solid;
+}
+
+.login-btn {
+  --border-width: 0;
+}

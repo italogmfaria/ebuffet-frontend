@@ -1,0 +1,32 @@
+<ion-content [style.--background]="primaryColor">
+  <div class="welcome-container">
+    <div class="banner-container">
+      <img [src]="bannerUrl" alt="Banner" class="banner-image">
+    </div>
+
+    <div class="content-card">
+      <div class="text-section">
+        <h1>Bem-vindo!</h1>
+        <p>Tudo para seu evento acontecer do jeitinho que você imagina. Monte pacotes, escolha cardápios e acompanhe cada etapa com facilidade.</p>
+      </div>
+
+      <div class="buttons-section">
+        <ion-button
+          expand="block"
+          class="create-account-btn"
+          [style.--background]="'white'"
+          [style.color]="secondaryColor">
+          Criar Conta
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          class="login-btn"
+          [style.--background]="secondaryColor"
+          [style.color]="'white'">
+          Entrar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>
