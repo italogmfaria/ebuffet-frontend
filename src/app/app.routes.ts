@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { IndexComponent } from '../pages/global/index/index.component';
+import { WelcomeComponent } from '../pages/global/welcome/welcome.component';
 
 export const routes: Routes = [
   {
@@ -10,5 +11,9 @@ export const routes: Routes = [
   {
     path: 'index',
     component: IndexComponent
+  },
+  {
+    path: 'welcome',
+    component: WelcomeComponent
   }
 ];
