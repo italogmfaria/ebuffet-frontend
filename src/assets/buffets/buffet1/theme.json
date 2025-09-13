@@ -1,6 +1,6 @@
 {
-  "primaryColor": "#009688",
-  "secondaryColor": "#E0F2F1",
+  "primaryColor": "#E0F2F1",
+  "secondaryColor": "#009688",
   "logo": "assets/buffets/buffet1/logo.png",
-  "backgroundImage": "assets/buffets/buffet1/banner.png"
+  "banner": "assets/buffets/buffet1/banner.png"
 }
