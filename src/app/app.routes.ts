@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
 import { IndexComponent } from '../pages/global/index/index.component';
 import { WelcomeComponent } from '../pages/global/welcome/welcome.component';
+import {ModelPageComponent} from "../shared/ui/templates/model-page/model-page.component";
+import {FormPageComponent} from "../shared/ui/templates/form-page/form-page.component";
+import {RegisterComponent} from "../pages/global/register/register.component";
+import {
+  RegisterConfirmationComponent
+} from "../pages/global/register/register-confirmation/register-confirmation.component";
 
 export const routes: Routes = [
   {
@@ -15,5 +21,13 @@ export const routes: Routes = [
   {
     path: 'welcome',
     component: WelcomeComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
+  },
+  {
+    path: 'register-confirmation',
+    component: RegisterConfirmationComponent
   }
 ];

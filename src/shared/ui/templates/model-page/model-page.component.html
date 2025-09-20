@@ -1,0 +1,14 @@
+<div class="model-page">
+  <header class="header">
+    <div class="header-content">
+      <button [style.color]="secondaryColor" class="back-button" (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+      <h1 [style.color]="secondaryColor" class="title">{{ title }}</h1>
+    </div>
+  </header>
+
+  <main class="content">
+    <ng-content></ng-content>
+  </main>
+</div>

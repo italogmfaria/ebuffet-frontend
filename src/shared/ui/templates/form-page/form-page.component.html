@@ -1,0 +1,16 @@
+<ion-content [style.--background]="primaryColor">
+  <div class="form-page-container">
+
+    <div [style.color]="accentColor" class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+
+    <div class="header-section">
+      <img [src]="bannerUrl" alt="Logo do Buffet" class="buffet-banner" />
+    </div>
+
+    <div class="content-section">
+        <ng-content></ng-content>
+    </div>
+  </div>
+</ion-content>

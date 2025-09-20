@@ -1,13 +1,13 @@
 <ion-content [style.--background]="primaryColor">
   <div class="welcome-container">
     <div class="banner-container">
-      <img [src]="bannerUrl" alt="Banner" class="banner-image">
+      <img [src]="logoUrl" alt="Banner" class="buffet-logo">
     </div>
 
     <div class="content-card">
       <div class="text-section">
-        <h1 [style.color]="textColor">Bem-vindo!</h1>
-        <p [style.color]="textColor">Tudo para seu evento acontecer do jeitinho que você imagina. Monte pacotes, escolha cardápios e acompanhe cada etapa com facilidade.</p>
+        <h1 [style.color]="accentColor">Bem-vindo!</h1>
+        <p [style.color]="accentColor">Tudo para seu evento acontecer do jeitinho que você imagina. Monte pacotes, escolha cardápios e acompanhe cada etapa com facilidade.</p>
       </div>
 
       <div class="buttons-section">
@@ -15,7 +15,8 @@
           expand="block"
           class="create-account-btn"
           [style.--background]="'white'"
-          [style.color]="secondaryColor">
+          [style.color]="secondaryColor"
+          (click)="goToRegister($event)">
           Criar Conta
         </ion-button>
 
