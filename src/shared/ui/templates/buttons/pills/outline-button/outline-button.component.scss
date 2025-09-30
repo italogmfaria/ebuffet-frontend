@@ -1,0 +1,17 @@
+.btn-outline {
+  --border-color: var(--ion-color-secondary);
+  --color: var(--ion-color-secondary);
+  --background: white;
+  height: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none;
+  --border-radius: 100px;
+  --border-width: 2px;
+  --border-style: solid;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

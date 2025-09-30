@@ -7,26 +7,22 @@
     <div class="content-card">
       <div class="text-section">
         <h1 [style.color]="accentColor">Bem-vindo!</h1>
-        <p [style.color]="accentColor">Tudo para seu evento acontecer do jeitinho que você imagina. Monte pacotes, escolha cardápios e acompanhe cada etapa com facilidade.</p>
+        <p [style.color]="accentColor">Tudo para seu evento acontecer do jeitinho que você imagina. <br> Monte seus cardápios, escolha comidas e serviços, e  acompanhe cada etapa com facilidade.</p>
       </div>
 
       <div class="buttons-section">
-        <ion-button
-          expand="block"
-          class="create-account-btn"
-          [style.--background]="'white'"
-          [style.color]="secondaryColor"
-          (click)="goToRegister($event)">
-          Criar Conta
-        </ion-button>
+        <app-outline-button
+          text="Criar Conta"
+          [customBackgroundColor]="'white'"
+          [customTextColor]="secondaryColor"
+          (buttonClick)="goToRegister($event)">
+        </app-outline-button>
 
-        <ion-button
-          expand="block"
-          class="login-btn"
-          [style.--background]="secondaryColor"
-          [style.color]="'white'">
-          Entrar
-        </ion-button>
+        <app-primary-button
+          text="Entrar"
+          [customColor]="secondaryColor"
+          (buttonClick)="goToLogin($event)">
+        </app-primary-button>
       </div>
     </div>
   </div>

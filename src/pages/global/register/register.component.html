@@ -1,3 +1,72 @@
-<app-form-page>
-  <p>Conteúdo do formulário de cadastro aqui</p>
+<app-form-page title="Crie sua conta">
+  <div class="register-page">
+    <form class="register-form">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Nome:"
+              placeholder="Digite seu nome">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Sobrenome:"
+              placeholder="Digite seu sobrenome">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Email:"
+              type="email"
+              placeholder="Digite seu email">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-password-input
+              label="Senha:"
+              placeholder="Digite sua senha">
+            </app-password-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <p class="terms">
+              Ao prosseguir, você concorda com os <span class="link" (click)="goToTerms($event)">Termos de uso e política de privacidade</span>
+            </p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-primary-button
+              text="Criar Conta"
+              type="submit"
+              (buttonClick)="createAccount($event)">
+            </app-primary-button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="center-row">
+          <ion-col>
+            <p class="subtitle">Já tem uma conta?</p>
+            <app-outline-button
+              text="Entrar"
+              (buttonClick)="goToLogin($event)">
+            </app-outline-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
 </app-form-page>

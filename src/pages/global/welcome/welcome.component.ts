@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
+import {CommonModule} from '@angular/common';
 import { NavController } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
+import {IonicModule} from "@ionic/angular";
+import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/ui/templates/exports';
 
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, IonButton]
+  imports: [CommonModule, IonicModule, PrimaryButtonComponent, OutlineButtonComponent]
 })
 export class WelcomeComponent implements OnInit {
   primaryColor = '';
@@ -34,5 +35,10 @@ export class WelcomeComponent implements OnInit {
   goToRegister(event: any) {
     event.target.blur();
     this.navCtrl.navigateRoot('/register');
+  }
+
+  goToLogin(event: any) {
+    event.target.blur();
+    this.navCtrl.navigateRoot('/login');
   }
 }

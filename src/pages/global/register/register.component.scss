@@ -1,0 +1,40 @@
+.register-page {
+  padding: 20px;
+  max-width: 720px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.register-form {
+  ion-grid {
+    width: 100%;
+  }
+}
+
+.terms {
+  font-size: 16px;
+  color: rgba(0,0,0,0.85);
+  text-align: justify;
+  margin: 0 0 8px;
+}
+
+.terms .link {
+  color: var(--ion-color-primary);
+  font-weight: 800;
+}
+
+.center-row {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--ion-color-primary);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+ion-row {
+  margin-bottom: 8px;
+}

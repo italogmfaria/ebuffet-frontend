@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
+import {IonicModule} from "@ionic/angular";
 
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent]
+  imports: [CommonModule, IonicModule]
 })
 export class IndexComponent implements OnInit {
   primaryColor = '';

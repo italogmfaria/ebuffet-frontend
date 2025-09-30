@@ -5,6 +5,17 @@
   padding: 0;
 }
 
+.page-title {
+  margin: 0;
+  line-height: 1;
+  font-weight: 800;
+  color: #000;
+  text-align: left;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
 .back-button {
   position: absolute;
   top: 20px;
@@ -34,10 +45,12 @@
 .content-section {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  bottom: 0;
+  justify-content: flex-start;
+  align-items: center;
   background-color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  padding-top: 20px;
 }
-
-

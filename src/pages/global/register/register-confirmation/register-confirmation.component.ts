@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {FormPageComponent} from "../../../../shared/ui/templates/form-page/form-page.component";
-import {ModelPageComponent} from "../../../../shared/ui/templates/model-page/model-page.component";
+import {FormPageComponent} from "../../../../shared/ui/templates/pages/form-page/form-page.component";
+import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 
 @Component({
   selector: 'app-register-confirmation',
