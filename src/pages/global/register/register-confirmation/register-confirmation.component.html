@@ -1,3 +1,16 @@
-<app-model-page title="Conta Criada">
-  <h3>Conta criada com Sucesso</h3>
+<app-model-page title="Conta Criada" backRoute="/welcome">
+  <div class="content-container">
+    <h2 class="success-title">Conta criada com sucesso!</h2>
+
+    <p class="description-text">
+      Clique em começar e aproveite todas as funcionalidades do nosso aplicativo.
+    </p>
+
+    <div class="button-container">
+      <app-primary-button
+        text="Fazer Login"
+        (buttonClick)="goToLogin($event)">
+      </app-primary-button>
+    </div>
+  </div>
 </app-model-page>

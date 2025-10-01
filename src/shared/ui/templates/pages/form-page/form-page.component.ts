@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
 import { environment } from '../../../../../environments/environment';
@@ -16,14 +16,12 @@ export class FormPageComponent implements OnInit {
   @Input() title: string = '';
   primaryColor = '';
   bannerUrl = '';
+  @Input() backRoute: string = '';
+  @Output() backClick = new EventEmitter<void>();
   accentColor = '';
 
-  constructor(private location: Location) {
+  constructor(private navCtrl: NavController) {
     addIcons({ arrowBack });
-  }
-
-  goBack() {
-    this.location.back();
   }
 
   async ngOnInit() {
@@ -33,5 +31,23 @@ export class FormPageComponent implements OnInit {
     this.bannerUrl = theme.banner;
     this.accentColor = theme.accentColor;
     document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
+  }
+
+  goBack() {
+    if (this.backRoute) {
+      this.navCtrl.navigateBack(this.backRoute);
+      return;
+    }
+
+    if (this.backClick.observed) {
+      this.backClick.emit();
+      return;
+    }
+
+    try {
+      this.navCtrl.back();
+    } catch (error) {
+      this.navCtrl.navigateRoot('/welcome');
+    }
   }
 }

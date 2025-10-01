@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormPageComponent } from '../../../shared/ui/templates/pages/form-page/form-page.component';
-import {IonicModule} from "@ionic/angular";
+import { IonicModule, ModalController } from "@ionic/angular";
 import { environment } from '../../../environments/environment';
-import {NavController} from "@ionic/angular/standalone";
+import { NavController } from "@ionic/angular/standalone";
 import {
   PrimaryButtonComponent,
   OutlineButtonComponent,
   TextInputComponent,
   PasswordInputComponent
 } from '../../../shared/ui/templates/exports';
+import { TermsComponent } from './terms/terms.component';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,10 @@ export class RegisterComponent implements OnInit {
   secondaryColor = '';
   accentColor = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(
+    private navCtrl: NavController,
+    private modalController: ModalController
+  ) {}
 
   async ngOnInit() {
     try {
@@ -52,14 +56,17 @@ export class RegisterComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  goToTerms(event: any) {
+  async goToTerms(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/terms');
+    const modal = await this.modalController.create({
+      component: TermsComponent
+    });
+    return await modal.present();
   }
 
   createAccount(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/register-confirmation');
+    this.navCtrl.navigateForward('/register-confirmation');
   }
 
   goToLogin(event: any) {

@@ -1,9 +1,10 @@
 <ion-button
-  expand="block"
-  class="btn-primary"
+  fill="solid"
+  shape="round"
+  class="circle-button close-circle"
   [disabled]="disabled"
-  [type]="type"
+  [size]="size"
   [style.--background]="customColor || 'var(--ion-color-secondary)'"
   (click)="onClick($event)">
-  {{ text }}
+  <ion-icon name="close" slot="icon-only"></ion-icon>
 </ion-button>

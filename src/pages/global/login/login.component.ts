@@ -4,7 +4,15 @@ import {
   FormPageComponent,
   DeleteButtonComponent,
   WhatsappButtonComponent,
-  CancelButtonComponent
+  CancelButtonComponent,
+  AddCircleComponent,
+  CloseCircleComponent,
+  DeleteCircleComponent,
+  EditCircleComponent,
+  ImageCircleComponent,
+  NotificationCircleComponent,
+  OpenCircleComponent,
+  RemoveCircleComponent
 } from '../../../shared/ui/templates/exports';
 
 @Component({
@@ -16,6 +24,14 @@ import {
     DeleteButtonComponent,
     WhatsappButtonComponent,
     CancelButtonComponent,
+    AddCircleComponent,
+    CloseCircleComponent,
+    DeleteCircleComponent,
+    EditCircleComponent,
+    ImageCircleComponent,
+    NotificationCircleComponent,
+    OpenCircleComponent,
+    RemoveCircleComponent,
     IonicModule
   ],
   standalone: true

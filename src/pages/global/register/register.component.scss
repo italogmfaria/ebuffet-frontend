@@ -12,26 +12,26 @@
 }
 
 .terms {
-  font-size: 16px;
+  font-size: 15px;
   color: rgba(0,0,0,0.85);
   text-align: justify;
   margin: 0 0 8px;
 }
 
 .terms .link {
-  color: var(--ion-color-primary);
+  color: var(--ion-color-secondary);
   font-weight: 800;
 }
 
 .center-row {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .subtitle {
-  margin: 0;
-  color: var(--ion-color-primary);
-  font-size: 18px;
+  margin: 0 0 20px 0;
+  color: var(--ion-color-secondary);
+  font-size: 16px;
   font-weight: 800;
 }
 
