@@ -14,7 +14,6 @@ body {
   color: var(--black);
 }
 
-// Remove ripple effect from all buttons
 ion-button {
   --ripple-color: transparent !important;
   --color-activated: var(--color) !important;
@@ -23,7 +22,6 @@ ion-button {
   --color-focused: var(--color) !important;
 }
 
-// Remove highlight effect on touch
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -32,4 +30,19 @@ ion-button {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+ion-router-outlet > * {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

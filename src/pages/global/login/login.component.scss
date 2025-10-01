@@ -1,0 +1,22 @@
+.login-page {
+  padding: 20px;
+  max-width: 720px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.login-form {
+  ion-grid {
+    width: 100%;
+  }
+}
+
+.center-row {
+  text-align: center;
+  margin-top: 30px;
+}
+
+
+ion-row {
+  margin-bottom: 8px;
+}

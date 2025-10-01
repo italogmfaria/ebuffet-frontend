@@ -1,0 +1,10 @@
+<ion-button
+  expand="block"
+  class="btn-delete"
+  [disabled]="disabled"
+  [type]="type"
+  (click)="onClick($event)">
+  <ion-icon *ngIf="showIcon" name="trash" slot="end"></ion-icon>
+  {{ text }}
+</ion-button>
+

@@ -1,0 +1,14 @@
+<div class="input-container">
+  <label *ngIf="label" class="field-label">{{ label }}</label>
+  <ion-item lines="none" class="input-outline">
+    <ion-input
+      [type]="type"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value"
+      (ionInput)="onInputChange($event)"
+      (ionBlur)="onBlur()">
+    </ion-input>
+  </ion-item>
+</div>
+

@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
+import {IonicModule} from "@ionic/angular";
 
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent]
+  imports: [CommonModule, IonicModule]
 })
 export class IndexComponent implements OnInit {
   primaryColor = '';
-  bannerUrl = '';
+  logoUrl = '';
 
   constructor(private navCtrl: NavController) {}
 
@@ -21,7 +21,7 @@ export class IndexComponent implements OnInit {
     const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
 
     this.primaryColor = theme.primaryColor;
-    this.bannerUrl = theme.banner;
+    this.logoUrl = theme.logo;
     document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
 
     setTimeout(() => {
