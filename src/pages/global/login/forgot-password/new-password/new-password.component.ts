@@ -5,9 +5,11 @@ import {ModelPageComponent} from "../../../../../shared/ui/templates/pages/model
     selector: 'app-new-password',
     templateUrl: './new-password.component.html',
     styleUrls: ['./new-password.component.scss'],
+    standalone: true,
     imports: [
         ModelPageComponent
-    ]
+    ],
+    host: { class: 'ion-page' }
 })
 export class NewPasswordComponent  implements OnInit {
 

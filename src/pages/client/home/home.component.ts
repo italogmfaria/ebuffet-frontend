@@ -1,28 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
-import { PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
-import {NavController} from "@ionic/angular/standalone";
-import {environment} from "../../../../environments/environment";
+import {CommonModule} from "@angular/common";
+import { FormPageComponent } from '../../../shared/ui/templates/exports';
+import { IonGrid } from "@ionic/angular/standalone";
+import {environment} from "../../../environments/environment";
 
 @Component({
-  selector: 'app-register-confirmation',
-  templateUrl: './register-confirmation.component.html',
-  styleUrls: ['./register-confirmation.component.scss'],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ModelPageComponent,
-    PrimaryButtonComponent
-  ],
+  imports: [CommonModule, FormPageComponent, IonGrid],
   host: { class: 'ion-page' }
 })
-export class RegisterConfirmationComponent  implements OnInit {
+export class HomeComponent implements OnInit {
   primaryColor = '';
   secondaryColor = '';
   accentColor = '';
 
-  constructor(private navCtrl: NavController) { }
+  constructor() {}
 
   async ngOnInit() {
     try {
@@ -44,11 +39,6 @@ export class RegisterConfirmationComponent  implements OnInit {
     } catch (err) {
       console.warn('Erro ao carregar o theme.json', err);
     }
-  }
-
-  goToLogin(event: any) {
-    event.target.blur();
-    this.navCtrl.navigateRoot('/login');
   }
 
 }
