@@ -38,3 +38,8 @@ ionic build
 npx cap copy
 npx cap run android
 ```
+O src/global.scss continua sem os imports das folhas básicas do Ionic, por isso os web components perdem todo o CSS padrão quando você gera o bundle para Android.
+
+O src/app/app.component.scss ainda referencia var(--secondary-color) e var(--primary-color), variáveis inexistentes no tema; os toolbars ficam sem cor quando o CSS é recompilado.
+
+O fallback de tema em ThemeService grava strings vazias nas variáveis --ion-color-*; se a leitura do theme.json falhar no dispositivo, todos os componentes Ionic ficam sem cores ou contrastes válidos.
