@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalController } from "@ionic/angular/standalone";
+import { FormPageComponent } from '../../../shared/ui/templates/pages/form-page/form-page.component';
+import { IonicModule, ModalController } from "@ionic/angular";
 import { environment } from '../../../environments/environment';
-import { NavController, IonGrid, IonRow, IonCol } from "@ionic/angular/standalone";
+import { NavController } from "@ionic/angular/standalone";
 import {
   PrimaryButtonComponent,
   OutlineButtonComponent,
   TextInputComponent,
-  PasswordInputComponent,
-  FormPageComponent
+  PasswordInputComponent
 } from '../../../shared/ui/templates/exports';
 import { TermsComponent } from './terms/terms.component';
 
@@ -17,10 +17,10 @@ import { TermsComponent } from './terms/terms.component';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormPageComponent, IonGrid, IonRow, IonCol, PrimaryButtonComponent, OutlineButtonComponent, TextInputComponent, PasswordInputComponent],
-  host: { class: 'ion-page' }
+  imports: [CommonModule, FormPageComponent, IonicModule, PrimaryButtonComponent, OutlineButtonComponent, TextInputComponent, PasswordInputComponent]
 })
 export class RegisterComponent implements OnInit {
+  showPassword: boolean = false;
   primaryColor = '';
   secondaryColor = '';
   accentColor = '';
@@ -50,6 +50,10 @@ export class RegisterComponent implements OnInit {
     } catch (err) {
       console.warn('Erro ao carregar o theme.json', err);
     }
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 
   async goToTerms(event: any) {

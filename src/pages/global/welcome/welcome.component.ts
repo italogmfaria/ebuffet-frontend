@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {IonContent, NavController} from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
+import {IonicModule} from "@ionic/angular";
 import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/ui/templates/exports';
 
 @Component({
@@ -9,8 +10,7 @@ import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
   standalone: true,
-  imports: [CommonModule, PrimaryButtonComponent, OutlineButtonComponent, IonContent],
-  host: { class: 'ion-page' }
+  imports: [CommonModule, IonicModule, PrimaryButtonComponent, OutlineButtonComponent]
 })
 export class WelcomeComponent implements OnInit {
   primaryColor = '';
@@ -21,23 +21,15 @@ export class WelcomeComponent implements OnInit {
   constructor(private navCtrl: NavController) {}
 
   async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+    const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
 
-      this.primaryColor = theme.primaryColor || '';
-      this.secondaryColor = theme.secondaryColor || '';
-      this.accentColor = theme.accentColor || '';
-      this.logoUrl = theme.logo || '';
+    this.primaryColor = theme.primaryColor;
+    this.secondaryColor = theme.secondaryColor;
+    this.accentColor = theme.accentColor;
+    this.logoUrl = theme.logo;
 
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-      if (this.secondaryColor) {
-        document.documentElement.style.setProperty('--ion-color-secondary', this.secondaryColor);
-      }
-    } catch (err) {
-      console.warn('Erro ao carregar o theme.json na WelcomeComponent', err);
-    }
+    document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
+    document.documentElement.style.setProperty('--ion-color-secondary', theme.secondaryColor);
   }
 
   goToRegister(event: any) {

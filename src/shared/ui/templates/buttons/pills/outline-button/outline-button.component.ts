@@ -1,13 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { IonButton } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-outline-button',
   templateUrl: './outline-button.component.html',
   styleUrls: ['./outline-button.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonButton]
+  imports: [IonicModule]
 })
 export class OutlineButtonComponent {
   @Input() text: string = '';

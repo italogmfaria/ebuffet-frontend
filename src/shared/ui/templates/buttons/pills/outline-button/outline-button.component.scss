@@ -13,45 +13,5 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  // Enhanced hover effects
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-  position: relative;
-
-  // Remove any default box-shadow
-  --box-shadow: none;
-  box-shadow: none !important;
-
-  &:hover:not(.button-disabled) {
-    transform: translateY(-1px);
-    --background: var(--ion-color-secondary);
-    --color: var(--ion-color-secondary-contrast);
-    --border-color: var(--ion-color-secondary);
-    filter: brightness(1.05);
-    box-shadow: none !important;
-  }
-
-  &:active:not(.button-disabled) {
-    transform: translateY(0);
-    --background: var(--ion-color-secondary-shade);
-    --border-color: var(--ion-color-secondary-shade);
-    filter: brightness(0.95);
-    transition: all 0.1s ease;
-    box-shadow: none !important;
-  }
-
-  &:focus:not(.button-disabled) {
-    outline: none;
-    --border-color: var(--ion-color-secondary-tint);
-    box-shadow: none !important;
-  }
-
-  &.button-disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-    filter: none !important;
-    box-shadow: none !important;
-  }
 }
+

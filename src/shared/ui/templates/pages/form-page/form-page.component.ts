@@ -1,5 +1,5 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
@@ -25,19 +25,12 @@ export class FormPageComponent implements OnInit {
   }
 
   async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+    const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
 
-      this.primaryColor = theme.primaryColor || '';
-      this.bannerUrl = theme.banner || '';
-      this.accentColor = theme.accentColor || '';
-
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-    } catch (error) {
-      console.warn('Erro ao carregar theme.json na FormPageComponent', error);
-    }
+    this.primaryColor = theme.primaryColor;
+    this.bannerUrl = theme.banner;
+    this.accentColor = theme.accentColor;
+    document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
   }
 
   goBack() {

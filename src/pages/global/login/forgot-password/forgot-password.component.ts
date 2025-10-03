@@ -5,11 +5,9 @@ import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-pa
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
-    standalone: true,
     imports: [
         ModelPageComponent
-    ],
-    host: { class: 'ion-page' }
+    ]
 })
 export class ForgotPasswordComponent  implements OnInit {
 

@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonItem, IonInput, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 
@@ -10,7 +10,7 @@ import { eye, eyeOff } from 'ionicons/icons';
   templateUrl: './password-input.component.html',
   styleUrls: ['./password-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonItem, IonInput, IonButton, IonIcon],
+  imports: [IonicModule, CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

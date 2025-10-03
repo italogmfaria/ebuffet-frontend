@@ -1,6 +1,5 @@
 :host {
   display: block;
-  width: 100%;
 }
 
 p, li {
@@ -10,11 +9,10 @@ p, li {
   margin-bottom: 1rem;
 }
 
-h4 {
+h3, h4 {
   text-align: left;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
-  font-size: 1.3rem;
 }
 
 ul {
@@ -24,23 +22,4 @@ ul {
 
 li {
   margin-bottom: 0.5rem;
-}
-
-:host ::ng-deep .content {
-  align-items: flex-start !important;
-  padding: 1rem !important;
-  text-align: left;
-}
-
-h4:first-of-type {
-  margin-top: 0.5rem;
-}
-
-p:first-of-type {
-  margin-top: 0;
-}
-
-* {
-  max-width: 100%;
-  box-sizing: border-box;
 }

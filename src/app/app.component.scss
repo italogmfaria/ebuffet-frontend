@@ -1,9 +1,10 @@
 ion-toolbar {
-  --background: var(--ion-color-primary);
-  --color: var(--ion-color-secondary);
+  --background: var(--secondary-color);
+  --color: var(--primary-color);
 }
 
 ion-content {
+  --background: transparent;
   background-size: cover;
   background-repeat: no-repeat;
 }

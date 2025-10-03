@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonItem, IonInput } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-text-input',
   templateUrl: './text-input.component.html',
   styleUrls: ['./text-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonItem, IonInput],
+  imports: [IonicModule, CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

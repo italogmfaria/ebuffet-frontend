@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
+import { IonIcon, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {arrowBack} from 'ionicons/icons';
 import { environment } from '../../../../../environments/environment';
@@ -10,7 +10,7 @@ import { environment } from '../../../../../environments/environment';
   templateUrl: './model-page.component.html',
   styleUrls: ['./model-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonContent]
+  imports: [CommonModule, IonIcon]
 })
 export class ModelPageComponent implements OnInit {
   @Input() title: string = '';

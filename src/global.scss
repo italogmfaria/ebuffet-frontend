@@ -1,21 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-@import '@ionic/angular/css/core.css';
-@import '@ionic/angular/css/normalize.css';
-@import '@ionic/angular/css/structure.css';
-@import '@ionic/angular/css/typography.css';
-@import '@ionic/angular/css/padding.css';
-@import '@ionic/angular/css/float-elements.css';
-@import '@ionic/angular/css/text-alignment.css';
-@import '@ionic/angular/css/text-transformation.css';
-@import '@ionic/angular/css/flex-utils.css';
-@import '@ionic/angular/css/display.css';
-
 :root {
   --black: #000;
   --white: #eee;
-  --ion-safe-area-top: env(safe-area-inset-top);
-  --ion-safe-area-bottom: env(safe-area-inset-bottom);
 }
 
 * {
@@ -23,8 +10,16 @@
 }
 
 body {
-  background-color: var(--ion-color-primary);
-  color: var(--white);
+  background-color: var(--white);
+  color: var(--black);
+}
+
+ion-button {
+  --ripple-color: transparent !important;
+  --color-activated: var(--color) !important;
+  --background-activated: var(--background) !important;
+  --background-focused: var(--background) !important;
+  --color-focused: var(--color) !important;
 }
 
 * {
@@ -37,10 +32,17 @@ body {
   user-select: none;
 }
 
-ion-content {
-  --padding-top: var(--ion-safe-area-top);
-  --padding-bottom: var(--ion-safe-area-bottom);
+ion-router-outlet > * {
+  animation: fadeInUp 0.4s ease-out;
 }
 
-
-
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

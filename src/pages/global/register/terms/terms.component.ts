@@ -9,8 +9,7 @@ import {ModalController} from "@ionic/angular";
   standalone: true,
   imports: [
     ModelPageComponent
-  ],
-  providers: [ModalController]
+  ]
 })
 export class TermsComponent  implements OnInit {
 

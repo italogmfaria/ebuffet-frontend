@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 import { PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
+import { Router } from '@angular/router';
 import {NavController} from "@ionic/angular/standalone";
 import {environment} from "../../../../environments/environment";
 
@@ -12,10 +14,10 @@ import {environment} from "../../../../environments/environment";
   standalone: true,
   imports: [
     CommonModule,
+    IonicModule,
     ModelPageComponent,
     PrimaryButtonComponent
-  ],
-  host: { class: 'ion-page' }
+  ]
 })
 export class RegisterConfirmationComponent  implements OnInit {
   primaryColor = '';
