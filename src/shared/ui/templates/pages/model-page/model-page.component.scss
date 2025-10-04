@@ -17,8 +17,9 @@
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   z-index: 1000;
-  height: 60px;
+  height: 80px;
 }
 
 .header-content {
@@ -26,6 +27,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  margin-top: 10px;
   padding: 0 16px;
   position: relative;
 }
@@ -62,7 +64,8 @@
 
 .content {
   flex: 1;
-  margin-top: 60px;
+  margin-top: 80px;
+  margin-bottom: 60px;
   padding: 0 20px;
   overflow-y: auto;
   width: 100%;
