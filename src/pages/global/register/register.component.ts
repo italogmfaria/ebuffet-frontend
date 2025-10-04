@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalController } from "@ionic/angular/standalone";
-import { environment } from '../../../environments/environment';
+import { ThemeService } from '../../../shared/config/theme.service';
 import { NavController, IonGrid, IonRow, IonCol } from "@ionic/angular/standalone";
 import {
   PrimaryButtonComponent,
@@ -27,28 +27,17 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private navCtrl: NavController,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private themeService: ThemeService
   ) {}
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-      this.primaryColor = theme.primaryColor || '';
-      this.secondaryColor = theme.secondaryColor || '';
-      this.accentColor = theme.accentColor || '';
-
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-      if (this.secondaryColor) {
-        document.documentElement.style.setProperty('--ion-color-secondary', this.secondaryColor);
-      }
-      if (this.accentColor) {
-        document.documentElement.style.setProperty('--ion-color-tertiary', this.accentColor);
-      }
-    } catch (err) {
-      console.warn('Erro ao carregar o theme.json', err);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
+      this.accentColor = theme.accentColor;
     }
   }
 
@@ -67,7 +56,7 @@ export class RegisterComponent implements OnInit {
 
   goToLogin(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/login');
+    this.navCtrl.navigateForward('/login');
   }
 
 }

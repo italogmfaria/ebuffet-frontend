@@ -16,12 +16,6 @@ export interface ThemeConfig {
 export class ThemeService {
   private currentTheme: ThemeConfig | null = null;
 
-  private readonly defaultPalette = {
-    primary: '#3880ff',
-    secondary: '#3dc2ff',
-    accent: '#5260ff'
-  };
-
   constructor(private http: HttpClient) {}
 
   async loadTheme(): Promise<void> {
@@ -30,26 +24,95 @@ export class ThemeService {
 
       const theme = await this.http.get<ThemeConfig>(themePath).toPromise();
 
-      if (theme) {
-        this.currentTheme = theme;
-        this.applyTheme(theme);
-      } else {
-        this.applyDefaultTheme();
+      if (!theme) {
+        throw new Error('Theme data is empty or invalid');
       }
+
+      if (!theme.primaryColor || !theme.secondaryColor || !theme.accentColor) {
+        throw new Error('Theme is missing required color properties');
+      }
+
+      this.currentTheme = theme;
+      this.applyTheme(theme);
+
+      document.body.classList.remove('theme-loading');
     } catch (error) {
-      console.error('Error loading theme:', error);
-      this.applyDefaultTheme();
+      console.error('Failed to load theme:', error);
+      this.applyFallbackTheme();
+      document.body.classList.remove('theme-loading');
+      if (!environment.production) {
+        this.showThemeError();
+      }
     }
+  }
+
+  private applyFallbackTheme(): void {
+    const fallbackTheme: ThemeConfig = {
+      primaryColor: '#3dc2ff',
+      secondaryColor: '#3880ff',
+      accentColor: '#ffffff',
+      logo: '',
+      banner: ''
+    };
+
+    this.currentTheme = fallbackTheme;
+    this.applyTheme(fallbackTheme);
+    console.log('Applied fallback theme');
+  }
+
+  private showThemeError(): void {
+    const errorDiv = document.createElement('div');
+    errorDiv.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f8f8f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      ">
+        <div style="
+          background: white;
+          padding: 2rem;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          text-align: center;
+          max-width: 400px;
+        ">
+          <h2 style="color: #d32f2f; margin-bottom: 1rem;">Erro ao Carregar Tema</h2>
+          <p style="color: #666; margin-bottom: 1.5rem;">
+            Não foi possível carregar o arquivo de tema da aplicação.
+            Verifique se o arquivo theme.json existe e está configurado corretamente.
+          </p>
+          <button onclick="window.location.reload()" style="
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+          ">
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(errorDiv);
   }
 
   private applyTheme(theme: ThemeConfig): void {
     const root = document.documentElement;
 
-    const primary = this.sanitizeColor(theme?.primaryColor, this.defaultPalette.primary);
-    const secondary = this.sanitizeColor(theme?.secondaryColor, this.defaultPalette.secondary);
-    const accent = this.sanitizeColor(theme?.accentColor, this.defaultPalette.accent);
+    const primary = theme.primaryColor;
+    const secondary = theme.secondaryColor;
+    const accent = theme.accentColor;
 
-    // Primary color
     root.style.setProperty('--ion-color-primary', primary);
     root.style.setProperty('--ion-color-primary-rgb', this.hexToRgb(primary));
     root.style.setProperty('--ion-color-primary-contrast', this.getContrastColor(primary));
@@ -57,7 +120,6 @@ export class ThemeService {
     root.style.setProperty('--ion-color-primary-shade', this.getShade(primary));
     root.style.setProperty('--ion-color-primary-tint', this.getTint(primary));
 
-    // Secondary color
     root.style.setProperty('--ion-color-secondary', secondary);
     root.style.setProperty('--ion-color-secondary-rgb', this.hexToRgb(secondary));
     root.style.setProperty('--ion-color-secondary-contrast', this.getContrastColor(secondary));
@@ -65,43 +127,17 @@ export class ThemeService {
     root.style.setProperty('--ion-color-secondary-shade', this.getShade(secondary));
     root.style.setProperty('--ion-color-secondary-tint', this.getTint(secondary));
 
-    // Accent color (custom)
     root.style.setProperty('--ion-color-accent', accent);
     root.style.setProperty('--ion-color-accent-rgb', this.hexToRgb(accent));
     root.style.setProperty('--ion-color-accent-contrast', this.getContrastColor(accent));
     root.style.setProperty('--ion-color-accent-contrast-rgb', this.hexToRgb(this.getContrastColor(accent)));
     root.style.setProperty('--ion-color-accent-shade', this.getShade(accent));
     root.style.setProperty('--ion-color-accent-tint', this.getTint(accent));
-  }
 
-  private applyDefaultTheme(): void {
-    const defaultTheme: ThemeConfig = {
-      primaryColor: this.defaultPalette.primary,
-      secondaryColor: this.defaultPalette.secondary,
-      accentColor: this.defaultPalette.accent,
-      logo: '',
-      banner: ''
-    };
-    this.currentTheme = defaultTheme;
-    this.applyTheme(defaultTheme);
-  }
-
-  private sanitizeColor(value: string | undefined | null, fallback: string): string {
-    const v = (value || '').trim();
-    if (!v) return fallback;
-    const hex3 = /^#?([a-fA-F\d]{3})$/;
-    const hex6 = /^#?([a-fA-F\d]{6})$/;
-    if (hex6.test(v)) {
-      return v.startsWith('#') ? v : `#${v}`;
-    }
-    if (hex3.test(v)) {
-      const m = v.replace('#', '');
-      const r = m[0];
-      const g = m[1];
-      const b = m[2];
-      return `#${r}${r}${g}${g}${b}${b}`;
-    }
-    return fallback;
+    root.style.setProperty('--theme-logo', `url('${theme.logo}')`);
+    root.style.setProperty('--theme-banner', `url('${theme.banner}')`);
+    root.style.setProperty('--theme-logo-path', theme.logo);
+    root.style.setProperty('--theme-banner-path', theme.banner);
   }
 
   private hexToRgb(hex: string): string {
@@ -112,7 +148,7 @@ export class ThemeService {
       const b = parseInt(result[3], 16);
       return `${r}, ${g}, ${b}`;
     }
-    return this.hexToRgb(this.defaultPalette.primary);
+    throw new Error(`Invalid hex color: ${hex}`);
   }
 
   private getContrastColor(hex: string): string {
@@ -124,7 +160,7 @@ export class ThemeService {
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
       return luminance > 0.5 ? '#000000' : '#ffffff';
     }
-    return '#ffffff';
+    throw new Error(`Invalid hex color: ${hex}`);
   }
 
   private getShade(hex: string): string {
@@ -148,7 +184,7 @@ export class ThemeService {
 
       return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
     }
-    return hex;
+    throw new Error(`Invalid hex color: ${hex}`);
   }
 
   getCurrentTheme(): ThemeConfig | null {

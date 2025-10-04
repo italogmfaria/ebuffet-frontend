@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonContent, NavController} from '@ionic/angular/standalone';
-import { environment } from '../../../environments/environment';
+import { ThemeService } from '../../../shared/config/theme.service';
 import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/ui/templates/exports';
 
 @Component({
@@ -18,35 +18,26 @@ export class WelcomeComponent implements OnInit {
   accentColor = '';
   logoUrl = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {}
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-      this.primaryColor = theme.primaryColor || '';
-      this.secondaryColor = theme.secondaryColor || '';
-      this.accentColor = theme.accentColor || '';
-      this.logoUrl = theme.logo || '';
-
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-      if (this.secondaryColor) {
-        document.documentElement.style.setProperty('--ion-color-secondary', this.secondaryColor);
-      }
-    } catch (err) {
-      console.warn('Erro ao carregar o theme.json na WelcomeComponent', err);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
+      this.accentColor = theme.accentColor;
+      this.logoUrl = theme.logo;
     }
   }
 
   goToRegister(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/register');
+    this.navCtrl.navigateForward('/register');
   }
 
   goToLogin(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/login');
+    this.navCtrl.navigateForward('/login');
   }
 }

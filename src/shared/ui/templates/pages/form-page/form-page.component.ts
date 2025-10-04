@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { environment } from '../../../../../environments/environment';
+import { ThemeService } from '../../../../../shared/config/theme.service';
 
 @Component({
   selector: 'app-form-page',
@@ -20,23 +20,17 @@ export class FormPageComponent implements OnInit {
   @Output() backClick = new EventEmitter<void>();
   accentColor = '';
 
-  constructor(private navCtrl: NavController) {
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {
     addIcons({ arrowBack });
   }
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-      this.primaryColor = theme.primaryColor || '';
-      this.bannerUrl = theme.banner || '';
-      this.accentColor = theme.accentColor || '';
-
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-    } catch (error) {
-      console.warn('Erro ao carregar theme.json na FormPageComponent', error);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.bannerUrl = theme.banner;
+      this.accentColor = theme.accentColor;
     }
   }
 

@@ -15,7 +15,7 @@
     "cap:sync": "npx cap sync android",
     "android:cleanweb": "cmd /C if exist android\\app\\src\\main\\assets\\public rmdir /S /Q android\\app\\src\\main\\assets\\public",
     "android:run": "npm run build:prod && npm run cap:sync && npx cap run android",
-    "android:open": "npm run cap:sync && npx cap open android",
+    "android:open": "ionic build && npm run cap:copy && npm run cap:sync && npx cap open android",
     "android:apk:debug": "npm run build:prod && npm run cap:sync && cd android && gradlew.bat assembleDebug",
     "android:apk:release": "npm run build:prod && npm run cap:sync && cd android && gradlew.bat assembleRelease",
     "android:aab:release": "npm run build:prod && npm run cap:sync && cd android && gradlew.bat bundleRelease"
@@ -35,8 +35,6 @@
     "@capacitor/app": "7.0.1",
     "@capacitor/core": "7.4.1",
     "@capacitor/haptics": "7.0.1",
-    "@capacitor/keyboard": "7.0.1",
-    "@capacitor/status-bar": "7.0.1",
     "@ionic/angular": "^8.0.0",
     "@material-design-icons/svg": "^0.14.15",
     "ionicons": "^7.0.0",

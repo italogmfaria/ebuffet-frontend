@@ -8,7 +8,7 @@ import {
 } from '../../../shared/ui/templates/exports';
 import {CommonModule} from "@angular/common";
 import {NavController, IonGrid, IonRow, IonCol} from "@ionic/angular/standalone";
-import {environment} from "../../../environments/environment";
+import { ThemeService } from '../../../shared/config/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -24,28 +24,17 @@ export class LoginComponent implements OnInit {
     accentColor = '';
 
     constructor(
-        private navCtrl: NavController
+        private navCtrl: NavController,
+        private themeService: ThemeService
     ) {}
 
-    async ngOnInit() {
-        try {
-            const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+    ngOnInit() {
+        const theme = this.themeService.getCurrentTheme();
 
-            this.primaryColor = theme.primaryColor || '';
-            this.secondaryColor = theme.secondaryColor || '';
-            this.accentColor = theme.accentColor || '';
-
-            if (this.primaryColor) {
-                document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-            }
-            if (this.secondaryColor) {
-                document.documentElement.style.setProperty('--ion-color-secondary', this.secondaryColor);
-            }
-            if (this.accentColor) {
-                document.documentElement.style.setProperty('--ion-color-tertiary', this.accentColor);
-            }
-        } catch (err) {
-            console.warn('Erro ao carregar o theme.json', err);
+        if (theme) {
+            this.primaryColor = theme.primaryColor;
+            this.secondaryColor = theme.secondaryColor;
+            this.accentColor = theme.accentColor;
         }
     }
 
@@ -56,11 +45,11 @@ export class LoginComponent implements OnInit {
 
     toDoLogin(event: any) {
         event.target.blur();
-        this.navCtrl.navigateRoot('/home');
+        this.navCtrl.navigateForward('/home');
     }
 
     goToForgotPassword(event: any) {
         event.target.blur();
-        this.navCtrl.navigateRoot('/forgot-password');
+        this.navCtrl.navigateForward('/forgot-password');
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {IonContent, NavController} from '@ionic/angular/standalone';
-import { environment } from '../../../environments/environment';
+import { ThemeService } from '../../../shared/config/theme.service';
 
 @Component({
   selector: 'app-index',
@@ -15,26 +15,18 @@ export class IndexComponent implements OnInit {
   primaryColor = '';
   logoUrl = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {}
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-      this.primaryColor = theme.primaryColor || '';
-      this.logoUrl = theme.logo || '';
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
-      }
-
-      setTimeout(() => {
-        this.navCtrl.navigateRoot('/welcome');
-      }, 3000);
-    } catch (err) {
-      console.warn('Erro ao carregar theme.json na IndexComponent', err);
-      setTimeout(() => {
-        this.navCtrl.navigateRoot('/welcome');
-      }, 3000);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.logoUrl = theme.logo;
     }
+
+    setTimeout(() => {
+      this.navCtrl.navigateRoot('/welcome');
+    }, 3000);
   }
 }

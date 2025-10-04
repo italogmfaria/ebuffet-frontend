@@ -22,11 +22,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-body {
-  background-color: var(--ion-color-primary);
-  color: var(--white);
-}
-
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -42,5 +37,35 @@ ion-content {
   --padding-bottom: var(--ion-safe-area-bottom);
 }
 
+body {
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
 
+.theme-loading {
+  --ion-color-primary: #3dc2ff;
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #36abe0;
+  --ion-color-primary-tint: #50c8ff;
 
+  --ion-color-secondary: #3880ff;
+  --ion-color-secondary-rgb: 61, 194, 255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #3171e0;
+  --ion-color-secondary-tint: #4c8dff;
+}
+
+/* Garantir que o app-root sempre seja visível */
+app-root {
+  display: block !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+ion-app {
+  background-color: transparent !important;
+}

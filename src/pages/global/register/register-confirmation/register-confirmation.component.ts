@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 import { PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
 import {NavController} from "@ionic/angular/standalone";
-import {environment} from "../../../../environments/environment";
+import { ThemeService } from '../../../../shared/config/theme.service';
 
 @Component({
   selector: 'app-register-confirmation',
@@ -22,33 +22,21 @@ export class RegisterConfirmationComponent  implements OnInit {
   secondaryColor = '';
   accentColor = '';
 
-  constructor(private navCtrl: NavController) { }
+  constructor(private navCtrl: NavController, private themeService: ThemeService) { }
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-      this.primaryColor = theme.primaryColor || '';
-      this.secondaryColor = theme.secondaryColor || '';
-      this.accentColor = theme.accentColor || '';
-
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--ion-color-primary', this.primaryColor);
-      }
-      if (this.secondaryColor) {
-        document.documentElement.style.setProperty('--ion-color-secondary', this.secondaryColor);
-      }
-      if (this.accentColor) {
-        document.documentElement.style.setProperty('--ion-color-tertiary', this.accentColor);
-      }
-    } catch (err) {
-      console.warn('Erro ao carregar o theme.json', err);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
+      this.accentColor = theme.accentColor;
     }
   }
 
   goToLogin(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/login');
+    this.navCtrl.navigateForward('/login');
   }
 
 }

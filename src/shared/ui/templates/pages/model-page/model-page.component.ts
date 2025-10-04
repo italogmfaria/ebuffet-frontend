@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {arrowBack} from 'ionicons/icons';
-import { environment } from '../../../../../environments/environment';
+import { ThemeService } from '../../../../../shared/config/theme.service';
 
 @Component({
   selector: 'app-model-page',
@@ -18,16 +18,15 @@ export class ModelPageComponent implements OnInit {
   @Output() backClick = new EventEmitter<void>();
   secondaryColor = '';
 
-  constructor(private navCtrl: NavController) {
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {
     addIcons({ arrowBack });
   }
 
-  async ngOnInit() {
-    try {
-      const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
+
+    if (theme) {
       this.secondaryColor = theme.secondaryColor;
-    } catch (error) {
-      console.warn('Erro ao carregar tema:', error);
     }
   }
 
