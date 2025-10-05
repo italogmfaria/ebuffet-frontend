@@ -15,6 +15,7 @@ import { ThemeService } from '../../../../services/theme.service';
 export class FormPageComponent implements OnInit {
   @Input() title: string = '';
   primaryColor = '';
+  secondaryColor = '';
   bannerUrl = '';
   @Input() backRoute: string = '';
   @Output() backClick = new EventEmitter<void>();
@@ -29,6 +30,7 @@ export class FormPageComponent implements OnInit {
 
     if (theme) {
       this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
       this.bannerUrl = theme.banner;
       this.accentColor = theme.accentColor;
     }

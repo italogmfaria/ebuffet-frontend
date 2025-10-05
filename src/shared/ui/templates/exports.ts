@@ -19,6 +19,7 @@
     export { NotificationCircleComponent } from './buttons/circles/notification-circle/notification-circle.component';
     export { OpenCircleComponent } from './buttons/circles/open-circle/open-circle.component';
     export { RemoveCircleComponent } from './buttons/circles/remove-circle/remove-circle.component';
+    export { LogoutCircleComponent } from './buttons/circles/logout-circle/logout-circle.component';
 
 
   // FABs componentes
@@ -43,6 +44,7 @@
 
 
 // Navbars componentes
+  export { ClientNavbarComponent } from './navbars/client-navbar/client-navbar.component';
 
 
 // Pages componentes

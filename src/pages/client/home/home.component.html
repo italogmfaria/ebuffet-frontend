@@ -1,4 +1,4 @@
-<app-form-page title="Bem vindo, Usuário!" class="ion-page" (backClick)="onBackClick()">
+<app-form-page [title]="'Bem vindo, ' + userName + '!'" class="ion-page" (backClick)="onBackClick()">
   <div class="home-page">
     <form class="home-form">
       <ion-grid>
@@ -18,3 +18,5 @@
   (cancel)="onConfirmExit()"
   (close)="onCloseModal()"
 ></app-confirmation-modal>
+
+<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>

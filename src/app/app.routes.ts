@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { IndexComponent } from '../pages/global/index/index.component';
 import { WelcomeComponent } from '../pages/global/welcome/welcome.component';
-import {ModelPageComponent} from "../shared/ui/templates/pages/model-page/model-page.component";
-import {FormPageComponent} from "../shared/ui/templates/pages/form-page/form-page.component";
 import {RegisterComponent} from "../pages/global/register/register.component";
 import {
   RegisterConfirmationComponent
@@ -12,6 +10,10 @@ import {LoginComponent} from "../pages/global/login/login.component";
 import {ForgotPasswordComponent} from "../pages/global/login/forgot-password/forgot-password.component";
 import {NewPasswordComponent} from "../pages/global/login/forgot-password/new-password/new-password.component";
 import {HomeComponent} from "../pages/client/home/home.component";
+import {FoodsComponent} from "../pages/client/foods/foods.component";
+import {OrderComponent} from "../pages/client/order/order.component";
+import {ServicesComponent} from "../pages/client/services/services.component";
+import {ProfileComponent} from "../pages/client/profile/profile.component";
 
 export const routes: Routes = [
   {
@@ -54,5 +56,26 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  // Rotas do cliente
+  {
+    path: 'client/home',
+    component: HomeComponent
+  },
+  {
+    path: 'client/foods',
+    component: FoodsComponent
+  },
+  {
+    path: 'client/order',
+    component: OrderComponent
+  },
+  {
+    path: 'client/services',
+    component: ServicesComponent
+  },
+  {
+    path: 'client/profile',
+    component: ProfileComponent
   }
 ];
