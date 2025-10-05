@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  buffetId: 'buffet0'
+  production: true,
+  buffetId: 'buffet1'
 };

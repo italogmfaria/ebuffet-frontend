@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
+import { ModelPageComponent } from "../../../../shared/ui/templates/exports";
 import {ModalController} from "@ionic/angular";
 
 @Component({
@@ -9,7 +9,8 @@ import {ModalController} from "@ionic/angular";
   standalone: true,
   imports: [
     ModelPageComponent
-  ]
+  ],
+  providers: [ModalController]
 })
 export class TermsComponent  implements OnInit {
 

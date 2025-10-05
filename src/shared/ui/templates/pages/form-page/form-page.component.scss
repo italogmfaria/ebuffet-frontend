@@ -3,6 +3,16 @@
   flex-direction: column;
   height: 100%;
   padding: 0;
+  width: 100%;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
 .page-title {
@@ -18,7 +28,7 @@
 
 .back-button {
   position: absolute;
-  top: 20px;
+  top: 35px;
   left: 20px;
   z-index: 10;
 }
@@ -30,7 +40,7 @@
 .header-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   margin-top: 70px;
   max-height: 80px;
 }
@@ -42,15 +52,22 @@
   object-fit: contain;
 }
 
-.content-section {
+.content {
   flex: 1;
   display: flex;
   flex-direction: column;
   bottom: 0;
   justify-content: flex-start;
-  align-items: center;
+  width: 100%;
   background-color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
-  padding-top: 20px;
+  padding: 20px 0 40px;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.content > * {
+  width: 100%;
+  box-sizing: border-box;
 }

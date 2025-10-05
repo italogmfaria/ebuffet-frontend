@@ -1,9 +1,9 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { environment } from '../../../../../environments/environment';
+import { ThemeService } from '../../../../services/theme.service';
 
 @Component({
   selector: 'app-form-page',
@@ -20,17 +20,18 @@ export class FormPageComponent implements OnInit {
   @Output() backClick = new EventEmitter<void>();
   accentColor = '';
 
-  constructor(private navCtrl: NavController) {
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {
     addIcons({ arrowBack });
   }
 
-  async ngOnInit() {
-    const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-    this.primaryColor = theme.primaryColor;
-    this.bannerUrl = theme.banner;
-    this.accentColor = theme.accentColor;
-    document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.bannerUrl = theme.banner;
+      this.accentColor = theme.accentColor;
+    }
   }
 
   goBack() {

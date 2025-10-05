@@ -2,7 +2,7 @@
   --background: #25D366;
   --background-hover: #128C7E;
   --background-activated: #075E54;
-  --color: #fff;
+  --color: #ffffff;
   height: 50px;
   font-size: 15px;
   font-weight: 500;
@@ -13,9 +13,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  --box-shadow: none;
+  box-shadow: none !important;
+
+  &:hover:not(.button-disabled) {
+    transform: translateY(-1px) scale(1.02);
+    --background: #128C7E;
+    filter: brightness(1.1);
+    box-shadow: none !important;
+  }
+
+  &:active:not(.button-disabled) {
+    transform: translateY(0) scale(0.98);
+    --background: #075E54;
+    filter: brightness(0.9);
+    transition: all 0.1s ease;
+    box-shadow: none !important;
+  }
+
+  &:focus:not(.button-disabled) {
+    outline: none;
+    filter: brightness(1.05);
+    box-shadow: none !important;
+  }
+
+  &.button-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
 }
 
 .btn-whatsapp ion-icon {
   font-size: 18px;
   margin-right: 8px;
+  transition: transform 0.3s ease;
+}
+
+.btn-whatsapp:hover:not(.button-disabled) ion-icon {
+  transform: scale(1.1) rotate(-5deg);
 }

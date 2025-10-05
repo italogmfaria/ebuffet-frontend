@@ -1,7 +1,7 @@
 .login-page {
   padding: 20px;
   max-width: 720px;
-  margin: 0;
+  margin: 10px 0;
   box-sizing: border-box;
 }
 
@@ -13,10 +13,30 @@
 
 .center-row {
   text-align: center;
-  margin-top: 30px;
 }
 
 
 ion-row {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+
+.forgot {
+  font-size: 15px;
+  color: rgba(0,0,0,0.85);
+  text-align: center;
+  margin: 0 0 25px 0;
+}
+
+.forgot .link {
+  color: var(--ion-color-secondary);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.subtitle {
+  margin: 0 0 25px 0;
+  color: var(--ion-color-secondary);
+  font-size: 16px;
+  font-weight: 800;
 }

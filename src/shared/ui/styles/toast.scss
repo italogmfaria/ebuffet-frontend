@@ -1,0 +1,96 @@
+// Estilos globais para os toasts da aplicação
+::ng-deep .app-toast {
+  --border-radius: 12px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --min-height: 56px;
+
+  .toast-wrapper {
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .toast-message {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    padding: 4px 0;
+  }
+
+  .toast-button {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  // Animação suave de entrada
+  &.toast-top {
+    animation: slideInFromTop 0.3s ease-out;
+  }
+
+  &.toast-bottom {
+    animation: slideInFromBottom 0.3s ease-out;
+  }
+}
+
+// Toast de sucesso - verde
+::ng-deep .app-toast.toast-success {
+  --background: #10b981;
+  --color: #ffffff;
+
+  .toast-wrapper {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+}
+
+// Toast de erro - vermelho
+::ng-deep .app-toast.toast-danger {
+  --background: #ef4444;
+  --color: #ffffff;
+
+  .toast-wrapper {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+}
+
+// Toast de aviso - laranja/amarelo
+::ng-deep .app-toast.toast-warning {
+  --background: #f59e0b;
+  --color: #ffffff;
+
+  .toast-wrapper {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+}
+
+// Toast informativo - azul/primário
+::ng-deep .app-toast.toast-primary {
+  --background: var(--ion-color-primary, #3b82f6);
+  --color: #ffffff;
+
+  .toast-wrapper {
+    background: linear-gradient(135deg, var(--ion-color-primary, #3b82f6) 0%, var(--ion-color-primary-shade, #2563eb) 100%);
+  }
+}
+
+// Animações
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+

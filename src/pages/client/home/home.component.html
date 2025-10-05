@@ -1,0 +1,20 @@
+<app-form-page title="Bem vindo, Usuário!" class="ion-page" (backClick)="onBackClick()">
+  <div class="home-page">
+    <form class="home-form">
+      <ion-grid>
+      </ion-grid>
+    </form>
+  </div>
+</app-form-page>
+
+<app-confirmation-modal
+  *ngIf="showExitModal"
+  [title]="'Deseja sair?'"
+  [subtitle]="'Você será redirecionado <br> para a tela inicial.'"
+  [icon]="'log-out'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (confirm)="onCancelExit()"
+  (cancel)="onConfirmExit()"
+  (close)="onCloseModal()"
+></app-confirmation-modal>

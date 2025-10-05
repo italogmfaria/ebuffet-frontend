@@ -3,29 +3,8 @@
 
 /** Ionic CSS Variables **/
 :root {
-  /** primary **/
-  --ion-color-primary: #E0F2F1;
-  --ion-color-primary-rgb: 224, 242, 241;
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #c5d6d5;
-  --ion-color-primary-tint: #e3f4f3;
-
-  /** secondary **/
-  --ion-color-secondary: #009688;
-  --ion-color-secondary-rgb: 0, 150, 136;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #008578;
-  --ion-color-secondary-tint: #1aa094;
-
-  /** accent **/
-  --ion-color-accent: #223f26;
-  --ion-color-accent-rgb: 34, 63, 38;
-  --ion-color-accent-contrast: #ffffff;
-  --ion-color-accent-contrast-rgb: 255, 255, 255;
-  --ion-color-accent-shade: #1e3821;
-  --ion-color-accent-tint: #38523c;
+  /** primary, secondary, and accent colors are dynamically loaded by ThemeService **/
+  /** These will be set at runtime based on theme.json configuration **/
 
   /** success **/
   --ion-color-success: #2dd36f;
@@ -74,4 +53,37 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+
+  /** Custom eBuffet variables **/
+  --buffet-border-radius: 8px;
+  --buffet-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --buffet-transition: all 0.3s ease;
+
+  /** Spacing variables **/
+  --buffet-spacing-xs: 4px;
+  --buffet-spacing-sm: 8px;
+  --buffet-spacing-md: 16px;
+  --buffet-spacing-lg: 24px;
+  --buffet-spacing-xl: 32px;
+}
+
+/** Loading state styles for before theme is loaded **/
+.theme-loading {
+  .ion-color-primary {
+    display: none !important;
+  }
+
+  .ion-color-secondary {
+    display: none !important;
+  }
+
+  .ion-color-accent {
+    display: none !important;
+  }
+}
+
+/** Make sure error message is always visible **/
+.theme-error {
+  opacity: 1 !important;
+  display: block !important;
 }

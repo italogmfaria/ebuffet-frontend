@@ -1,28 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavController } from '@ionic/angular/standalone';
-import { environment } from '../../../environments/environment';
-import {IonicModule} from "@ionic/angular";
+import {IonContent, NavController} from '@ionic/angular/standalone';
+import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonContent],
+  host: { class: 'ion-page' }
 })
 export class IndexComponent implements OnInit {
   primaryColor = '';
   logoUrl = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {}
 
-  async ngOnInit() {
-    const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-    this.primaryColor = theme.primaryColor;
-    this.logoUrl = theme.logo;
-    document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.logoUrl = theme.logo;
+    }
 
     setTimeout(() => {
       this.navCtrl.navigateRoot('/welcome');

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import { NavController } from '@ionic/angular/standalone';
-import { environment } from '../../../environments/environment';
-import {IonicModule} from "@ionic/angular";
+import {IonContent, NavController} from '@ionic/angular/standalone';
+import { ThemeService } from '../../../shared/services/theme.service';
 import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/ui/templates/exports';
 
 @Component({
@@ -10,7 +9,8 @@ import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, PrimaryButtonComponent, OutlineButtonComponent]
+  imports: [CommonModule, PrimaryButtonComponent, OutlineButtonComponent, IonContent],
+  host: { class: 'ion-page' }
 })
 export class WelcomeComponent implements OnInit {
   primaryColor = '';
@@ -18,27 +18,26 @@ export class WelcomeComponent implements OnInit {
   accentColor = '';
   logoUrl = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private themeService: ThemeService) {}
 
-  async ngOnInit() {
-    const theme = await fetch(`assets/buffets/${environment.buffetId}/theme.json`).then(r => r.json());
+  ngOnInit() {
+    const theme = this.themeService.getCurrentTheme();
 
-    this.primaryColor = theme.primaryColor;
-    this.secondaryColor = theme.secondaryColor;
-    this.accentColor = theme.accentColor;
-    this.logoUrl = theme.logo;
-
-    document.documentElement.style.setProperty('--ion-color-primary', theme.primaryColor);
-    document.documentElement.style.setProperty('--ion-color-secondary', theme.secondaryColor);
+    if (theme) {
+      this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
+      this.accentColor = theme.accentColor;
+      this.logoUrl = theme.logo;
+    }
   }
 
   goToRegister(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/register');
+    this.navCtrl.navigateForward('/register');
   }
 
   goToLogin(event: any) {
     event.target.blur();
-    this.navCtrl.navigateRoot('/login');
+    this.navCtrl.navigateForward('/login');
   }
 }
