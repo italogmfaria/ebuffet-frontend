@@ -1,12 +1,13 @@
 <app-form-page title="Login" class="ion-page">
   <div class="login-page">
-    <form class="login-form">
+    <form [formGroup]="loginForm" class="login-form">
       <ion-grid>
           <ion-row>
               <ion-col>
                   <app-text-input
                           label="Email:"
-                          placeholder="Digite seu email">
+                          placeholder="Digite seu email"
+                          formControlName="email">
                   </app-text-input>
               </ion-col>
           </ion-row>
@@ -15,7 +16,8 @@
               <ion-col>
                   <app-password-input
                           label="Senha:"
-                          placeholder="Digite sua senha">
+                          placeholder="Digite sua senha"
+                          formControlName="password">
                   </app-password-input>
               </ion-col>
           </ion-row>
@@ -26,6 +28,7 @@
                   <app-primary-button
                           text="Entrar"
                           type="submit"
+                          [disabled]="!isFormValid"
                           (buttonClick)="toDoLogin($event)">
                   </app-primary-button>
               </ion-col>

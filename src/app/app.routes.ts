@@ -54,9 +54,5 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
-  },
-  {
-    path: 'form-page',
-    component: FormPageComponent
   }
 ];

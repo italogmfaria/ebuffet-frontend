@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { ThemeService } from '../../../../../shared/config/theme.service';
+import { ThemeService } from '../../../../services/theme.service';
 
 @Component({
   selector: 'app-form-page',

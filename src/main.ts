@@ -12,13 +12,15 @@ import {
   pencil,
   image,
   notifications,
+  logOut,
+  help,
   chevronForward,
   removeCircleOutline
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { ThemeService } from './shared/config/theme.service';
+import { ThemeService } from './shared/services/theme.service';
 
 addIcons({
   add,
@@ -27,6 +29,8 @@ addIcons({
   pencil,
   image,
   notifications,
+  help,
+  'log-out': logOut,
   'chevron-forward': chevronForward,
   'remove-circle-outline': removeCircleOutline
 });

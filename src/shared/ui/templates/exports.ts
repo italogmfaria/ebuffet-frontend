@@ -1,4 +1,6 @@
 // Badges componentes
+  export { QueryBadgeComponent } from './badges/query-badge/query-badge.component';
+  export { DetailBagdeComponent } from './badges/detail-bagde/detail-bagde.component';
 
 
 
@@ -36,11 +38,8 @@
 // Cards componentes
 
 
-// Input componentes
-  export { TextInputComponent } from './inputs/text-input/text-input.component';
-  export { PasswordInputComponent } from './inputs/password-input/password-input.component';
-
 // Modals componentes
+  export { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
 
 
 // Navbars componentes
@@ -50,4 +49,7 @@
   export { FormPageComponent } from './pages/form-page/form-page.component';
   export { ModelPageComponent } from './pages/model-page/model-page.component';
 
-
+// Input componentes
+  export { TextInputComponent } from './inputs/text-input/text-input.component';
+  export { PasswordInputComponent } from './inputs/password-input/password-input.component';
+  export { CodeInputComponent } from './inputs/code-input/code-input.component';

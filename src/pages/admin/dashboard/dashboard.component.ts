@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormPageComponent} from "../../../shared/ui/templates/pages/form-page/form-page.component";
+import { FormPageComponent } from "../../../shared/ui/templates/exports";
 import {IonGrid} from "@ionic/angular/standalone";
 
 @Component({

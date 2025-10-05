@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NavController, ToastController } from '@ionic/angular/standalone';
-import { ModelPageComponent } from "../../../../../shared/ui/templates/pages/model-page/model-page.component";
-import { PasswordInputComponent } from "../../../../../shared/ui/templates/inputs/password-input/password-input.component";
-import { PrimaryButtonComponent } from "../../../../../shared/ui/templates/buttons/pills/primary-button/primary-button.component";
+import { NavController } from '@ionic/angular/standalone';
+import { ModelPageComponent, PasswordInputComponent, PrimaryButtonComponent } from "../../../../../shared/ui/templates/exports";
+import { ToastService } from '../../../../../shared/services/toast.service';
+import { ValidationService } from '../../../../../shared/services/validation.service';
 
 @Component({
     selector: 'app-new-password',
@@ -24,62 +24,48 @@ export class NewPasswordComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private navCtrl: NavController,
-    private toastController: ToastController
+    private toastService: ToastService,
+    private validationService: ValidationService
   ) {
     this.passwordForm = this.formBuilder.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
-    }, {
-      validators: this.passwordMatchValidator
     });
   }
 
   ngOnInit() {}
 
-  passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
-    const password = group.get('password')?.value;
-    const confirmPassword = group.get('confirmPassword')?.value;
-
-    if (password && confirmPassword && password !== confirmPassword) {
-      return { passwordMismatch: true };
-    }
-    return null;
-  }
-
   async onConfirm(): Promise<void> {
     const password = this.passwordForm.get('password')?.value;
     const confirmPassword = this.passwordForm.get('confirmPassword')?.value;
 
-    if (!password || !confirmPassword) {
-      await this.showToast('Por favor, preencha todos os campos.', 'warning');
+    // Validar campos obrigatórios
+    const requiredValidation = this.validationService.validateRequiredFields({ password, confirmPassword });
+    if (!requiredValidation.isValid) {
+      await this.toastService.warning(requiredValidation.message!);
       return;
     }
 
-    if (password.length < 6) {
-      await this.showToast('A senha deve ter pelo menos 6 caracteres.', 'warning');
+    // Validar senha
+    const passwordValidation = this.validationService.validatePassword(password, 6);
+    if (!passwordValidation.isValid) {
+      await this.toastService.warning(passwordValidation.message!);
       return;
     }
 
-    if (password !== confirmPassword) {
-      await this.showToast('As senhas não coincidem. Por favor, verifique e tente novamente.', 'danger');
+    // Validar se senhas coincidem
+    const matchValidation = this.validationService.validatePasswordMatch(password, confirmPassword);
+    if (!matchValidation.isValid) {
+      await this.toastService.error(matchValidation.message!);
       return;
     }
 
+    // Se passou por todas as validações
     console.log('Nova senha definida:', password);
+    // TODO: Enviar para o backend
 
-    this.showToast('Senha alterada com sucesso!', 'success');
+    await this.toastService.success('Senha alterada com sucesso!');
     this.navCtrl.navigateForward('/login');
-  }
-
-  async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'danger'): Promise<void> {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 3000,
-      position: 'top',
-      color: color,
-      cssClass: 'custom-toast'
-    });
-    await toast.present();
   }
 
   get isFormValid(): boolean {

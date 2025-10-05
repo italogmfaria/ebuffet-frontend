@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
-import { PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
-import {NavController} from "@ionic/angular/standalone";
-import { ThemeService } from '../../../../shared/config/theme.service';
+import { ModelPageComponent, PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
+import { NavController } from "@ionic/angular/standalone";
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 @Component({
   selector: 'app-register-confirmation',
@@ -17,7 +16,7 @@ import { ThemeService } from '../../../../shared/config/theme.service';
   ],
   host: { class: 'ion-page' }
 })
-export class RegisterConfirmationComponent  implements OnInit {
+export class RegisterConfirmationComponent implements OnInit {
   primaryColor = '';
   secondaryColor = '';
   accentColor = '';

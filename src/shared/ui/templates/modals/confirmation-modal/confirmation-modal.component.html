@@ -1,0 +1,31 @@
+<div class="modal-overlay" (click)="onClose()"></div>
+<div class="confirmation-modal-container">
+  <div class="close-btn-wrapper">
+    <app-close-circle
+      size="large"
+      (buttonClick)="onClose()"
+      [customColor]="secondaryColor"
+      aria-label="Fechar"
+    ></app-close-circle>
+  </div>
+  <div class="badge-wrapper">
+    <app-query-badge [icon]="icon" [iconColor]="iconColor"></app-query-badge>
+  </div>
+  <div class="content-wrapper">
+    <h2 class="title" [innerHTML]="title"></h2>
+    <p class="subtitle" [innerHTML]="subtitle"></p>
+  </div>
+  <div class="buttons-wrapper">
+    <app-outline-button
+      [text]="outlineButtonText"
+      (buttonClick)="onCancel()"
+      [customTextColor]="secondaryColor"
+      [customBackgroundColor]="'transparent'"
+    ></app-outline-button>
+    <app-primary-button
+      [text]="primaryButtonText"
+      (buttonClick)="onConfirm()"
+      [customColor]="secondaryColor"
+    ></app-primary-button>
+  </div>
+</div>

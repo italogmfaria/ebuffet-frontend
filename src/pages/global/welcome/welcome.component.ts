@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonContent, NavController} from '@ionic/angular/standalone';
-import { ThemeService } from '../../../shared/config/theme.service';
+import { ThemeService } from '../../../shared/services/theme.service';
 import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/ui/templates/exports';
 
 @Component({
