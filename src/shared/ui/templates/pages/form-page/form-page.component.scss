@@ -1,7 +1,7 @@
 .form-page-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   padding: 0;
   width: 100%;
   align-items: stretch;
@@ -62,16 +62,17 @@ ion-content {
 .content {
   flex: 1;
   display: flex;
+  align-items: center;
   flex-direction: column;
   bottom: 0;
-  justify-content: flex-start;
   width: 100%;
+  min-width: 100%;
   background-color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   padding: 20px 0 40px;
   box-sizing: border-box;
-  align-items: stretch;
+  overflow-x: hidden;
 }
 
 .content.has-navbar {
@@ -80,5 +81,6 @@ ion-content {
 
 .content > * {
   width: 100%;
+  min-width: 100%;
   box-sizing: border-box;
 }

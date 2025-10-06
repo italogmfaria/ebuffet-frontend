@@ -1,3 +1,22 @@
-<div>
-  <h4>Calendário</h4>
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h4>Calendário</h4>
+    <app-detail-bagde [text]="'INDISPONÍVEL'"></app-detail-bagde>
+  </div>
+
+  <div class="calendar-wrapper"
+       [style.--secondary-color]="secondaryColor"
+       [style.--accent-color]="accentColor">
+    <ion-datetime
+      presentation="date"
+      [(ngModel)]="selectedDate"
+      [highlightedDates]="highlightedDates"
+      [showDefaultButtons]="false"
+      [min]="minDate"
+      [max]="maxDate"
+      locale="pt-BR"
+      [readonly]="true"
+    >
+    </ion-datetime>
+  </div>
 </div>

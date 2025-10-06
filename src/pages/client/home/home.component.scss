@@ -1,12 +1,17 @@
 .home-page {
   padding: 0 15px;
-  max-width: 720px;
+  width: 100%;
+  min-width: 100%;
   margin: 0;
   box-sizing: border-box;
 }
 
 .home-form {
+  width: 100%;
+  min-width: 100%;
+
   ion-grid {
     width: 100%;
+    min-width: 100%;
   }
 }

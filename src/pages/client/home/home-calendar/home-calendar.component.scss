@@ -1,0 +1,119 @@
+.calendar-container {
+  padding: 20px 0;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 16px 0;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+
+    h4 {
+      margin: 0;
+      font-weight: bold;
+      color: var(--secondary-color);
+      font-family: 'Inter', sans-serif;
+    }
+  }
+
+  .calendar-wrapper {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+
+  ion-datetime {
+    // Sobrescrever variáveis CSS do ion-datetime
+    --background: transparent !important;
+    --ion-color-base: var(--secondary-color) !important;
+    --ion-text-color: var(--secondary-color) !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    height: auto;
+    font-family: 'Inter', sans-serif !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+    display: block !important;
+
+    // Forçar que o conteúdo interno não expanda
+    & > * {
+      max-width: 100% !important;
+    }
+
+    // Dias indisponíveis (highlighted) com cor secundária
+    ::part(calendar-day-highlighted) {
+      background: var(--secondary-color) !important;
+      color: var(--accent-color) !important;
+      border-radius: 50% !important;
+      font-weight: 600 !important;
+      font-size: 11px !important;
+      transform: scale(0.75) !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    // Dias normais - sobrescrever TUDO
+    ::part(calendar-day),
+    ::part(calendar-day-today) {
+      font-size: 13px !important;
+      font-weight: 400 !important;
+      color: var(--secondary-color) !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    // Cabeçalho dos dias da semana
+    ::part(calendar-day-of-week) {
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: var(--secondary-color) !important;
+      opacity: 0.7 !important;
+      text-transform: uppercase !important;
+    }
+
+    // Título do mês/ano
+    ::part(month-year-button) {
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: var(--secondary-color) !important;
+      background: transparent !important;
+    }
+
+    // Setas de navegação
+    ::part(calendar-next-button),
+    ::part(calendar-prev-button) {
+      color: var(--accent-color) !important;
+      background: transparent !important;
+    }
+
+    // Dias desabilitados/inativos
+    ::part(calendar-day-disabled) {
+      opacity: 0.3 !important;
+    }
+
+    // Remover hover padrão
+    ::part(calendar-day):hover {
+      background: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    // Remover hover do dia highlighted
+    ::part(calendar-day-highlighted):hover {
+      opacity: 0.9 !important;
+    }
+  }
+}
