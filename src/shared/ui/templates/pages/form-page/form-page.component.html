@@ -9,7 +9,7 @@
       <img [src]="bannerUrl" alt="Logo do Buffet" class="buffet-banner" />
     </div>
 
-    <main class="content">
+    <main class="content" [class.has-navbar]="hasNavbar">
       <h2 class="page-title">{{ title }}</h2>
         <ng-content></ng-content>
     </main>

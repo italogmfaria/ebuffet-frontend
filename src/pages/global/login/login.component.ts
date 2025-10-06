@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
         }
 
         await this.toastService.success('Login realizado com sucesso!');
-        this.navCtrl.navigateForward('/home');
+        this.navCtrl.navigateForward('/client/home');
     }
 
     private async authenticateUser(email: string, password: string): Promise<boolean> {

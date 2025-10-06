@@ -67,6 +67,10 @@ ion-content {
   align-items: stretch;
 }
 
+.content.has-navbar {
+  padding: 20px 0 120px;
+}
+
 .content > * {
   width: 100%;
   box-sizing: border-box;

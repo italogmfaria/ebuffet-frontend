@@ -18,6 +18,7 @@ export class FormPageComponent implements OnInit {
   secondaryColor = '';
   bannerUrl = '';
   @Input() backRoute: string = '';
+  @Input() hasNavbar: boolean = false;
   @Output() backClick = new EventEmitter<void>();
   accentColor = '';
 
