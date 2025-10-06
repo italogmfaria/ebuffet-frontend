@@ -1,10 +1,10 @@
-<app-form-page [title]="'Bem vindo, ' + userName + '!'" [hasNavbar]="true" class="ion-page" (backClick)="onBackClick()">
+<app-form-page [title]="'Bem vindo, ' + userName + '!'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="home-page">
     <form class="home-form">
       <ion-grid>
-          <h4>Olá, tudo bem?</h4>
-
-
+          <app-home-carousel></app-home-carousel>
+          <app-home-calendar></app-home-calendar>
+          <app-home-categories></app-home-categories>
       </ion-grid>
     </form>
   </div>

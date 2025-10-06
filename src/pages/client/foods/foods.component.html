@@ -1,4 +1,4 @@
-<app-form-page [title]="'Comidas'" [hasNavbar]="true" class="ion-page" (backClick)="onBackClick()">
+<app-form-page [title]="'Comidas'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="foods-page">
     <form class="foods-form">
       <ion-grid>

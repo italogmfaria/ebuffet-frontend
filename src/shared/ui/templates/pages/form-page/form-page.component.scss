@@ -28,7 +28,7 @@ ion-content {
 
 .back-button {
   position: absolute;
-  top: 35px;
+  top: 40px;
   left: 20px;
   z-index: 10;
 }
@@ -37,17 +37,24 @@ ion-content {
   font-size: 28px;
 }
 
+.notification-button {
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  z-index: 10;
+}
+
 .header-section {
   display: flex;
   justify-content: center;
   margin-bottom: 30px;
-  margin-top: 70px;
+  margin-top: 80px;
   max-height: 80px;
 }
 
 .buffet-banner {
   width: 100%;
-  max-width: 250px;
+  max-width: 220px;
   height: auto;
   object-fit: contain;
 }

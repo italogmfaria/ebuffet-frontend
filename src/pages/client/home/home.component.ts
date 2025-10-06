@@ -3,13 +3,16 @@ import {CommonModule} from "@angular/common";
 import { FormPageComponent, ConfirmationModalComponent, ClientNavbarComponent } from '../../../shared/ui/templates/exports';
 import { IonGrid, NavController } from "@ionic/angular/standalone";
 import { ThemeService } from '../../../shared/services/theme.service';
+import {HomeCarouselComponent} from "./home-carousel/home-carousel.component";
+import {HomeCategoriesComponent} from "./home-categories/home-categories.component";
+import {HomeCalendarComponent} from "./home-calendar/home-calendar.component";
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormPageComponent, IonGrid, ConfirmationModalComponent, ClientNavbarComponent],
+  imports: [CommonModule, FormPageComponent, IonGrid, ConfirmationModalComponent, ClientNavbarComponent, HomeCarouselComponent, HomeCategoriesComponent, HomeCalendarComponent],
   host: { class: 'ion-page' }
 })
 export class HomeComponent implements OnInit {
@@ -55,6 +58,10 @@ export class HomeComponent implements OnInit {
 
   onCloseModal() {
     this.showExitModal = false;
+  }
+
+  onNotificationClick() {
+    this.navCtrl.navigateForward('/notifications');
   }
 
 }

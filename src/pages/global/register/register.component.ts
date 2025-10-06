@@ -114,7 +114,6 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    await this.toastService.success('Conta criada com sucesso!');
     this.navCtrl.navigateForward('/register-confirmation');
   }
 

@@ -90,7 +90,6 @@ export class LoginComponent implements OnInit {
             return;
         }
 
-        await this.toastService.success('Login realizado com sucesso!');
         this.navCtrl.navigateForward('/client/home');
     }
 

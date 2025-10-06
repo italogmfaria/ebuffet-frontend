@@ -14,6 +14,7 @@ import {FoodsComponent} from "../pages/client/foods/foods.component";
 import {OrderComponent} from "../pages/client/order/order.component";
 import {ServicesComponent} from "../pages/client/services/services.component";
 import {ProfileComponent} from "../pages/client/profile/profile.component";
+import {NotificationsComponent} from "../pages/global/notifications/notifications.component";
 
 export const routes: Routes = [
   {
@@ -56,6 +57,10 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent
   },
   // Rotas do cliente
   {

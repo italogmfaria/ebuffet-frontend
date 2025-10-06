@@ -35,4 +35,8 @@ export class FoodsComponent implements OnInit {
   onBackClick() {
     this.navCtrl.navigateBack('/client/home');
   }
+
+  onNotificationClick() {
+    this.navCtrl.navigateForward('/notifications');
+  }
 }
