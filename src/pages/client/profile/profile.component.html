@@ -19,4 +19,16 @@
   </div>
 </app-model-page>
 
+<app-confirmation-modal
+  *ngIf="showLogoutModal"
+  [title]="'Deseja sair?'"
+  [subtitle]="'Você será redirecionado <br> para a tela inicial.'"
+  [icon]="'log-out'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (confirm)="onCancelLogout()"
+  (cancel)="onConfirmLogout()"
+  (close)="onCloseModal()"
+></app-confirmation-modal>
+
 <app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>

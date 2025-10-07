@@ -6,6 +6,7 @@ import { ThemeService } from '../../../shared/services/theme.service';
 import {HomeCarouselComponent} from "./home-carousel/home-carousel.component";
 import {HomeCategoriesComponent} from "./home-categories/home-categories.component";
 import {HomeCalendarComponent} from "./home-calendar/home-calendar.component";
+import { SessionService } from '../../../shared/services/session.service';
 
 @Component({
     selector: 'app-home',
@@ -27,7 +28,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private themeService: ThemeService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
@@ -49,7 +51,13 @@ export class HomeComponent implements OnInit {
 
   onConfirmExit() {
     this.showExitModal = false;
-    this.navCtrl.navigateBack('/welcome');
+    // Limpa sessão persistida e redireciona para a tela pública
+    try {
+      this.sessionService.logout();
+    } catch (e) {
+      console.error('Error while logging out', e);
+    }
+    this.navCtrl.navigateRoot('/welcome');
   }
 
   onCancelExit() {

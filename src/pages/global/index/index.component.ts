@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {IonContent, NavController} from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
@@ -15,18 +15,13 @@ export class IndexComponent implements OnInit {
   primaryColor = '';
   logoUrl = '';
 
-  constructor(private navCtrl: NavController, private themeService: ThemeService) {}
+  constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
     const theme = this.themeService.getCurrentTheme();
-
     if (theme) {
       this.primaryColor = theme.primaryColor;
       this.logoUrl = theme.logo;
     }
-
-    setTimeout(() => {
-      this.navCtrl.navigateRoot('/welcome');
-    }, 3000);
   }
 }

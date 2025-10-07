@@ -15,6 +15,7 @@ import {OrderComponent} from "../pages/client/order/order.component";
 import {ServicesComponent} from "../pages/client/services/services.component";
 import {ProfileComponent} from "../pages/client/profile/profile.component";
 import {NotificationsComponent} from "../pages/global/notifications/notifications.component";
+import { AuthGuard } from '../shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -55,32 +56,34 @@ export const routes: Routes = [
     component: NewPasswordComponent
   },
   {
-    path: 'home',
-    component: HomeComponent
-  },
-  {
     path: 'notifications',
     component: NotificationsComponent
   },
-  // Rotas do cliente
+  // Rotas do cliente (protegidas)
   {
-    path: 'client/home',
-    component: HomeComponent
-  },
-  {
-    path: 'client/foods',
-    component: FoodsComponent
-  },
-  {
-    path: 'client/order',
-    component: OrderComponent
-  },
-  {
-    path: 'client/services',
-    component: ServicesComponent
-  },
-  {
-    path: 'client/profile',
-    component: ProfileComponent
+    path: 'client',
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'home',
+        component: HomeComponent
+      },
+      {
+        path: 'foods',
+        component: FoodsComponent
+      },
+      {
+        path: 'order',
+        component: OrderComponent
+      },
+      {
+        path: 'services',
+        component: ServicesComponent
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
+      }
+    ]
   }
 ];
