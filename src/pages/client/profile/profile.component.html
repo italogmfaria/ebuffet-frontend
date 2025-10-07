@@ -1,0 +1,34 @@
+<app-model-page [title]="'Perfil'" class="ion-page" (backClick)="onBackClick()">
+  <div class="profile-page">
+    <ion-grid>
+      <div class="profile-header">
+        <app-logout-circle
+          size="medium"
+          (buttonClick)="onLogout()">
+        </app-logout-circle>
+
+        <h2>{{ userName }}</h2>
+
+        <app-edit-circle
+          size="medium"
+          (buttonClick)="onEdit()">
+        </app-edit-circle>
+      </div>
+      <!-- TODO: Implementar dados do perfil do usuário -->
+    </ion-grid>
+  </div>
+</app-model-page>
+
+<app-confirmation-modal
+  *ngIf="showLogoutModal"
+  [title]="'Deseja sair?'"
+  [subtitle]="'Você será redirecionado <br> para a tela inicial.'"
+  [icon]="'log-out'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (confirm)="onCancelLogout()"
+  (cancel)="onConfirmLogout()"
+  (close)="onCloseModal()"
+></app-confirmation-modal>
+
+<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>

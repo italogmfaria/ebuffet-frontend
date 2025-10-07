@@ -1,0 +1,39 @@
+<nav class="client-navbar">
+  <div class="nav-item"
+     (mouseenter)="onIconHover('home')"
+     (mouseleave)="onIconLeave()"
+     (click)="navigate('/client/home')">
+    <ion-icon name="home" [style.color]="getIconColor('home', '/client/home')"></ion-icon>
+  </div>
+
+  <div class="nav-item"
+     (mouseenter)="onIconHover('menu')"
+     (mouseleave)="onIconLeave()"
+     (click)="navigate('/client/foods')">
+    <ion-icon name="restaurant" [style.color]="getIconColor('menu', '/client/foods')"></ion-icon>
+  </div>
+
+  <div class="nav-item cart-item"
+     (mouseenter)="onIconHover('cart')"
+     (mouseleave)="onIconLeave()"
+     (click)="navigate('/client/order')">
+    <ion-icon name="cart" [style.color]="getIconColor('cart', '/client/order')"></ion-icon>
+    <ion-badge *ngIf="cartItemCount > 0" [style.background-color]="secondaryColor">
+      {{ cartItemCount }}
+    </ion-badge>
+  </div>
+
+  <div class="nav-item"
+     (mouseenter)="onIconHover('services')"
+     (mouseleave)="onIconLeave()"
+     (click)="navigate('/client/services')">
+    <ion-icon name="balloon" [style.color]="getIconColor('services', '/client/services')"></ion-icon>
+  </div>
+
+  <div class="nav-item"
+     (mouseenter)="onIconHover('profile')"
+     (mouseleave)="onIconLeave()"
+     (click)="navigate('/client/profile')">
+    <ion-icon name="person" [style.color]="getIconColor('profile', '/client/profile')"></ion-icon>
+  </div>
+</nav>

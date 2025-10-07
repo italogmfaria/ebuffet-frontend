@@ -15,7 +15,14 @@ import {
   logOut,
   help,
   chevronForward,
-  removeCircleOutline
+  removeCircleOutline,
+  home,
+  restaurant,
+  cart,
+  receipt,
+  person,
+  restaurantOutline,
+  balloon
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -32,7 +39,14 @@ addIcons({
   help,
   'log-out': logOut,
   'chevron-forward': chevronForward,
-  'remove-circle-outline': removeCircleOutline
+  'remove-circle-outline': removeCircleOutline,
+  home,
+  restaurant,
+  cart,
+  receipt,
+  person,
+  'restaurant-outline': restaurantOutline,
+  balloon
 });
 
 function initializeTheme(themeService: ThemeService): () => Promise<void> {

@@ -4,23 +4,35 @@ import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
 import { ThemeService } from '../../../../services/theme.service';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationCircleComponent } from '../../buttons/circles/notification-circle/notification-circle.component';
 
 @Component({
   selector: 'app-form-page',
   templateUrl: './form-page.component.html',
   styleUrls: ['./form-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon]
+  imports: [CommonModule, IonContent, IonIcon, NotificationCircleComponent]
 })
 export class FormPageComponent implements OnInit {
   @Input() title: string = '';
-  primaryColor = '';
-  bannerUrl = '';
   @Input() backRoute: string = '';
+  @Input() hasNavbar: boolean = false;
+  @Input() showNotification: boolean = false;
   @Output() backClick = new EventEmitter<void>();
-  accentColor = '';
+  @Output() notificationClick = new EventEmitter<Event>();
 
-  constructor(private navCtrl: NavController, private themeService: ThemeService) {
+  primaryColor = '';
+  secondaryColor = '';
+  bannerUrl = '';
+  accentColor = '';
+  hasNewNotification = false;
+
+  constructor(
+    private navCtrl: NavController,
+    private themeService: ThemeService,
+    private notificationService: NotificationService
+  ) {
     addIcons({ arrowBack });
   }
 
@@ -29,9 +41,15 @@ export class FormPageComponent implements OnInit {
 
     if (theme) {
       this.primaryColor = theme.primaryColor;
+      this.secondaryColor = theme.secondaryColor;
       this.bannerUrl = theme.banner;
       this.accentColor = theme.accentColor;
     }
+
+    // Observa mudanças no estado de notificações
+    this.notificationService.hasNewNotification$.subscribe(hasNew => {
+      this.hasNewNotification = hasNew;
+    });
   }
 
   goBack() {
@@ -50,5 +68,9 @@ export class FormPageComponent implements OnInit {
     } catch (error) {
       this.navCtrl.navigateRoot('/welcome');
     }
+  }
+
+  onNotificationClick(event: Event) {
+    this.notificationClick.emit(event);
   }
 }

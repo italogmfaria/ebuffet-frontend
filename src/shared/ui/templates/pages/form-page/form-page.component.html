@@ -5,12 +5,20 @@
       <ion-icon name="arrow-back"></ion-icon>
     </div>
 
+    <div class="notification-button" [hidden]="!showNotification">
+      <app-notification-circle
+        [size]="'medium'"
+        [hasNewNotification]="hasNewNotification"
+        (buttonClick)="onNotificationClick($event)">
+      </app-notification-circle>
+    </div>
+
     <div class="header-section">
       <img [src]="bannerUrl" alt="Logo do Buffet" class="buffet-banner" />
     </div>
 
-    <main class="content">
-      <h2 class="page-title">{{ title }}</h2>
+    <main class="content" [class.has-navbar]="hasNavbar">
+      <h4 class="page-title">{{ title }}</h4>
         <ng-content></ng-content>
     </main>
   </div>

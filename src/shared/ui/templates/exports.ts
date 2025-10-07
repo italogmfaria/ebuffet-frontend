@@ -2,8 +2,6 @@
   export { QueryBadgeComponent } from './badges/query-badge/query-badge.component';
   export { DetailBagdeComponent } from './badges/detail-bagde/detail-bagde.component';
 
-
-
 // Button componentes
 
   // Categories componentes
@@ -19,6 +17,8 @@
     export { NotificationCircleComponent } from './buttons/circles/notification-circle/notification-circle.component';
     export { OpenCircleComponent } from './buttons/circles/open-circle/open-circle.component';
     export { RemoveCircleComponent } from './buttons/circles/remove-circle/remove-circle.component';
+    export { LogoutCircleComponent } from './buttons/circles/logout-circle/logout-circle.component';
+    export { UserCircleComponent } from './buttons/circles/user-circle/user-circle.component';
 
 
   // FABs componentes
@@ -43,6 +43,7 @@
 
 
 // Navbars componentes
+  export { ClientNavbarComponent } from './navbars/client-navbar/client-navbar.component';
 
 
 // Pages componentes

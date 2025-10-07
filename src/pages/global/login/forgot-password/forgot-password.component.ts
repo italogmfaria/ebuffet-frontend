@@ -53,7 +53,6 @@ export class ForgotPasswordComponent  implements OnInit {
       return;
     }
 
-    await this.toastService.success('Código validado com sucesso!');
     this.navCtrl.navigateForward('/new-password');
   }
 
@@ -64,7 +63,6 @@ export class ForgotPasswordComponent  implements OnInit {
   }
 
   async onResendCode(): Promise<void> {
-    await this.toastService.success('Código reenviado para seu e-mail!');
     // TODO: Implementar lógica de reenvio
   }
 

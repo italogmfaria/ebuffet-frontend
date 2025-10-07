@@ -1,13 +1,32 @@
 .register-page {
-  padding: 20px;
-  max-width: 720px;
-  margin: 0;
+  padding: 30px 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
 .register-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   ion-grid {
     width: 100%;
+    height: 100%;
+    padding: 0 30px;
+    box-sizing: border-box;
+  }
+
+  ion-row {
+    width: 100%;
+  }
+
+  ion-col {
+    width: 100%;
+    padding: 0;
   }
 }
 

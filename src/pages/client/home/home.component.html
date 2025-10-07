@@ -1,7 +1,10 @@
-<app-form-page title="Bem vindo, Usuário!" class="ion-page" (backClick)="onBackClick()">
+<app-form-page [title]="'Bem vindo, ' + userName + '!'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="home-page">
     <form class="home-form">
       <ion-grid>
+          <app-home-carousel></app-home-carousel>
+          <app-home-calendar></app-home-calendar>
+          <app-home-categories></app-home-categories>
       </ion-grid>
     </form>
   </div>
@@ -18,3 +21,5 @@
   (cancel)="onConfirmExit()"
   (close)="onCloseModal()"
 ></app-confirmation-modal>
+
+<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>

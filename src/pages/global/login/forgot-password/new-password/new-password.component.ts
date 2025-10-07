@@ -64,7 +64,6 @@ export class NewPasswordComponent implements OnInit {
     console.log('Nova senha definida:', password);
     // TODO: Enviar para o backend
 
-    await this.toastService.success('Senha alterada com sucesso!');
     this.navCtrl.navigateForward('/login');
   }
 
