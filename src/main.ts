@@ -28,6 +28,7 @@ import {
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { ThemeService } from './shared/services/theme.service';
+import {SessionService} from "./shared/services/session.service";
 
 addIcons({
   add,
@@ -59,16 +60,30 @@ function initializeTheme(themeService: ThemeService): () => Promise<void> {
   };
 }
 
+function initSession(session: SessionService): () => Promise<void> {
+  return () => session.init();
+}
+
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+
     provideHttpClient(),
+
     {
       provide: APP_INITIALIZER,
       useFactory: initializeTheme,
       deps: [ThemeService],
+      multi: true
+    },
+
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initSession,
+      deps: [SessionService],
       multi: true
     }
   ],

@@ -14,6 +14,8 @@ import {
 import { TermsComponent } from './terms/terms.component';
 import { ToastService } from '../../../shared/services/toast.service';
 import { ValidationService } from '../../../shared/services/validation.service';
+import {AuthApi} from "../../../features/auth/api/auth.api";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-register',
@@ -35,7 +37,8 @@ export class RegisterComponent implements OnInit {
     private themeService: ThemeService,
     private formBuilder: FormBuilder,
     private toastService: ToastService,
-    private validationService: ValidationService
+    private validationService: ValidationService,
+    private authApi: AuthApi
   ) {
     this.registerForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -118,13 +121,31 @@ export class RegisterComponent implements OnInit {
   }
 
   private async registerUser(name: string, surname: string, email: string, password: string): Promise<boolean> {
-    // Simular delay de rede
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const payload = {
+      nome: `${name.trim()} ${surname.trim()}`.trim(),
+      email,
+      senha: password,
+    };
 
-    // TODO: Substituir por chamada real ao backend
-    // Exemplo: return this.authService.register(name, surname, email, password);
+    try {
+      const user = await firstValueFrom(this.authApi.register(payload));
+      return !!user?.id;
+    } catch (err: any) {
+      const status = err?.status;
+      const backendMsg =
+        err?.error?.message ||
+        err?.error?.detail ||
+        (Array.isArray(err?.error?.fieldErrors) ? err.error.fieldErrors.map((e: any) => `${e.field}: ${e.message}`).join('\n') : null);
 
-    return true;
+      if (status === 400 || status === 422) {
+        await this.toastService.warning(backendMsg || 'Dados inválidos. Verifique os campos e tente novamente.');
+      } else if (status === 409) {
+        await this.toastService.error('Este e-mail já está cadastrado. Tente outro.');
+      } else {
+        await this.toastService.error(backendMsg || 'Não foi possível criar sua conta agora.');
+      }
+      return false;
+    }
   }
 
   goToLogin(event: any) {
