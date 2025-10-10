@@ -45,7 +45,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // No need to load theme colors manually anymore
   }
 
   createAccount(event: any) {

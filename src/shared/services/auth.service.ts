@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {AuthApi} from "../../features/auth/api/auth.api";
+import {MeResponse} from "../../features/auth/model/auth.type";
 
 const ACCESS_TOKEN_KEY = 'access_token';
 
@@ -14,22 +15,24 @@ export class AuthService {
    */
   async login(email: string, password: string, sessionService: { login: (user?: any) => void }): Promise<boolean> {
     try {
-      const res = await firstValueFrom(this.api.login({ username: email, password }));
-      if (!res?.token) return false;
+      const { token } = await firstValueFrom(this.api.login({ username: email, password }));
+      if (!token) return false;
 
-      localStorage.setItem(ACCESS_TOKEN_KEY, res.token);
+      localStorage.setItem(ACCESS_TOKEN_KEY, token);
 
-      // Decodifica claims básicas do JWT (se disponíveis)
-      const claims = decodeJwt(res.token);
-      const user = {
-        email: claims?.email ?? email,
-        sub: claims?.sub,
-        roles: claims?.roles ?? claims?.authorities ?? []
-      };
+      const me: MeResponse = await firstValueFrom(this.api.me());
 
-      sessionService.login(user);
+      sessionService.login({
+        id: me.id,
+        nome: me.nome,
+        email: me.email,
+        telefone: me.telefone,
+        roles: me.roles
+      });
+
       return true;
     } catch {
+      try { localStorage.removeItem(ACCESS_TOKEN_KEY); } catch {}
       return false;
     }
   }
@@ -47,13 +50,12 @@ export class AuthService {
     const token = AuthService.getToken();
     if (!token) return false;
     const claims = decodeJwt(token);
-    if (!claims?.exp) return true; // se o back não manda exp, não bloqueia
+    if (!claims?.exp) return true;
     const nowSec = Math.floor(Date.now() / 1000);
     return claims.exp > nowSec;
   }
 }
 
-/** Decodificador JWT seguro (sem libs) */
 function decodeJwt(token: string): any | null {
   try {
     const payload = token.split('.')[1];

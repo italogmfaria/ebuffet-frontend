@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from '../../../shared/api/api.client';
 import { Observable } from 'rxjs';
-import {AuthRequest, AuthResponse, RegisterRequest, UserResponse} from "../model/auth.type";
+import {AuthRequest, AuthResponse, MeResponse, RegisterRequest, UserResponse} from "../model/auth.type";
 
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
@@ -13,5 +13,9 @@ export class AuthApi {
 
   register(payload: RegisterRequest): Observable<UserResponse> {
     return this.api.post<UserResponse>('/auth/register', payload);
+  }
+
+  me(): Observable<MeResponse> {
+    return this.api.get<MeResponse>('/auth/me');
   }
 }

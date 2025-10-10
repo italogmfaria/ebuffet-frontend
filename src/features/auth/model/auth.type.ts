@@ -22,3 +22,10 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface MeResponse {
+  id: number;
+  nome: string;
+  email: string;
+  telefone?: string | null;
+  roles: string[];
+}

@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { provideHttpClient } from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import { APP_INITIALIZER } from '@angular/core';
 
 import { addIcons } from 'ionicons';
@@ -30,6 +30,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { ThemeService } from './shared/services/theme.service';
 import {SessionService} from "./shared/services/session.service";
+import {authInterceptor} from "./shared/interceptors/auth-interceptor";
 
 addIcons({
   add,
@@ -73,20 +74,13 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
 
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([
+        authInterceptor,
+      ])
+    ),
 
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeTheme,
-      deps: [ThemeService],
-      multi: true
-    },
-
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initSession,
-      deps: [SessionService],
-      multi: true
-    }
+    { provide: APP_INITIALIZER, useFactory: initializeTheme, deps: [ThemeService], multi: true },
+    { provide: APP_INITIALIZER, useFactory: initSession, deps: [SessionService], multi: true }
   ],
 }).catch(err => console.error(err));

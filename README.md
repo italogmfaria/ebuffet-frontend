@@ -23,6 +23,7 @@ src/
 └── shared/                 # Shared Layer - código reutilizável
     ├── api/                # Configurações de API base
     ├── config/             # Configurações globais
+    ├── interceptors/       # Configurações de interceptors
     ├── lib/                # Bibliotecas e utilitários
     └── ui/                 # Componentes UI genéricos
 ```
