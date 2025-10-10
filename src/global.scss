@@ -63,3 +63,15 @@ app-root {
 ion-app {
   background-color: transparent !important;
 }
+
+/* Reset de estilos do ion-card para prevenir bugs no Android */
+ion-card {
+  margin: 0 !important;
+  box-shadow: none !important;
+  --box-shadow: none !important;
+}
+
+ion-card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}

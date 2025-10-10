@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import { FormPageComponent, ConfirmationModalComponent, ClientNavbarComponent } from '../../../shared/ui/templates/exports';
 import { IonGrid, NavController } from "@ionic/angular/standalone";
@@ -7,6 +7,7 @@ import {HomeCarouselComponent} from "./home-carousel/home-carousel.component";
 import {HomeCategoriesComponent} from "./home-categories/home-categories.component";
 import {HomeCalendarComponent} from "./home-calendar/home-calendar.component";
 import { SessionService } from '../../../shared/services/session.service';
+import { OrderService } from '../../../shared/services/order.service';
 
 @Component({
     selector: 'app-home',
@@ -17,29 +18,28 @@ import { SessionService } from '../../../shared/services/session.service';
   host: { class: 'ion-page' }
 })
 export class HomeComponent implements OnInit {
-  primaryColor = '';
-  secondaryColor = '';
-  accentColor = '';
+  @Input() cartItemCount = 0;
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
   showExitModal = false;
 
   // TODO: Buscar do backend quando implementar o service
   userName = 'Usuário';
-  cartItemCount = 1; // Exemplo de contador do carrinho
+
 
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private orderService: OrderService
   ) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-    }
+    // Subscribe to order items to update cart count
+    this.orderService.orderItems$.subscribe(() => {
+      this.cartItemCount = this.orderService.getTotalItems();
+    });
 
     // TODO: Implementar chamada ao backend para buscar dados do usuário
     // this.loadUserData();

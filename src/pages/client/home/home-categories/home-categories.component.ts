@@ -15,14 +15,14 @@ import {
 })
 export class HomeCategoriesComponent implements OnInit {
   categories = [
-    { name: 'Almoço', image: 'assets/images/categories-images/categories-image-1.png', route: '/almoço' },
-    { name: 'Café da manhã', image: 'assets/images/categories-images/categories-image-2.png', route: '/cafe-da-manha' },
+    { name: 'Almoço', image: 'assets/images/categories-images/categories-image-1.png', route: '/almoco' },
+    { name: 'Café da manhã', image: 'assets/images/categories-images/categories-image-2.png', route: '/cafe' },
     { name: 'Happy Hour', image: 'assets/images/categories-images/categories-image-3.png', route: '/happy-hour' },
     { name: 'Jantar', image: 'assets/images/categories-images/categories-image-4.png', route: '/jantar' }
   ];
 
-  secondaryColor = '';
-  accentColor = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
 
   constructor(
     public themeService: ThemeService,
@@ -32,18 +32,18 @@ export class HomeCategoriesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
+    // Subscribe to theme colors to update CSS variables
+    this.secondaryColor$.subscribe(color => {
+      if (color) {
+        this.renderer.setStyle(this.elementRef.nativeElement, '--secondary-color', color);
+      }
+    });
 
-      if (this.secondaryColor) {
-        this.renderer.setStyle(this.elementRef.nativeElement, '--secondary-color', this.secondaryColor);
+    this.accentColor$.subscribe(color => {
+      if (color) {
+        this.renderer.setStyle(this.elementRef.nativeElement, '--accent-color', color);
       }
-      if (this.accentColor) {
-        this.renderer.setStyle(this.elementRef.nativeElement, '--accent-color', this.accentColor);
-      }
-    }
+    });
   }
 
 

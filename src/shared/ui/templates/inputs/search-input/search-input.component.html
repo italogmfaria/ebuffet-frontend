@@ -1,0 +1,16 @@
+<ion-item class="search-input">
+  <ion-icon
+    slot="start"
+    name="search"
+    [style.color]="secondaryColor$ | async">
+  </ion-icon>
+  <ion-input
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [ngModel]="value"
+    [style.--placeholder-color]="secondaryColor$ | async"
+    [style.color]="secondaryColor$ | async"
+    (ionInput)="onInputChange($event)"
+    (ionBlur)="onTouched()">
+  </ion-input>
+</ion-item>

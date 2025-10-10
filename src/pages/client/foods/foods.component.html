@@ -1,11 +1,29 @@
-<app-form-page [title]="'Comidas'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
+<app-form-page [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="foods-page">
     <form class="foods-form">
-      <ion-grid>
-        <!-- TODO: Implementar listagem de comidas -->
-      </ion-grid>
+      <app-search-input
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Pesquise comidas e crie seu cardápio'"
+        name="food-search"
+        (searchChange)="onSearch($event)">
+      </app-search-input>
+      <app-default-categories
+        [selectedCategoryId]="selectedCategory"
+        (categorySelected)="onCategorySelect($event)">
+      </app-default-categories>
+      <div class="foods-grid">
+        <app-default-item-card
+          *ngFor="let food of filteredFoods"
+          [title]="food.nome"
+          [description]="food.descricao"
+          [imageUrl]="food.imageUrl || ''"
+          [circleType]="'add'"
+          (click)="onFoodClick(food)"
+          (circleClick)="onAddToOrder(food)">
+        </app-default-item-card>
+      </div>
     </form>
   </div>
 </app-form-page>
 
-<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>
+<app-client-navbar></app-client-navbar>

@@ -26,9 +26,9 @@ import {firstValueFrom} from "rxjs";
   host: { class: 'ion-page' }
 })
 export class RegisterComponent implements OnInit {
-  primaryColor = '';
-  secondaryColor = '';
-  accentColor = '';
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
   registerForm: FormGroup;
 
   constructor(
@@ -49,13 +49,7 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
   async goToTerms(event: any) {

@@ -16,18 +16,14 @@ export class ModelPageComponent implements OnInit {
   @Input() title: string = '';
   @Input() backRoute: string = '';
   @Output() backClick = new EventEmitter<void>();
-  secondaryColor = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
 
   constructor(private navCtrl: NavController, private themeService: ThemeService) {
     addIcons({ arrowBack });
   }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
   goBack() {

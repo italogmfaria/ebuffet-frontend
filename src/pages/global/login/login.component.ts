@@ -24,9 +24,9 @@ import {AuthService} from "../../../shared/services/auth.service";
   host: { class: 'ion-page' }
 })
 export class LoginComponent implements OnInit {
-  primaryColor = '';
-  secondaryColor = '';
-  accentColor = '';
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
   loginForm: FormGroup;
 
   constructor(
@@ -45,13 +45,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
   createAccount(event: any) {

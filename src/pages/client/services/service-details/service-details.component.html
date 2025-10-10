@@ -1,2 +1,32 @@
-<app-model-page title="Nome do Serviço" backRoute="/services">
+<app-model-page [title]="serviceName" class="ion-page" (backClick)="onBackClick()">
+  <div class="service-details-page" *ngIf="serviceDetails">
+    <div class="service-image-container">
+      <ng-container *ngIf="serviceDetails.imageUrl; else placeholder">
+        <ion-img [src]="serviceDetails.imageUrl" [alt]="serviceDetails.nome" class="service-image"></ion-img>
+      </ng-container>
+      <ng-template #placeholder>
+        <app-image-placeholder></app-image-placeholder>
+      </ng-template>
+    </div>
+
+    <div class="service-content">
+      <div class="service-header">
+        <h2 class="service-title" [style.color]="secondaryColor$ | async">{{ serviceDetails.nome }}</h2>
+        <app-detail-bagde [text]="CategoriasLabels[serviceDetails.categoria]"></app-detail-bagde>
+      </div>
+
+      <div class="service-description">
+        <p *ngFor="let paragraph of serviceDetails.descricao.split('\n\n')">
+          {{ paragraph }}
+        </p>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <app-primary-button
+        [text]="'Adicionar a sua reserva'"
+        (buttonClick)="onAddToReserve()">
+      </app-primary-button>
+    </div>
+  </div>
 </app-model-page>

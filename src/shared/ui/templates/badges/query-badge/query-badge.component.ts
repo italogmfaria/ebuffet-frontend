@@ -11,7 +11,7 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, IonicModule]
 })
 export class QueryBadgeComponent implements OnInit {
-  secondaryColor = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
 
   @Input() icon: string = 'help';
   @Input() iconColor: string = '#fff';
@@ -19,10 +19,7 @@ export class QueryBadgeComponent implements OnInit {
   constructor(private themeService: ThemeService) { }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
 }

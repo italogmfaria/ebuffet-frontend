@@ -1,7 +1,7 @@
-<ion-content [style.--background]="primaryColor">
+<ion-content [style.--background]="primaryColor$ | async">
   <div class="form-page-container">
 
-    <div [style.color]="accentColor" class="back-button" (click)="goBack()">
+    <div [style.color]="accentColor$ | async" class="back-button" (click)="goBack()">
       <ion-icon name="arrow-back"></ion-icon>
     </div>
 
@@ -14,7 +14,7 @@
     </div>
 
     <div class="header-section">
-      <img [src]="bannerUrl" alt="Logo do Buffet" class="buffet-banner" />
+      <img [src]="banner$ | async" alt="Logo do Buffet" class="buffet-banner" />
     </div>
 
     <main class="content" [class.has-navbar]="hasNavbar">

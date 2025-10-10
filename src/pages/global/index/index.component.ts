@@ -12,16 +12,12 @@ import { ThemeService } from '../../../shared/services/theme.service';
   host: { class: 'ion-page' }
 })
 export class IndexComponent implements OnInit {
-  primaryColor = '';
-  logoUrl = '';
+  primaryColor$ = this.themeService.primaryColor$;
+  logo$ = this.themeService.logo$;
 
   constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.logoUrl = theme.logo;
-    }
+    // No need to load theme properties manually anymore
   }
 }

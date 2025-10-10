@@ -1,2 +1,32 @@
-<app-model-page title="Nome da Comida" backRoute="/foods">
+<app-model-page [title]="foodName" class="ion-page" (backClick)="onBackClick()">
+  <div class="food-details-page" *ngIf="foodDetails">
+    <div class="food-image-container">
+      <ng-container *ngIf="foodDetails.imageUrl; else placeholder">
+        <ion-img [src]="foodDetails.imageUrl" [alt]="foodDetails.nome" class="food-image"></ion-img>
+      </ng-container>
+      <ng-template #placeholder>
+        <app-image-placeholder></app-image-placeholder>
+      </ng-template>
+    </div>
+
+    <div class="food-content">
+      <div class="food-header">
+        <h2 class="food-title" [style.color]="secondaryColor$ | async">{{ foodDetails.nome }}</h2>
+        <app-detail-bagde [text]="CategoriasLabels[foodDetails.categoria]"></app-detail-bagde>
+      </div>
+
+      <div class="food-description">
+        <p *ngFor="let paragraph of foodDetails.descricao.split('\n\n')">
+          {{ paragraph }}
+        </p>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <app-primary-button
+        [text]="'Adicionar a sua reserva'"
+        (buttonClick)="onAddToReserve()">
+      </app-primary-button>
+    </div>
+  </div>
 </app-model-page>

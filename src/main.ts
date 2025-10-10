@@ -8,6 +8,7 @@ import { addIcons } from 'ionicons';
 import {
   add,
   close,
+  search,
   trash,
   pencil,
   image,
@@ -35,6 +36,7 @@ addIcons({
   close,
   trash,
   pencil,
+  search,
   image,
   notifications,
   help,

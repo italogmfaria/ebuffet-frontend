@@ -14,8 +14,8 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 })
 export class HomeCalendarComponent implements OnInit {
   selectedDate: string = '';
-  secondaryColor: string = '';
-  accentColor: string = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
   minDate: string = '2020-01-01';
   maxDate: string = '2030-12-31';
 
@@ -29,11 +29,7 @@ export class HomeCalendarComponent implements OnInit {
   constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
   // Função para customizar a aparência de cada dia
@@ -42,9 +38,14 @@ export class HomeCalendarComponent implements OnInit {
     const dateOnly = date.toISOString().split('T')[0];
 
     if (this.unavailableDates.includes(dateOnly)) {
+      // Note: This will need to be updated to work with observables in the template
+      // or subscribe to get the current value
+      let color = '#3880ff'; // fallback
+      this.secondaryColor$.subscribe((c) => (color = c)).unsubscribe();
+
       return {
         textColor: '#ffffff',
-        backgroundColor: this.secondaryColor,
+        backgroundColor: color,
       };
     }
 

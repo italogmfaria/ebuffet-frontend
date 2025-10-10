@@ -22,10 +22,10 @@ export class FormPageComponent implements OnInit {
   @Output() backClick = new EventEmitter<void>();
   @Output() notificationClick = new EventEmitter<Event>();
 
-  primaryColor = '';
-  secondaryColor = '';
-  bannerUrl = '';
-  accentColor = '';
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
+  banner$ = this.themeService.banner$;
   hasNewNotification = false;
 
   constructor(
@@ -37,15 +37,6 @@ export class FormPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.bannerUrl = theme.banner;
-      this.accentColor = theme.accentColor;
-    }
-
     // Observa mudanças no estado de notificações
     this.notificationService.hasNewNotification$.subscribe(hasNew => {
       this.hasNewNotification = hasNew;
