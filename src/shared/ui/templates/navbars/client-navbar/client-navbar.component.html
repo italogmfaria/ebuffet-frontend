@@ -18,7 +18,7 @@
      (mouseleave)="onIconLeave()"
      (click)="navigate('/client/order')">
     <ion-icon name="cart" [style.color]="getIconColor('cart', '/client/order')"></ion-icon>
-    <ion-badge *ngIf="cartItemCount > 0" [style.background-color]="secondaryColor">
+    <ion-badge *ngIf="cartItemCount > 0" [style.background-color]="secondaryColor$ | async">
       {{ cartItemCount }}
     </ion-badge>
   </div>

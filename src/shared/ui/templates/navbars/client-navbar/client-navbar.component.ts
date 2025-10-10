@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonIcon, IonBadge, NavController } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../../services/theme.service';
+import { OrderService } from '../../../../services/order.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-client-navbar',
@@ -13,27 +15,37 @@ import { ThemeService } from '../../../../services/theme.service';
 })
 export class ClientNavbarComponent implements OnInit {
   @Input() cartItemCount = 0;
-  secondaryColor = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
   currentRoute = '';
+  private currentSecondaryColor = '';
 
   hoveredIcon: string | null = null;
 
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
-    private router: Router
+    private router: Router,
+    private orderService: OrderService
   ) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-    }
+    // Subscribe to order items to update cart count automatically
+    this.orderService.orderItems$.subscribe(() => {
+      this.cartItemCount = this.orderService.getTotalItems();
+    });
+
+    // Subscribe to secondary color for use in getIconColor method
+    this.secondaryColor$.subscribe(color => {
+      this.currentSecondaryColor = color;
+    });
 
     this.currentRoute = this.router.url;
 
-    this.router.events.subscribe(() => {
-      this.currentRoute = this.router.url;
+    // Subscribe only to NavigationEnd events
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.currentRoute = event.urlAfterRedirects || event.url;
     });
   }
 
@@ -42,7 +54,10 @@ export class ClientNavbarComponent implements OnInit {
   }
 
   isActive(route: string): boolean {
-    return this.currentRoute === route;
+    // Exact match or starts with route followed by query params or slash
+    return this.currentRoute === route ||
+           this.currentRoute.startsWith(route + '/') ||
+           this.currentRoute.startsWith(route + '?');
   }
 
   onIconHover(iconName: string) {
@@ -55,7 +70,7 @@ export class ClientNavbarComponent implements OnInit {
 
   getIconColor(iconName: string, route: string): string {
     if (this.isActive(route) || this.hoveredIcon === iconName) {
-      return this.secondaryColor;
+      return this.currentSecondaryColor;
     }
     return '#9e9e9e';
   }

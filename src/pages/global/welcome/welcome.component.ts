@@ -13,22 +13,15 @@ import { PrimaryButtonComponent, OutlineButtonComponent } from '../../../shared/
   host: { class: 'ion-page' }
 })
 export class WelcomeComponent implements OnInit {
-  primaryColor = '';
-  secondaryColor = '';
-  accentColor = '';
-  logoUrl = '';
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
+  logo$ = this.themeService.logo$;
 
   constructor(private navCtrl: NavController, private themeService: ThemeService) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-      this.logoUrl = theme.logo;
-    }
+    // No need to load theme properties manually anymore
   }
 
   goToRegister(event: any) {

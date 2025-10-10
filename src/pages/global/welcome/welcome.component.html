@@ -1,26 +1,26 @@
-<ion-content [style.--background]="primaryColor">
+<ion-content [style.--background]="primaryColor$ | async">
   <div class="welcome-container">
     <div class="banner-container">
-      <img [src]="logoUrl" alt="Banner" class="buffet-logo">
+      <img [src]="logo$ | async" alt="Banner" class="buffet-logo">
     </div>
 
     <div class="content-card">
       <div class="text-section">
-        <h1 [style.color]="accentColor">Bem-vindo!</h1>
-        <p [style.color]="accentColor">Tudo para seu evento acontecer do jeitinho que você imagina. <br> Monte seus cardápios, escolha comidas e serviços, e  acompanhe cada etapa com facilidade.</p>
+        <h1 [style.color]="accentColor$ | async">Bem-vindo!</h1>
+        <p [style.color]="accentColor$ | async">Tudo para seu evento acontecer do jeitinho que você imagina. <br> Monte seus cardápios, escolha comidas e serviços, e  acompanhe cada etapa com facilidade.</p>
       </div>
 
       <div class="buttons-section">
         <app-outline-button
           text="Criar Conta"
           [customBackgroundColor]="'white'"
-          [customTextColor]="secondaryColor"
+          [customTextColor]="(secondaryColor$ | async)!"
           (buttonClick)="goToRegister($event)">
         </app-outline-button>
 
         <app-primary-button
           text="Entrar"
-          [customColor]="secondaryColor"
+          [customColor]="(secondaryColor$ | async)!"
           (buttonClick)="goToLogin($event)">
         </app-primary-button>
       </div>

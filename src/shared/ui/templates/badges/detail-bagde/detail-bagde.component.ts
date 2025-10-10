@@ -11,15 +11,12 @@ import { ThemeService } from '../../../../services/theme.service';
 })
 export class DetailBagdeComponent implements OnInit {
   @Input() text: string = 'INDISPONÍVEL';
-  secondaryColor = '';
+  secondaryColor$ = this.themeService.secondaryColor$;
 
   constructor(private themeService: ThemeService) { }
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.secondaryColor = theme.secondaryColor;
-    }
+    // No need to load theme colors manually anymore
   }
 
 }

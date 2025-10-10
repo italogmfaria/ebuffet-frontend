@@ -1,11 +1,29 @@
-<app-form-page [title]="'Serviços'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
+<app-form-page [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="services-page">
     <form class="services-form">
-      <ion-grid>
-        <!-- TODO: Implementar listagem de serviços (decoração, arrumação, etc) -->
-      </ion-grid>
+      <app-search-input
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Pesquise serviços e faça seu evento'"
+        name="service-search"
+        (searchChange)="onSearch($event)">
+      </app-search-input>
+      <app-default-categories
+        [selectedCategoryId]="selectedCategory"
+        (categorySelected)="onCategorySelect($event)">
+      </app-default-categories>
+      <div class="services-grid">
+        <app-default-item-card
+          *ngFor="let service of filteredServices"
+          [title]="service.nome"
+          [description]="service.descricao"
+          [imageUrl]="service.imageUrl || ''"
+          [circleType]="'add'"
+          (click)="onServiceClick(service)"
+          (circleClick)="onAddToOrder(service)">
+        </app-default-item-card>
+      </div>
     </form>
   </div>
 </app-form-page>
 
-<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>
+<app-client-navbar></app-client-navbar>

@@ -5,7 +5,7 @@
 // Button componentes
 
   // Categories componentes
-
+  export { DefaultCategoriesComponent } from './buttons/categories/default-categories/default-categories.component';
 
 
   // Circles componentes
@@ -36,7 +36,7 @@
 
 
 // Cards componentes
-
+export { DefaultItemCardComponent } from './cards/default-item-card/default-item-card.component';
 
 // Modals componentes
   export { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
@@ -54,3 +54,10 @@
   export { TextInputComponent } from './inputs/text-input/text-input.component';
   export { PasswordInputComponent } from './inputs/password-input/password-input.component';
   export { CodeInputComponent } from './inputs/code-input/code-input.component';
+  export { SearchInputComponent } from './inputs/search-input/search-input.component';
+
+// Squares componentes
+
+
+// Placeholders componentes
+  export { ImagePlaceholderComponent } from './placeholders/image-placeholder/image-placeholder.component';

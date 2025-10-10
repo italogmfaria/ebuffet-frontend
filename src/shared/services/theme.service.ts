@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface ThemeConfig {
@@ -15,6 +16,20 @@ export interface ThemeConfig {
 })
 export class ThemeService {
   private currentTheme: ThemeConfig | null = null;
+
+  // BehaviorSubjects para as cores do tema
+  private primaryColorSubject = new BehaviorSubject<string>('#3dc2ff');
+  private secondaryColorSubject = new BehaviorSubject<string>('#3880ff');
+  private accentColorSubject = new BehaviorSubject<string>('#ffffff');
+  private logoSubject = new BehaviorSubject<string>('');
+  private bannerSubject = new BehaviorSubject<string>('');
+
+  // Observables públicos
+  public primaryColor$ = this.primaryColorSubject.asObservable();
+  public secondaryColor$ = this.secondaryColorSubject.asObservable();
+  public accentColor$ = this.accentColorSubject.asObservable();
+  public logo$ = this.logoSubject.asObservable();
+  public banner$ = this.bannerSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -33,6 +48,7 @@ export class ThemeService {
       }
 
       this.currentTheme = theme;
+      this.updateColorSubjects(theme);
       this.applyTheme(theme);
 
       document.body.classList.remove('theme-loading');
@@ -56,8 +72,17 @@ export class ThemeService {
     };
 
     this.currentTheme = fallbackTheme;
+    this.updateColorSubjects(fallbackTheme);
     this.applyTheme(fallbackTheme);
     console.log('Applied fallback theme');
+  }
+
+  private updateColorSubjects(theme: ThemeConfig): void {
+    this.primaryColorSubject.next(theme.primaryColor);
+    this.secondaryColorSubject.next(theme.secondaryColor);
+    this.accentColorSubject.next(theme.accentColor);
+    this.logoSubject.next(theme.logo);
+    this.bannerSubject.next(theme.banner);
   }
 
   private showThemeError(): void {

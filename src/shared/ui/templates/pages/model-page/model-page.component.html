@@ -1,10 +1,10 @@
 <ion-content class="model-page">
   <header class="header">
     <div class="header-content">
-      <button [style.color]="secondaryColor" class="back-button" (click)="goBack()">
+      <button [style.color]="secondaryColor$ | async" class="back-button" (click)="goBack()">
         <ion-icon name="arrow-back"></ion-icon>
       </button>
-      <h1 [style.color]="secondaryColor" class="title">{{ title }}</h1>
+      <h1 [style.color]="secondaryColor$ | async" class="title">{{ title }}</h1>
     </div>
   </header>
 

@@ -1,29 +1,26 @@
-<app-model-page [title]="'Nova Reserva'" class="ion-page" (backClick)="onBackClick()">
+<app-model-page [title]="'Meu Pedido'" class="ion-page" (backClick)="onBackClick()">
   <div class="order-page">
     <ion-grid>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
-      <h4>Olá, tudo bem?</h4>
+      <div *ngIf="orderItems.length === 0" class="empty-order">
+        <h4>Seu pedido está vazio</h4>
+        <p>Adicione itens do cardápio para começar seu pedido.</p>
+      </div>
+
+      <div *ngIf="orderItems.length > 0" class="order-items">
+        <h4>Itens do Pedido:</h4>
+        <div class="items-list">
+          <app-default-item-card
+            *ngFor="let item of orderItems"
+            [title]="item.title + ' (x' + item.quantity + ')'"
+            [description]="item.description"
+            [imageUrl]="item.imageUrl || ''"
+            [circleType]="'remove'"
+            (circleClick)="onRemoveFromOrder(item.title)">
+          </app-default-item-card>
+        </div>
+      </div>
     </ion-grid>
   </div>
 </app-model-page>
 
-<app-client-navbar [cartItemCount]="cartItemCount"></app-client-navbar>
+<app-client-navbar></app-client-navbar>

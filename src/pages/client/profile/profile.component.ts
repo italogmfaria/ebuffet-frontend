@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModelPageComponent, ClientNavbarComponent, LogoutCircleComponent, EditCircleComponent, ConfirmationModalComponent } from '../../../shared/ui/templates/exports';
 import { IonGrid, NavController } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { SessionService } from '../../../shared/services/session.service';
+import { OrderService } from '../../../shared/services/order.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,10 +15,10 @@ import { SessionService } from '../../../shared/services/session.service';
   host: { class: 'ion-page' }
 })
 export class ProfileComponent implements OnInit {
-  primaryColor = '';
-  secondaryColor = '';
-  accentColor = '';
-  cartItemCount = 1;
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
+  @Input() cartItemCount = 0;
   userName = 'Usuário';
   showLogoutModal = false;
 
@@ -25,15 +26,14 @@ export class ProfileComponent implements OnInit {
     private themeService: ThemeService,
     private navCtrl: NavController
     ,private sessionService: SessionService
+    ,private orderService: OrderService
   ) {}
 
   ngOnInit() {
-    const theme = this.themeService.getCurrentTheme();
-    if (theme) {
-      this.primaryColor = theme.primaryColor;
-      this.secondaryColor = theme.secondaryColor;
-      this.accentColor = theme.accentColor;
-    }
+    // Subscribe to order items to update cart count
+    this.orderService.orderItems$.subscribe(() => {
+      this.cartItemCount = this.orderService.getTotalItems();
+    });
   }
 
   onBackClick() {
