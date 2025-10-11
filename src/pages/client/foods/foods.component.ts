@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent} from '../../../shared/ui/templates/exports';
@@ -7,9 +7,11 @@ import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { OrderService } from '../../../shared/services/order.service';
 import { ToastService } from '../../../shared/services/toast.service';
-import { FoodsApiService } from '../../../features/foods/api/foods.api';
 import { ComidaListDTO } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../features/shared/enums/categoria.enum';
+import {Subscription} from "rxjs";
+import {filter} from "rxjs/operators";
+import {FoodsApiService} from "../../../shared/services/food.service";
 
 @Component({
   selector: 'app-foods',
@@ -27,17 +29,19 @@ import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../fe
   ],
   host: { class: 'ion-page' }
 })
-export class FoodsComponent implements OnInit {
+export class FoodsComponent implements OnInit, OnDestroy {
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
   accentColor$ = this.themeService.accentColor$;
 
   cartItemCount = 0;
-  searchQuery: string = '';
+  searchQuery = '';
   selectedCategory: string = 'todos';
 
   foods: ComidaListDTO[] = [];
   filteredFoods: ComidaListDTO[] = [];
+
+  private subs = new Subscription();
 
   constructor(
     private themeService: ThemeService,
@@ -49,29 +53,56 @@ export class FoodsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Subscribe to order items to update cart count
-    this.orderService.orderItems$.subscribe(() => {
-      this.cartItemCount = this.orderService.getTotalItems();
-    });
+    this.subs.add(
+      this.orderService.orderItems$.subscribe(() => {
+        this.cartItemCount = this.orderService.getTotalItems();
+      })
+    );
 
-    // Carrega as comidas do serviço
     this.loadFoods();
 
-    // Captura o parâmetro de categoria da URL, se disponível
-    this.route.queryParams.subscribe(params => {
-      const category = params['category'];
-      if (category) {
-        this.selectedCategory = category;
-        this.applyFilters();
-      }
-    });
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        const category = params['category'];
+        if (category) {
+          this.selectedCategory = category;
+          this.applyFilters();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
   loadFoods() {
-    this.foodsApiService.getAllFoods().subscribe(foods => {
-      this.foods = foods;
-      this.applyFilters();
-    });
+    const buffetIdSync = this.themeService.getBuffetIdSync();
+    if (buffetIdSync) {
+      this.fetchFoods(buffetIdSync);
+      return;
+    }
+
+    this.subs.add(
+      this.themeService.buffetId$
+        .pipe(filter((id): id is number => id !== null))
+        .subscribe(id => this.fetchFoods(id))
+    );
+  }
+
+  private fetchFoods(buffetId: number) {
+    this.subs.add(
+      this.foodsApiService.getAll(buffetId).subscribe({
+        next: foods => {
+          this.foods = foods;
+          this.applyFilters();
+        },
+        error: err => {
+          console.error('Erro ao carregar comidas', err);
+          this.toastService.error('Não foi possível carregar as comidas.');
+        }
+      })
+    );
   }
 
   onBackClick() {
@@ -95,11 +126,9 @@ export class FoodsComponent implements OnInit {
   private applyFilters() {
     let filtered = [...this.foods];
 
-    // Filtro por pesquisa
     if (this.searchQuery) {
       const term = this.searchQuery.toLowerCase();
 
-      // Busca em categorias - encontra categorias que correspondem ao termo
       const matchingCategories: EnumCategoria[] = [];
       Object.entries(CategoriasLabels).forEach(([key, label]) => {
         if (label.toLowerCase().includes(term)) {
@@ -107,7 +136,6 @@ export class FoodsComponent implements OnInit {
         }
       });
 
-      // Filtra por nome, descrição ou categoria
       filtered = filtered.filter(f =>
         f.nome.toLowerCase().includes(term) ||
         f.descricao.toLowerCase().includes(term) ||
@@ -115,7 +143,6 @@ export class FoodsComponent implements OnInit {
       );
     }
 
-    // Filtro por categoria selecionada (aplica depois da busca)
     if (this.selectedCategory !== 'todos') {
       const enumCategoria = CategoriaIdMapping[this.selectedCategory];
       if (enumCategoria) {

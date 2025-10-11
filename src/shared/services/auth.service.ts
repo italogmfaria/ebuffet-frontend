@@ -9,10 +9,6 @@ const ACCESS_TOKEN_KEY = 'access_token';
 export class AuthService {
   private api = inject(AuthApi);
 
-  /**
-   * Faz login usando email (mapeado para username) e salva o token.
-   * Também atualiza a SessionService com dados mínimos do usuário.
-   */
   async login(email: string, password: string, sessionService: { login: (user?: any) => void }): Promise<boolean> {
     try {
       const { token } = await firstValueFrom(this.api.login({ username: email, password }));
