@@ -18,7 +18,7 @@
           [description]="food.descricao"
           [imageUrl]="food.imageUrl || ''"
           [circleType]="'add'"
-          (click)="onFoodClick(food)"
+          (cardClick)="onFoodClick(food)"
           (circleClick)="onAddToOrder(food)">
         </app-default-item-card>
       </div>

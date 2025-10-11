@@ -1,10 +1,55 @@
 .order-page {
-  padding: 20px;
+  padding: 10px 0 20px;
+  width: 100%;
 
-  .order-form {
-    ion-grid {
-      padding: 0;
+  .section {
+    margin-bottom: 30px;
+    padding: 0 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-of-type {
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    .empty-section {
+      padding: 20px;
+      text-align: center;
+
+      .empty-text {
+        color: #999;
+        font-size: 14px;
+        margin: 0;
+        font-style: italic;
+      }
+    }
+
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
   }
-}
 
+  .button-container {
+    margin-top: 0;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+
+    app-primary-button {
+      width: 100%;
+    }
+  }
+
+  ion-grid {
+    padding: 0;
+    width: 100%;
+  }
+}

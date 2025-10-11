@@ -128,9 +128,11 @@ export class FoodsComponent implements OnInit {
 
   onAddToOrder(item: ComidaListDTO) {
     this.orderService.addItem({
+      id: item.id,
       title: item.nome,
       description: item.descricao,
-      imageUrl: item.imageUrl || ''
+      imageUrl: item.imageUrl || '',
+      type: 'food'
     });
     this.toastService.success(`${item.nome} adicionado ao pedido!`);
   }

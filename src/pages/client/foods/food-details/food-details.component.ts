@@ -34,6 +34,8 @@ export class FoodDetailsComponent implements OnInit {
   foodDetails: ComidaDetailDTO | null = null;
   protected readonly CategoriasLabels = CategoriasLabels;
 
+  isFromOrder: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -49,6 +51,7 @@ export class FoodDetailsComponent implements OnInit {
     // Captura o nome da comida dos query params
     this.route.queryParams.subscribe(params => {
       this.foodName = params['name'] || 'Detalhes da Comida';
+      this.isFromOrder = params['fromOrder'] === 'true';
     });
 
     this.loadFoodDetails();
@@ -64,18 +67,24 @@ export class FoodDetailsComponent implements OnInit {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/foods');
+    this.navCtrl.back();
   }
 
   onAddToReserve() {
     if (this.foodDetails) {
       this.orderService.addItem({
+        id: this.foodDetails.id,
         title: this.foodDetails.nome,
         description: this.foodDetails.descricao,
-        imageUrl: this.foodDetails.imageUrl || ''
+        imageUrl: this.foodDetails.imageUrl || '',
+        type: 'food'
       });
 
       this.navCtrl.navigateForward('/client/order');
     }
+  }
+
+  onBackToOrder() {
+    this.navCtrl.navigateBack('/client/order');
   }
 }

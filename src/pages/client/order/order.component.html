@@ -1,26 +1,95 @@
-<app-model-page [title]="'Meu Pedido'" class="ion-page" (backClick)="onBackClick()">
+<app-model-page [title]="'Nova Reserva'" class="ion-page" (backClick)="onBackClick()">
   <div class="order-page">
     <ion-grid>
-      <div *ngIf="orderItems.length === 0" class="empty-order">
-        <h4>Seu pedido está vazio</h4>
-        <p>Adicione itens do cardápio para começar seu pedido.</p>
-      </div>
-
-      <div *ngIf="orderItems.length > 0" class="order-items">
-        <h4>Itens do Pedido:</h4>
-        <div class="items-list">
-          <app-default-item-card
-            *ngFor="let item of orderItems"
-            [title]="item.title + ' (x' + item.quantity + ')'"
+      <!-- Seção de Cardápio -->
+      <div class="section">
+        <h3 class="section-title">Comidas:</h3>
+        <div *ngIf="foodItems.length === 0" class="empty-section">
+          <p class="empty-text">Nenhuma comida adicionada</p>
+        </div>
+        <div *ngIf="foodItems.length > 0" class="items-list">
+          <app-order-item-card
+            *ngFor="let item of foodItems"
+            [title]="item.title"
             [description]="item.description"
             [imageUrl]="item.imageUrl || ''"
-            [circleType]="'remove'"
-            (circleClick)="onRemoveFromOrder(item.title)">
-          </app-default-item-card>
+            [quantity]="item.quantity"
+            (cardClick)="onFoodItemClick(item)"
+            (removeClick)="onRemoveFromOrder(item.title)"
+            (quantityChange)="onQuantityChange(item.title, $event)">
+          </app-order-item-card>
         </div>
+      </div>
+
+      <!-- Seção de Serviços -->
+      <div class="section">
+        <h3 class="section-title">Serviços:</h3>
+        <div *ngIf="serviceItems.length === 0" class="empty-section">
+          <p class="empty-text">Nenhum serviço adicionado</p>
+        </div>
+        <div *ngIf="serviceItems.length > 0" class="items-list">
+          <app-order-item-card
+            *ngFor="let item of serviceItems"
+            [title]="item.title"
+            [description]="item.description"
+            [imageUrl]="item.imageUrl || ''"
+            [quantity]="item.quantity"
+            (cardClick)="onServiceItemClick(item)"
+            (removeClick)="onRemoveFromOrder(item.title)"
+            (quantityChange)="onQuantityChange(item.title, $event)">
+          </app-order-item-card>
+        </div>
+      </div>
+
+      <!-- Botão Continuar -->
+      <div class="button-container">
+        <app-primary-button
+          [text]="'Continuar'"
+          [disabled]="!hasItems"
+          (buttonClick)="onContinue()">
+        </app-primary-button>
       </div>
     </ion-grid>
   </div>
 </app-model-page>
 
 <app-client-navbar></app-client-navbar>
+
+<app-confirmation-modal
+  *ngIf="showFoodModal"
+  [title]="'Deseja alguma comida?'"
+  [subtitle]="'Não há nenhuma comida<br>inclusa na sua reserva.'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onFoodModalClose()"
+  (confirm)="onFoodModalCancel()"
+  (cancel)="onFoodModalConfirm()">
+</app-confirmation-modal>
+
+<app-confirmation-modal
+  *ngIf="showServiceModal"
+  [title]="'Deseja algum serviço?'"
+  [subtitle]="'Não há nenhum serviço<br>incluso na sua reserva.'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Não'"
+  [primaryButtonText]="'Sim'"
+  (close)="onServiceModalClose()"
+  (confirm)="onServiceModalConfirm()"
+  (cancel)="onServiceModalCancel()">
+</app-confirmation-modal>
+
+<app-confirmation-modal
+  *ngIf="showRemoveModal"
+  [title]="'Remover item?'"
+  [subtitle]="'Tem certeza que deseja<br>remover este item do pedido?'"
+  [icon]="'trash'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Cancelar'"
+  [primaryButtonText]="'Remover'"
+  (close)="onRemoveModalClose()"
+  (confirm)="onRemoveModalConfirm()"
+  (cancel)="onRemoveModalCancel()">
+</app-confirmation-modal>

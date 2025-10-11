@@ -37,6 +37,7 @@
 
 // Cards componentes
 export { DefaultItemCardComponent } from './cards/default-item-card/default-item-card.component';
+export { OrderItemCardComponent } from './cards/order-item-card/order-item-card.component';
 
 // Modals componentes
   export { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';

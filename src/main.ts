@@ -23,7 +23,8 @@ import {
   receipt,
   person,
   restaurantOutline,
-  balloon
+  balloon,
+  remove
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -47,6 +48,7 @@ addIcons({
   cart,
   receipt,
   person,
+  remove,
   'restaurant-outline': restaurantOutline,
   balloon
 });

@@ -3,21 +3,22 @@ import { IonicModule } from '@ionic/angular';
 import { ThemeService } from '../../../../services/theme.service';
 import { CommonModule } from '@angular/common';
 import { ImagePlaceholderComponent } from '../../placeholders/image-placeholder/image-placeholder.component';
-import {RemoveCircleComponent, AddCircleComponent} from "../../exports";
+import {CloseCircleComponent, AddCircleComponent} from "../../exports";
 
 @Component({
   selector: 'app-default-item-card',
   templateUrl: './default-item-card.component.html',
   styleUrls: ['./default-item-card.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, ImagePlaceholderComponent, AddCircleComponent, RemoveCircleComponent]
+  imports: [IonicModule, CommonModule, ImagePlaceholderComponent, AddCircleComponent, CloseCircleComponent]
 })
 export class DefaultItemCardComponent implements OnInit {
   @Input() title: string = '';
   @Input() description: string = '';
   @Input() imageUrl: string = '';
-  @Input() circleType: 'add' | 'remove' | 'none' = 'none';
+  @Input() circleType: 'add' | 'close' | 'none' = 'none';
   @Output() circleClick = new EventEmitter<{ title: string; description: string; imageUrl: string }>();
+  @Output() cardClick = new EventEmitter<void>();
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -25,6 +26,10 @@ export class DefaultItemCardComponent implements OnInit {
 
   ngOnInit() {
     // No need to load theme colors manually anymore
+  }
+
+  onCardClick() {
+    this.cardClick.emit();
   }
 
   onCircleClick(event: Event) {
