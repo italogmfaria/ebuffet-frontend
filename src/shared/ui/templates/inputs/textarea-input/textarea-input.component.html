@@ -1,16 +1,15 @@
 <div class="input-container">
   <label *ngIf="label" class="field-label">{{ label }}</label>
-  <ion-item lines="none" class="input-outline">
-    <ion-input
-      [type]="type"
+  <ion-item lines="none" class="textarea-outline">
+    <ion-textarea
       [placeholder]="placeholder"
       [disabled]="disabled"
       [value]="value"
-      [maxlength]="maxlength"
-      [inputmode]="inputmode"
+      [rows]="rows"
+      [autoGrow]="false"
       (ionInput)="onInputChange($event)"
-      (keypress)="onKeyPress($event)"
       (ionBlur)="onBlur()">
-    </ion-input>
+    </ion-textarea>
   </ion-item>
 </div>
+

@@ -37,6 +37,7 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   foodDetails: ComidaDetailDTO | null = null;
   protected readonly CategoriasLabels = CategoriasLabels;
 
+  isFromOrder: boolean = false;
   private subs = new Subscription();
 
   constructor(
@@ -54,13 +55,16 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.route.queryParams.subscribe(params => {
         this.foodName = params['name'] || 'Detalhes da Comida';
+        this.isFromOrder = params['fromOrder'] === 'true';
       })
     );
 
     this.loadFoodDetails();
   }
 
-  ngOnDestroy() { this.subs.unsubscribe(); }
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
 
   private loadFoodDetails() {
     const buffetIdSync = this.themeService.getBuffetIdSync();
@@ -93,16 +97,24 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/foods');
+    this.navCtrl.back();
   }
 
   onAddToReserve() {
-    if (!this.foodDetails) return;
-    this.orderService.addItem({
-      title: this.foodDetails.nome,
-      description: this.foodDetails.descricao,
-      imageUrl: this.foodDetails.imageUrl || ''
-    });
-    this.navCtrl.navigateForward('/client/order');
+    if (this.foodDetails) {
+      this.orderService.addItem({
+        id: this.foodDetails.id,
+        title: this.foodDetails.nome,
+        description: this.foodDetails.descricao,
+        imageUrl: this.foodDetails.imageUrl || '',
+        type: 'food'
+      });
+
+      this.navCtrl.navigateForward('/client/order');
+    }
+  }
+
+  onBackToOrder() {
+    this.navCtrl.navigateBack('/client/order');
   }
 }

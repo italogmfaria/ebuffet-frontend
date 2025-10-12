@@ -1,2 +1,34 @@
-<app-model-page title="Reserva Confirmada" backRoute="/home">
-</app-model-page>
+<div class="confirmation-page" [style.background]="primaryColor$ | async">
+  <div class="content-container">
+    <div class="check-icon-wrapper">
+      <app-check-circle
+        size="large"
+        [customColor]="(secondaryColor$ | async) || undefined">
+      </app-check-circle>
+    </div>
+
+    <h1 class="title" [style.color]="accentColor$ | async">Reserva realizada!</h1>
+
+    <p class="description" [style.color]="accentColor$ | async">
+      Aguarde ao buffet autorizar e <br> confirmar o agendamento de <br> sua reserva para o evento.
+    </p>
+
+    <div class="buttons-wrapper">
+      <app-outline-button
+        [text]="'Minhas Reservas'"
+        (buttonClick)="onMyReservations()">
+      </app-outline-button>
+
+      <app-whatsapp-button
+        [text]="'Entrar em contato'"
+        (buttonClick)="onContactWhatsApp()">
+      </app-whatsapp-button>
+
+      <app-primary-button
+        [text]="'Voltar'"
+        [customColor]="(secondaryColor$ | async) || undefined"
+        (buttonClick)="onGoBack()">
+      </app-primary-button>
+    </div>
+  </div>
+</div>

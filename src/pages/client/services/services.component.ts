@@ -128,9 +128,11 @@ export class ServicesComponent implements OnInit {
 
   onAddToOrder(item: ServicoListDTO) {
     this.orderService.addItem({
+      id: item.id,
       title: item.nome,
       description: item.descricao,
-      imageUrl: item.imageUrl || ''
+      imageUrl: item.imageUrl || '',
+      type: 'service'
     });
     this.toastService.success(`${item.nome} adicionado ao pedido!`);
   }

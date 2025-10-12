@@ -18,7 +18,7 @@
           [description]="service.descricao"
           [imageUrl]="service.imageUrl || ''"
           [circleType]="'add'"
-          (click)="onServiceClick(service)"
+          (cardClick)="onServiceClick(service)"
           (circleClick)="onAddToOrder(service)">
         </app-default-item-card>
       </div>

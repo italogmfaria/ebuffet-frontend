@@ -1,0 +1,13 @@
+<div class="input-container">
+  <label *ngIf="label" class="field-label">{{ label }}</label>
+  <ion-item lines="none" class="input-outline" (click)="onInputClick()" [class.disabled]="disabled">
+    <ion-input
+      [placeholder]="placeholder"
+      [disabled]="true"
+      [value]="displayValue"
+      [readonly]="true">
+    </ion-input>
+    <ion-icon name="arrow-dropdown-circle" slot="end" class="dropdown-icon" [style.color]="secondaryColor$ | async"></ion-icon>
+  </ion-item>
+</div>
+

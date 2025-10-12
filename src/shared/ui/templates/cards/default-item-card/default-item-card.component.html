@@ -1,4 +1,4 @@
-<div class="item-card">
+<div class="item-card" (click)="onCardClick()">
   <div class="card-content-wrapper">
     <div class="image-container">
       <ng-container *ngIf="imageUrl; else placeholder">
@@ -20,7 +20,7 @@
 
     <div class="circle-button" *ngIf="circleType !== 'none'" (click)="onCircleClick($event)">
       <app-add-circle *ngIf="circleType === 'add'"></app-add-circle>
-      <app-remove-circle *ngIf="circleType === 'remove'"></app-remove-circle>
+      <app-close-circle *ngIf="circleType === 'close'"></app-close-circle>
     </div>
   </div>
 </div>

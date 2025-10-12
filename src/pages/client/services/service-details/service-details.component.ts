@@ -34,6 +34,8 @@ export class ServiceDetailsComponent implements OnInit {
   serviceDetails: ServicoDetailDTO | null = null;
   protected readonly CategoriasLabels = CategoriasLabels;
 
+  isFromOrder: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -49,6 +51,7 @@ export class ServiceDetailsComponent implements OnInit {
     // Captura o nome do serviço dos query params
     this.route.queryParams.subscribe(params => {
       this.serviceName = params['name'] || 'Detalhes do Serviço';
+      this.isFromOrder = params['fromOrder'] === 'true';
     });
 
     this.loadServiceDetails();
@@ -64,18 +67,24 @@ export class ServiceDetailsComponent implements OnInit {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/services');
+    this.navCtrl.back();
   }
 
   onAddToReserve() {
     if (this.serviceDetails) {
       this.orderService.addItem({
+        id: this.serviceDetails.id,
         title: this.serviceDetails.nome,
         description: this.serviceDetails.descricao,
-        imageUrl: this.serviceDetails.imageUrl || ''
+        imageUrl: this.serviceDetails.imageUrl || '',
+        type: 'service'
       });
 
       this.navCtrl.navigateForward('/client/order');
     }
+  }
+
+  onBackToOrder() {
+    this.navCtrl.navigateBack('/client/order');
   }
 }

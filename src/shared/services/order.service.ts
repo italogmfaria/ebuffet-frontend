@@ -8,6 +8,7 @@ export interface OrderItem {
   imageUrl?: string;
   quantity: number;
   price?: number;
+  type?: 'food' | 'service';
 }
 
 @Injectable({
@@ -54,14 +55,20 @@ export class OrderService {
     );
 
     if (existingItemIndex > -1) {
-      if (currentItems[existingItemIndex].quantity > 1) {
-        // Decrease quantity
-        currentItems[existingItemIndex].quantity -= 1;
-      } else {
-        // Remove item completely
-        currentItems.splice(existingItemIndex, 1);
-      }
+      currentItems.splice(existingItemIndex, 1);
+      this.orderItems.next([...currentItems]);
+      this.saveToLocalStorage();
+    }
+  }
 
+  updateQuantity(title: string, newQuantity: number): void {
+    const currentItems = this.orderItems.value;
+    const existingItemIndex = currentItems.findIndex(
+      (i) => i.title === title
+    );
+
+    if (existingItemIndex > -1) {
+      currentItems[existingItemIndex].quantity = newQuantity;
       this.orderItems.next([...currentItems]);
       this.saveToLocalStorage();
     }

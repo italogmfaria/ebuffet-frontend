@@ -1,0 +1,43 @@
+<div class="order-item-card" (click)="onCardClick()">
+  <div class="card-content-wrapper">
+    <div class="image-container">
+      <ng-container *ngIf="imageUrl; else placeholder">
+        <ion-img [src]="imageUrl" [alt]="title"></ion-img>
+      </ng-container>
+      <ng-template #placeholder>
+        <app-image-placeholder></app-image-placeholder>
+      </ng-template>
+    </div>
+
+    <div class="card-text-content">
+      <ion-text [style.color]="secondaryColor$ | async">
+        <h2 class="title">{{ title }}</h2>
+      </ion-text>
+      <ion-text color="medium">
+        <p class="description">{{ description }}</p>
+      </ion-text>
+    </div>
+
+    <div class="card-actions">
+      <div class="remove-button" (click)="onRemoveClick($event)">
+        <app-delete-circle size="medium"></app-delete-circle>
+      </div>
+      <div class="quantity-controls">
+        <button
+          class="quantity-btn"
+          [style.color]="secondaryColor$ | async"
+          (click)="onDecrease($event)"
+          [disabled]="quantity <= 1">
+          <ion-icon name="remove"></ion-icon>
+        </button>
+        <span class="quantity-display" [style.color]="secondaryColor$ | async">{{ quantity }}</span>
+        <button
+          class="quantity-btn"
+          [style.color]="secondaryColor$ | async"
+          (click)="onIncrease($event)">
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

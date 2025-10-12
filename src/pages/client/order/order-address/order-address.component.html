@@ -1,3 +1,79 @@
-<app-model-page title="Endereço da Reserva" backRoute="/order-details">
+<app-model-page [title]="'Endereço da Reserva'" class="ion-page" (backClick)="onBackClick()">
+  <div class="order-address-page">
+    <div class="form-container">
+      <!-- Rua -->
+      <app-text-input
+        [label]="'Rua:'"
+        [placeholder]="'Digite a rua'"
+        [(ngModel)]="street">
+      </app-text-input>
 
+      <!-- Número -->
+      <app-text-input
+        [label]="'Número:'"
+        [placeholder]="'Digite o número de residência'"
+        [(ngModel)]="number">
+      </app-text-input>
+
+      <!-- Complemento -->
+      <app-text-input
+        [label]="'Complemento:'"
+        [placeholder]="'Digite o complemento'"
+        [(ngModel)]="complement">
+      </app-text-input>
+
+      <!-- Bairro -->
+      <app-text-input
+        [label]="'Bairro:'"
+        [placeholder]="'Digite o bairro'"
+        [(ngModel)]="neighborhood">
+      </app-text-input>
+
+      <!-- Cidade -->
+      <app-text-input
+        [label]="'Cidade:'"
+        [placeholder]="'Digite a cidade'"
+        [(ngModel)]="city">
+      </app-text-input>
+
+      <!-- Estado -->
+      <app-selected-input
+        [label]="'Estado:'"
+        [placeholder]="'Selecione o estado'"
+        [options]="stateOptions"
+        [(ngModel)]="state"
+        (inputClick)="onStateInputClick()">
+      </app-selected-input>
+
+      <!-- CEP -->
+      <app-text-input
+        [label]="'CEP:'"
+        [placeholder]="'00000-000'"
+        [maxlength]="9"
+        [inputmode]="'numeric'"
+        [(ngModel)]="zipCode"
+        (inputChange)="onZipCodeChange($event)"
+        (keypress)="onZipCodeKeyPress($event)">
+      </app-text-input>
+
+      <!-- Botão Fazer Reserva -->
+      <div class="button-container">
+        <app-primary-button
+          [text]="'Fazer Reserva'"
+          [disabled]="!isFormValid"
+          (buttonClick)="onMakeReservation()">
+        </app-primary-button>
+      </div>
+    </div>
+  </div>
 </app-model-page>
+
+<!-- Modal de Seleção de Estado -->
+<app-select-modal
+  *ngIf="showStateModal"
+  [title]="'Selecione o Estado'"
+  [options]="stateOptions"
+  [selectedValue]="state"
+  (close)="showStateModal = false"
+  (optionSelected)="onStateSelected($event)">
+</app-select-modal>

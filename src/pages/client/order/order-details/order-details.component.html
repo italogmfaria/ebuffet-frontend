@@ -1,2 +1,60 @@
-<app-model-page title="Detalhes da Reserva" backRoute="/order">
+<app-model-page [title]="'Detalhes da Reserva'" class="ion-page" (backClick)="onBackClick()">
+  <div class="order-details-page">
+    <div class="form-container">
+      <!-- Nome da reserva -->
+      <app-text-input
+        [label]="'Nome da reserva:'"
+        [placeholder]="'Digite o nome de sua reserva'"
+        [(ngModel)]="reservationName">
+      </app-text-input>
+
+      <!-- Descrição da reserva -->
+      <app-textarea-input
+        [label]="'Descrição da reserva:'"
+        [placeholder]="'Digite sobre qual intuito da reserva'"
+        [rows]="5"
+        [(ngModel)]="reservationDescription">
+      </app-textarea-input>
+
+      <!-- Quantidade de pessoas -->
+      <app-text-input
+        [label]="'Quantidade de pessoas:'"
+        [type]="'number'"
+        [placeholder]="'Digite a quantidade de pessoas'"
+        [(ngModel)]="peopleCount">
+      </app-text-input>
+
+      <!-- Horário desejado -->
+      <app-text-input
+        [label]="'Horário desejado:'"
+        [type]="'time'"
+        [placeholder]="'Digite o horário que deseja'"
+        [(ngModel)]="desiredTime">
+      </app-text-input>
+
+      <!-- Data desejada -->
+      <app-calendar-input
+        [label]="'Data desejada:'"
+        [placeholder]="'Escolha a data desejada'"
+        [(ngModel)]="desiredDate"
+        (inputClick)="onCalendarInputClick()">
+      </app-calendar-input>
+
+      <!-- Botão Continuar -->
+      <div class="button-container">
+        <app-primary-button
+          [text]="'Continuar'"
+          [disabled]="!isFormValid"
+          (buttonClick)="onContinue()">
+        </app-primary-button>
+      </div>
+    </div>
+  </div>
 </app-model-page>
+
+<!-- Modal do Calendário -->
+<app-calendar-modal
+  *ngIf="showCalendarModal"
+  (close)="onCalendarModalClose()"
+  (dateSelected)="onDateSelected($event)">
+</app-calendar-modal>

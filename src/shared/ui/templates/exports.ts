@@ -10,6 +10,7 @@
 
   // Circles componentes
     export { AddCircleComponent } from './buttons/circles/add-circle/add-circle.component';
+    export { CheckCircleComponent } from './buttons/circles/check-circle/check-circle.component';
     export { CloseCircleComponent } from './buttons/circles/close-circle/close-circle.component';
     export { DeleteCircleComponent } from './buttons/circles/delete-circle/delete-circle.component';
     export { EditCircleComponent } from './buttons/circles/edit-circle/edit-circle.component';
@@ -37,9 +38,12 @@
 
 // Cards componentes
 export { DefaultItemCardComponent } from './cards/default-item-card/default-item-card.component';
+export { OrderItemCardComponent } from './cards/order-item-card/order-item-card.component';
 
 // Modals componentes
   export { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
+  export { CalendarModalComponent } from './modals/calendar-modal/calendar-modal.component';
+  export { SelectModalComponent } from './modals/select-modal/select-modal.component';
 
 
 // Navbars componentes
@@ -55,6 +59,9 @@ export { DefaultItemCardComponent } from './cards/default-item-card/default-item
   export { PasswordInputComponent } from './inputs/password-input/password-input.component';
   export { CodeInputComponent } from './inputs/code-input/code-input.component';
   export { SearchInputComponent } from './inputs/search-input/search-input.component';
+  export { CalendarInputComponent } from './inputs/calendar-input/calendar-input.component';
+  export { SelectedInputComponent } from './inputs/selected-input/selected-input.component';
+  export { TextareaInputComponent } from './inputs/textarea-input/textarea-input.component';
 
 // Squares componentes
 

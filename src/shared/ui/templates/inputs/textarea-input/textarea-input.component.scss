@@ -1,0 +1,42 @@
+.input-container {
+  margin-bottom: 5px;
+}
+
+.field-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.textarea-outline {
+  display: flex;
+  align-items: flex-start;
+  --background: #fff;
+  background: #fff;
+  border-radius: 24px;
+  padding: 12px 0;
+  box-shadow: none;
+  border: 2px solid var(--ion-color-secondary, #8a3bf1);
+  min-height: 120px;
+  margin: 0;
+}
+
+.textarea-outline ion-textarea {
+  --padding-start: 0px;
+  --padding-end: 0px;
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  font-size: 15px;
+  color: #333;
+  width: 100%;
+  font-weight: 500;
+  min-height: 96px;
+}
+
+.textarea-outline ion-textarea::part(native) {
+  font-size: 15px;
+  color: rgba(0,0,0,0.45);
+  font-weight: 500;
+}

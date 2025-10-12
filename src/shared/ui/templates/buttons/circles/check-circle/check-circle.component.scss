@@ -1,0 +1,47 @@
+:host {
+  display: inline-block;
+}
+
+.circle-button {
+  --border-radius: 50%;
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: white;
+
+  &.check-circle {
+    --background: var(--ion-color-secondary);
+
+    &:hover {
+      --background: var(--ion-color-secondary-shade);
+    }
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+// Size variations
+.circle-button[size="small"] {
+  --height: 40px;
+  --width: 40px;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.circle-button[size="medium"] {
+  --height: 56px;
+  --width: 56px;
+}
+
+.circle-button[size="large"] {
+  --height: 72px;
+  --width: 72px;
+
+  ion-icon {
+    font-size: 2rem;
+  }
+}
+
