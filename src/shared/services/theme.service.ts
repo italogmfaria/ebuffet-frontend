@@ -9,6 +9,7 @@ export interface ThemeConfig {
   accentColor: string;
   logo: string;
   banner: string;
+  buffetId?: number;
 }
 
 @Injectable({
@@ -23,6 +24,7 @@ export class ThemeService {
   private accentColorSubject = new BehaviorSubject<string>('#ffffff');
   private logoSubject = new BehaviorSubject<string>('');
   private bannerSubject = new BehaviorSubject<string>('');
+  private buffetIdSubject = new BehaviorSubject<number | null>(null);
 
   // Observables públicos
   public primaryColor$ = this.primaryColorSubject.asObservable();
@@ -30,6 +32,7 @@ export class ThemeService {
   public accentColor$ = this.accentColorSubject.asObservable();
   public logo$ = this.logoSubject.asObservable();
   public banner$ = this.bannerSubject.asObservable();
+  public buffetId$ = this.buffetIdSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -49,6 +52,7 @@ export class ThemeService {
 
       this.currentTheme = theme;
       this.updateColorSubjects(theme);
+      this.buffetIdSubject.next(theme.buffetId ?? null);
       this.applyTheme(theme);
 
       document.body.classList.remove('theme-loading');
@@ -62,13 +66,18 @@ export class ThemeService {
     }
   }
 
+  getBuffetIdSync(): number | null {
+    return this.currentTheme?.buffetId ?? null;
+  }
+
   private applyFallbackTheme(): void {
     const fallbackTheme: ThemeConfig = {
       primaryColor: '#3dc2ff',
       secondaryColor: '#3880ff',
       accentColor: '#ffffff',
       logo: '',
-      banner: ''
+      banner: '',
+
     };
 
     this.currentTheme = fallbackTheme;

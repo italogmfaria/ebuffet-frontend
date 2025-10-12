@@ -41,8 +41,7 @@ export class HomeComponent implements OnInit {
       this.cartItemCount = this.orderService.getTotalItems();
     });
 
-    // TODO: Implementar chamada ao backend para buscar dados do usuário
-    // this.loadUserData();
+    this.loadUserData();
   }
 
   onBackClick() {
@@ -70,6 +69,28 @@ export class HomeComponent implements OnInit {
 
   onNotificationClick() {
     this.navCtrl.navigateForward('/notifications');
+  }
+
+  private loadUserData() {
+    const user = this.sessionService.getUser();
+    if (user?.nome) {
+      this.userName = this.firstName(user.nome);
+      return;
+    }
+    if (user?.email) {
+      this.userName = this.firstNameFromEmail(user.email);
+    }
+  }
+
+  private firstName(fullName: string): string {
+    const trimmed = (fullName || '').trim();
+    if (!trimmed) return 'Usuário';
+    return trimmed.split(/\s+/)[0];
+  }
+
+  private firstNameFromEmail(email: string): string {
+    if (!email) return 'Usuário';
+    return email.split('@')[0];
   }
 
 }

@@ -13,6 +13,7 @@ import { ThemeService } from '../../../shared/services/theme.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { SessionService } from '../../../shared/services/session.service';
+import {AuthService} from "../../../shared/services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -34,7 +35,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private toastService: ToastService,
     private validationService: ValidationService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private authService: AuthService
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -43,7 +45,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // No need to load theme colors manually anymore
   }
 
   createAccount(event: any) {
@@ -82,13 +83,15 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    const ok = await this.authService.login(email, password, this.sessionService);
+    if (!ok) {
+      await this.toastService.error('E-mail ou senha incorretos. Tente novamente.');
+      return;
+    }
+
     try {
-      this.sessionService.login({ email });
-      await this.navCtrl.navigateRoot('/client/home', {
-        animated: true,
-        skipLocationChange: false
-      });
-    } catch (e) {
+      await this.navCtrl.navigateRoot('/client/home', { animated: true, skipLocationChange: false });
+    } catch {
       await this.toastService.error('Erro ao salvar sessão. Tente novamente.');
     }
   }
