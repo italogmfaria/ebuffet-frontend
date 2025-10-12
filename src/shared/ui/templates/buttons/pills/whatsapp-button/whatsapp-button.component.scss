@@ -1,7 +1,7 @@
 .btn-whatsapp {
   --background: #25D366;
-  --background-hover: #128C7E;
-  --background-activated: #075E54;
+  --background-hover: #25D366;
+  --background-activated: #25D366;
   --color: #ffffff;
   height: 50px;
   font-size: 15px;
@@ -21,22 +21,23 @@
 
   &:hover:not(.button-disabled) {
     transform: translateY(-1px) scale(1.02);
-    --background: #128C7E;
+    --background: #25D366;
     filter: brightness(1.1);
     box-shadow: none !important;
   }
 
   &:active:not(.button-disabled) {
     transform: translateY(0) scale(0.98);
-    --background: #075E54;
-    filter: brightness(0.9);
+    --background: #25D366;
+    filter: brightness(1.0);
     transition: all 0.1s ease;
     box-shadow: none !important;
   }
 
   &:focus:not(.button-disabled) {
     outline: none;
-    filter: brightness(1.05);
+    --background: #25D366;
+    filter: brightness(1.0);
     box-shadow: none !important;
   }
 

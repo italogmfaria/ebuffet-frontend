@@ -53,7 +53,6 @@ body {
   --ion-color-secondary-tint: #4c8dff;
 }
 
-/* Garantir que o app-root sempre seja visível */
 app-root {
   display: block !important;
   height: 100vh;
@@ -64,7 +63,6 @@ ion-app {
   background-color: transparent !important;
 }
 
-/* Reset de estilos do ion-card para prevenir bugs no Android */
 ion-card {
   margin: 0 !important;
   box-shadow: none !important;

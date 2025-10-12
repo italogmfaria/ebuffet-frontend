@@ -1,31 +1,28 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonItem, IonInput } from '@ionic/angular/standalone';
+import { IonItem, IonTextarea } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-text-input',
-  templateUrl: './text-input.component.html',
-  styleUrls: ['./text-input.component.scss'],
+  selector: 'app-textarea-input',
+  templateUrl: './textarea-input.component.html',
+  styleUrls: ['./textarea-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonItem, IonInput],
+  imports: [CommonModule, IonItem, IonTextarea],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextInputComponent),
+      useExisting: forwardRef(() => TextareaInputComponent),
       multi: true
     }
   ]
 })
-export class TextInputComponent implements ControlValueAccessor {
+export class TextareaInputComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() placeholder: string = '';
-  @Input() type: string = 'text';
   @Input() disabled: boolean = false;
-  @Input() maxlength?: number;
-  @Input() inputmode?: string;
+  @Input() rows: number = 5;
   @Output() inputChange = new EventEmitter<string>();
-  @Output() keypress = new EventEmitter<KeyboardEvent>();
 
   value: string = '';
 
@@ -57,8 +54,5 @@ export class TextInputComponent implements ControlValueAccessor {
   onBlur() {
     this.onTouched();
   }
-
-  onKeyPress(event: KeyboardEvent) {
-    this.keypress.emit(event);
-  }
 }
+

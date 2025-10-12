@@ -21,6 +21,7 @@ import { ServiceDetailsComponent } from '../pages/client/services/service-detail
 import { OrderDetailsComponent } from '../pages/client/order/order-details/order-details.component';
 import { OrderAddressComponent } from '../pages/client/order/order-address/order-address.component';
 import { OrderConfirmationComponent } from '../pages/client/order/order-confirmation/order-confirmation.component';
+import {ProfileReservesComponent} from "../pages/client/profile/profile-reserves/profile-reserves.component";
 
 export const routes: Routes = [
   {
@@ -108,6 +109,10 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: ProfileComponent
+      },
+      {
+        path: 'profile-reserves',
+        component: ProfileReservesComponent
       }
     ]
   }

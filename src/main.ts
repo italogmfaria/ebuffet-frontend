@@ -24,7 +24,10 @@ import {
   person,
   restaurantOutline,
   balloon,
-  remove
+  remove,
+  calendar,
+  arrowDownCircle,
+  checkmark
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -49,8 +52,11 @@ addIcons({
   receipt,
   person,
   remove,
+  'arrow-dropdown-circle': arrowDownCircle,
   'restaurant-outline': restaurantOutline,
-  balloon
+  balloon,
+  calendar,
+  checkmark
 });
 
 function initializeTheme(themeService: ThemeService): () => Promise<void> {

@@ -1,18 +1,50 @@
 import { Component, OnInit } from '@angular/core';
-import {ModelPageComponent} from "../../../../shared/ui/templates/pages/model-page/model-page.component";
+import { CommonModule } from '@angular/common';
+import { NavController } from '@ionic/angular/standalone';
+import {
+  CheckCircleComponent,
+  OutlineButtonComponent,
+  WhatsappButtonComponent,
+  PrimaryButtonComponent
+} from '../../../../shared/ui/templates/exports';
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 @Component({
   selector: 'app-order-confirmation',
   templateUrl: './order-confirmation.component.html',
   styleUrls: ['./order-confirmation.component.scss'],
+  standalone: true,
   imports: [
-    ModelPageComponent
+    CommonModule,
+    CheckCircleComponent,
+    OutlineButtonComponent,
+    WhatsappButtonComponent,
+    PrimaryButtonComponent
   ]
 })
-export class OrderConfirmationComponent  implements OnInit {
+export class OrderConfirmationComponent implements OnInit {
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
 
-  constructor() { }
+  constructor(
+    private themeService: ThemeService,
+    private navCtrl: NavController
+  ) {}
 
   ngOnInit() {}
 
+  onMyReservations() {
+    this.navCtrl.navigateForward('/client/profile-reserves');
+  }
+
+  onContactWhatsApp() {
+    const phone = '5564992827727';
+    const message = 'Olá! Gostaria de confirmar minha reserva.';
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+
+  onGoBack() {
+    this.navCtrl.navigateRoot('/client/home');
+  }
 }
