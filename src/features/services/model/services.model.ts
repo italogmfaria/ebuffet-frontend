@@ -1,43 +1,49 @@
 import { EnumCategoria } from '../../shared/enums/categoria.enum';
 
-export interface Servico {
+export enum Categoria {
+  Casamento = 'CASAMENTO',
+  Aniversario = 'ANIVERSARIO',
+  Formatura = 'FORMATURA',
+  Confraternizacao = 'CONFRATERNIZACAO',
+  Batizado = 'BATIZADO',
+  Bodas = 'BODAS',
+  ChaRevelacao = 'CHA_REVELACAO',
+  Noivado = 'NOIVADO',
+  Jantar = 'JANTAR',
+  Almoco = 'ALMOCO',
+  Natal = 'NATAL',
+  Outros = 'OUTROS'
+}
+
+export enum EnumStatus {
+  ATIVO = 'ATIVO',
+  INATIVO = 'INATIVO',
+}
+
+export interface ServicoResponse {
   id: number;
   nome: string;
   descricao: string;
   categoria: EnumCategoria;
   buffetId: number;
-  imageUrl?: string;
-  dataCriacao?: Date;
-  dataAtualizacao?: Date;
+  dataCriacao: string;
+  dataAtualizacao: string;
+  status: EnumStatus;
 }
 
-// DTO para listagem de serviços
-export interface ServicoListDTO {
-  id: number;
-  nome: string;
-  descricao: string;
-  categoria: EnumCategoria;
-  imageUrl?: string;
+export interface SpringPage<T> {
+  content: T[];
+  number: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
 }
 
-// DTO para detalhes do serviço
-export interface ServicoDetailDTO {
-  id: number;
-  nome: string;
-  descricao: string;
-  categoria: EnumCategoria;
-  buffetId: number;
-  imageUrl?: string;
-  dataCriacao: Date;
-  dataAtualizacao: Date;
-}
-
-// DTO para criar/atualizar serviço
-export interface ServicoFormDTO {
-  nome: string;
-  descricao: string;
-  categoria: EnumCategoria;
-  buffetId: number;
+export interface ServicoListDTO extends ServicoResponse {
   imageUrl?: string;
 }
 
+export interface ServicoDetailDTO extends ServicoResponse {
+  imageUrl?: string;
+}

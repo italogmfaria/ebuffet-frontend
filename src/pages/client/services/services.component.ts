@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent} from '../../../shared/ui/templates/exports';
@@ -10,6 +10,8 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
 import { ServicoListDTO } from '../../../features/services/model/services.model';
 import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../features/shared/enums/categoria.enum';
+import {filter} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-services',
@@ -27,7 +29,7 @@ import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../fe
   ],
   host: { class: 'ion-page' }
 })
-export class ServicesComponent implements OnInit {
+export class ServicesComponent implements OnInit, OnDestroy {
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
   accentColor$ = this.themeService.accentColor$;
@@ -39,6 +41,8 @@ export class ServicesComponent implements OnInit {
   services: ServicoListDTO[] = [];
   filteredServices: ServicoListDTO[] = [];
 
+  private subs = new Subscription();
+
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
@@ -49,29 +53,56 @@ export class ServicesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Subscribe to order items to update cart count
-    this.orderService.orderItems$.subscribe(() => {
-      this.cartItemCount = this.orderService.getTotalItems();
-    });
+    this.subs.add(
+      this.orderService.orderItems$.subscribe(() => {
+        this.cartItemCount = this.orderService.getTotalItems();
+      })
+    );
 
-    // Carrega os serviços
     this.loadServices();
 
-    // Captura o parâmetro de categoria da URL, se disponível
-    this.route.queryParams.subscribe(params => {
-      const category = params['category'];
-      if (category) {
-        this.selectedCategory = category;
-        this.applyFilters();
-      }
-    });
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        const category = params['category'];
+        if (category) {
+          this.selectedCategory = category;
+          this.applyFilters();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
   loadServices() {
-    this.servicesApiService.getAllServices().subscribe(services => {
-      this.services = services;
-      this.applyFilters();
-    });
+    const buffetIdSync = this.themeService.getBuffetIdSync?.() ?? null;
+    if (buffetIdSync) {
+      this.fetchServices(buffetIdSync);
+      return;
+    }
+
+    this.subs.add(
+      this.themeService.buffetId$
+        .pipe(filter((id): id is number => id !== null))
+        .subscribe(id => this.fetchServices(id))
+    );
+  }
+
+  private fetchServices(buffetId: number) {
+    this.subs.add(
+      this.servicesApiService.getAll(buffetId).subscribe({
+        next: services => {
+          this.services = services;
+          this.applyFilters();
+        },
+        error: err => {
+          console.error('Erro ao carregar serviços', err);
+          this.toastService.error('Não foi possível carregar os serviços.');
+        }
+      })
+    );
   }
 
   onBackClick() {
@@ -95,11 +126,9 @@ export class ServicesComponent implements OnInit {
   private applyFilters() {
     let filtered = [...this.services];
 
-    // Filtro por pesquisa
     if (this.searchQuery) {
       const term = this.searchQuery.toLowerCase();
 
-      // Busca em categorias - encontra categorias que correspondem ao termo
       const matchingCategories: EnumCategoria[] = [];
       Object.entries(CategoriasLabels).forEach(([key, label]) => {
         if (label.toLowerCase().includes(term)) {
@@ -107,7 +136,6 @@ export class ServicesComponent implements OnInit {
         }
       });
 
-      // Filtra por nome, descrição ou categoria
       filtered = filtered.filter(s =>
         s.nome.toLowerCase().includes(term) ||
         s.descricao.toLowerCase().includes(term) ||
@@ -115,9 +143,8 @@ export class ServicesComponent implements OnInit {
       );
     }
 
-    // Filtro por categoria selecionada (aplica depois da busca)
     if (this.selectedCategory !== 'todos') {
-      const enumCategoria = CategoriaIdMapping[this.selectedCategory];
+      const enumCategoria = (CategoriaIdMapping as any)[this.selectedCategory];
       if (enumCategoria) {
         filtered = filtered.filter(s => s.categoria === enumCategoria);
       }
