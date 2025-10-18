@@ -11,6 +11,7 @@ import {
   PrimaryButtonComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import {ReservationBuilderService} from "../../../../shared/services/reservation.builder.service";
 
 @Component({
   selector: 'app-order-details',
@@ -29,20 +30,21 @@ import { ThemeService } from '../../../../shared/services/theme.service';
   ]
 })
 export class OrderDetailsComponent implements OnInit {
-  reservationName: string = '';
-  reservationDescription: string = '';
-  peopleCount: string = '';
-  desiredTime: string = '';
-  desiredDate: string = '';
+  reservationName = '';
+  reservationDescription = '';
+  peopleCount = '';
+  desiredTime = '';
+  desiredDate = '';
 
-  showCalendarModal: boolean = false;
+  showCalendarModal = false;
 
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
 
   constructor(
     private themeService: ThemeService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private reservationBuilder: ReservationBuilderService
   ) {}
 
   ngOnInit() {}
@@ -75,19 +77,24 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   onContinue() {
-    if (this.isFormValid) {
-      // Aqui você pode processar os dados do formulário
-      console.log('Dados da reserva:', {
-        name: this.reservationName,
-        description: this.reservationDescription,
-        peopleCount: this.peopleCount,
-        desiredTime: this.desiredTime,
-        desiredDate: this.desiredDate
-      });
+    if (!this.isFormValid) return;
 
-      // Navegar para order-address
-      this.proceedToNextPage();
+    const qtd = Number(this.peopleCount);
+    if (!Number.isFinite(qtd) || qtd <= 0) {
+      return;
     }
+
+    this.reservationBuilder.captureCartSnapshot();
+
+    this.reservationBuilder.setDetails({
+      nome: this.reservationName.trim(),
+      descricao: this.reservationDescription.trim(),
+      qtdPessoas: qtd,
+      horarioDesejado: this.desiredTime,
+      dataDesejada: this.desiredDate
+    });
+
+    this.proceedToNextPage();
   }
 
   private proceedToNextPage() {

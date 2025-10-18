@@ -8,54 +8,39 @@ export class ApiClient {
   private http = inject(HttpClient);
   private baseUrl = environment.API_URL;
 
-  /**
-   * Realiza uma requisição GET
-   */
-  get<T>(endpoint: string, params?: Record<string, any>, headers?: Record<string, string>): Observable<T> {
-    const options = {
-      params: new HttpParams({ fromObject: params ?? {} }),
-      headers: new HttpHeaders(headers ?? {})
-    };
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, options);
+  /** Converte todos os parâmetros para string */
+  private normalizeParams(params?: Record<string, any>): Record<string, string> | undefined {
+    if (!params) return undefined;
+    const normalized: Record<string, string> = {};
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        normalized[key] = String(value);
+      }
+    }
+    return normalized;
   }
 
-  /**
-   * Realiza uma requisição POST
-   */
-  post<T>(endpoint: string, body: any, headers?: Record<string, string>): Observable<T> {
-    const options = {
-      headers: new HttpHeaders(headers ?? {})
-    };
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, options);
+  /** GET */
+  get<T>(path: string, params?: Record<string, any>): Observable<T> {
+    const normalized = this.normalizeParams(params);
+    return this.http.get<T>(`${this.baseUrl}${path}`, { params: normalized });
   }
 
-  /**
-   * Realiza uma requisição PUT
-   */
-  put<T>(endpoint: string, body: any, headers?: Record<string, string>): Observable<T> {
-    const options = {
-      headers: new HttpHeaders(headers ?? {})
-    };
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, options);
+  /** POST */
+  post<T>(path: string, body?: any, params?: Record<string, any>): Observable<T> {
+    const normalized = this.normalizeParams(params);
+    return this.http.post<T>(`${this.baseUrl}${path}`, body, { params: normalized });
   }
 
-  /**
-   * Realiza uma requisição PATCH
-   */
-  patch<T>(endpoint: string, body: any, headers?: Record<string, string>): Observable<T> {
-    const options = {
-      headers: new HttpHeaders(headers ?? {})
-    };
-    return this.http.patch<T>(`${this.baseUrl}${endpoint}`, body, options);
+  /** PUT */
+  put<T>(path: string, body?: any, params?: Record<string, any>): Observable<T> {
+    const normalized = this.normalizeParams(params);
+    return this.http.put<T>(`${this.baseUrl}${path}`, body, { params: normalized });
   }
 
-  /**
-   * Realiza uma requisição DELETE
-   */
-  delete<T>(endpoint: string, headers?: Record<string, string>): Observable<T> {
-    const options = {
-      headers: new HttpHeaders(headers ?? {})
-    };
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, options);
+  /** DELETE */
+  delete<T>(path: string, params?: Record<string, any>): Observable<T> {
+    const normalized = this.normalizeParams(params);
+    return this.http.delete<T>(`${this.baseUrl}${path}`, { params: normalized });
   }
 }
