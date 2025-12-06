@@ -1,2 +1,28 @@
-<app-model-page title="Notificações">
+<app-model-page [title]="'Notificações'" class="ion-page" (backClick)="onBackClick()">
+  <div class="notifications-page">
+    <!-- Empty state -->
+    <div *ngIf="notifications.length === 0" class="empty-section">
+      <p class="empty-text">Nenhuma notificação</p>
+    </div>
+
+    <!-- Notifications list -->
+    <div *ngIf="notifications.length > 0" class="notifications-list">
+      <app-notification-card
+        *ngFor="let notification of notifications"
+        [title]="notification.title"
+        [description]="notification.description"
+        [isNew]="notification.isNew"
+        (cardClick)="onNotificationClick(notification)">
+      </app-notification-card>
+    </div>
+  </div>
 </app-model-page>
+
+<!-- Notification Modal -->
+<app-notification-modal
+  *ngIf="showModal && selectedNotification"
+  [title]="selectedNotification.title"
+  [description]="selectedNotification.description"
+  (close)="onModalClose()">
+</app-notification-modal>
+

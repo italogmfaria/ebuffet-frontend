@@ -1,0 +1,11 @@
+<div class="notification-card" (click)="onCardClick()">
+  <div class="card-content">
+    <h3 class="card-title" [style.color]="secondaryColor$ | async">{{ title }}</h3>
+    <p class="card-description">{{ description }}</p>
+  </div>
+
+  <div class="card-indicator">
+    <div *ngIf="isNew" class="new-indicator"></div>
+  </div>
+</div>
+

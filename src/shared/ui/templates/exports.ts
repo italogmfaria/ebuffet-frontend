@@ -45,11 +45,14 @@
 export { DefaultItemCardComponent } from './cards/default-item-card/default-item-card.component';
 export { OrderItemCardComponent } from './cards/order-item-card/order-item-card.component';
 export { ProfileListItemComponent } from './cards/profile-list-item/profile-list-item.component';
+export { EventReserveCardComponent } from './cards/event-reserve-card/event-reserve-card.component';
+export { NotificationCardComponent } from './cards/notification-card/notification-card.component';
 
 // Modals componentes
   export { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
   export { CalendarModalComponent } from './modals/calendar-modal/calendar-modal.component';
   export { SelectModalComponent } from './modals/select-modal/select-modal.component';
+  export { NotificationModalComponent } from './modals/notification-modal/notification-modal.component';
 
 
 // Navbars componentes
