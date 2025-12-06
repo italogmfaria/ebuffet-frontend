@@ -1,0 +1,22 @@
+<div class="status-container" #statusContainer>
+  <ion-chip
+    *ngFor="let status of statusItems"
+    [id]="'status-' + status.id"
+    [style.--background]="status.selected && status.id === 'todos' ? (secondaryColor$ | async) : (primaryColor$ | async)"
+    [style.--color]="'white'"
+    class="status-chip"
+    [class.selected]="status.selected"
+    [class.status-badge]="status.id !== 'todos'"
+    (click)="onStatusClick(status.id)">
+
+    <!-- TODOS chip -->
+    <span *ngIf="status.id === 'todos'">{{ status.name }}</span>
+
+    <!-- Status components -->
+    <app-pending-status *ngIf="status.id === 'pending'"></app-pending-status>
+    <app-approved-status *ngIf="status.id === 'approved'" [type]="type"></app-approved-status>
+    <app-canceled-status *ngIf="status.id === 'canceled'" [type]="type"></app-canceled-status>
+    <app-completed-status *ngIf="status.id === 'completed'"></app-completed-status>
+  </ion-chip>
+</div>
+

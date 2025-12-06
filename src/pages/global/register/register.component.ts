@@ -44,6 +44,7 @@ export class RegisterComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(15)]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -66,10 +67,11 @@ export class RegisterComponent implements OnInit {
     const name = this.registerForm.get('name')?.value;
     const surname = this.registerForm.get('surname')?.value;
     const email = this.registerForm.get('email')?.value;
+    const phone = this.registerForm.get('phone')?.value;
     const password = this.registerForm.get('password')?.value;
 
     // Validar campos obrigatórios
-    const requiredValidation = this.validationService.validateRequiredFields({ name, surname, email, password });
+    const requiredValidation = this.validationService.validateRequiredFields({ name, surname, email, phone, password });
     if (!requiredValidation.isValid) {
       await this.toastService.warning(requiredValidation.message!);
       return;
@@ -96,6 +98,13 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
+    // Validar telefone
+    const phoneValidation = this.validationService.validatePhone(phone);
+    if (!phoneValidation.isValid) {
+      await this.toastService.warning(phoneValidation.message!);
+      return;
+    }
+
     // Validar senha
     const passwordValidation = this.validationService.validatePassword(password, 6);
     if (!passwordValidation.isValid) {
@@ -104,7 +113,7 @@ export class RegisterComponent implements OnInit {
     }
 
     // Tentar registrar
-    const isRegistered = await this.registerUser(name, surname, email, password);
+    const isRegistered = await this.registerUser(name, surname, email, phone, password);
 
     if (!isRegistered) {
       await this.toastService.error('Este e-mail já está cadastrado. Tente outro.');
@@ -114,10 +123,11 @@ export class RegisterComponent implements OnInit {
     this.navCtrl.navigateForward('/register-confirmation');
   }
 
-  private async registerUser(name: string, surname: string, email: string, password: string): Promise<boolean> {
+  private async registerUser(name: string, surname: string, email: string, phone: string, password: string): Promise<boolean> {
     const payload = {
       nome: `${name.trim()} ${surname.trim()}`.trim(),
       email,
+      telefone: phone,
       senha: password,
     };
 
@@ -147,11 +157,41 @@ export class RegisterComponent implements OnInit {
     this.navCtrl.navigateForward('/login');
   }
 
+  /**
+   * Formata o telefone enquanto o usuário digita
+   * Aceita formatos: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+   */
+  formatPhone(value: string): string {
+    // Remove tudo que não é dígito
+    value = value.replace(/\D/g, '');
+
+    // Limita a 11 dígitos
+    value = value.substring(0, 11);
+
+    // Aplica a formatação
+    if (value.length <= 2) {
+      return value.replace(/(\d{0,2})/, '($1');
+    } else if (value.length <= 6) {
+      return value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
+    } else if (value.length <= 10) {
+      return value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else {
+      // Celular com 11 dígitos: (XX) XXXXX-XXXX
+      return value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+  }
+
+  onPhoneInput(value: string) {
+    const formatted = this.formatPhone(value);
+    this.registerForm.patchValue({ phone: formatted }, { emitEvent: false });
+  }
+
   get isFormValid(): boolean {
     const name = this.registerForm.get('name')?.value;
     const surname = this.registerForm.get('surname')?.value;
     const email = this.registerForm.get('email')?.value;
+    const phone = this.registerForm.get('phone')?.value;
     const password = this.registerForm.get('password')?.value;
-    return !!(name && surname && email && password);
+    return !!(name && surname && email && phone && password);
   }
 }

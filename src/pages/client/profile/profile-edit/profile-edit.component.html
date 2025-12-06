@@ -1,2 +1,85 @@
-<app-model-page title="Editar Perfil" backRoute="/profile">
+<app-model-page [title]="'Editar Perfil'" class="ion-page" (backClick)="onBackClick()">
+  <div class="profile-edit-page">
+    <ion-grid>
+      <!-- Profile Avatar Section -->
+      <div class="profile-avatar-section">
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar">
+            <ion-img
+              *ngIf="userProfileImage"
+              [src]="userProfileImage"
+              class="profile-image">
+            </ion-img>
+            <app-profile-placeholder *ngIf="!userProfileImage"></app-profile-placeholder>
+          </div>
+
+          <div class="image-circle-wrapper">
+            <app-image-circle
+              size="large"
+              (buttonClick)="onImageClick()">
+            </app-image-circle>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <form class="profile-form">
+        <!-- Nome Input -->
+        <div class="form-field">
+          <ion-text>
+            <h3 class="field-label">Nome:</h3>
+          </ion-text>
+          <app-text-input
+            [(ngModel)]="userName"
+            name="userName"
+            [placeholder]="'Digite o seu nome'"
+            [type]="'text'">
+          </app-text-input>
+        </div>
+
+        <!-- Email Input -->
+        <div class="form-field">
+          <ion-text>
+            <h3 class="field-label">Email:</h3>
+          </ion-text>
+          <app-text-input
+            [(ngModel)]="userEmail"
+            name="userEmail"
+            [placeholder]="'Digite o seu email'"
+            [type]="'email'">
+          </app-text-input>
+        </div>
+
+        <!-- Telefone Input -->
+        <div class="form-field">
+          <ion-text>
+            <h3 class="field-label">Telefone:</h3>
+          </ion-text>
+          <app-text-input
+            [(ngModel)]="userPhone"
+            name="userPhone"
+            [placeholder]="'(XX) XXXXX-XXXX'"
+            [type]="'tel'"
+            [maxlength]="15"
+            (inputChange)="formatPhone($event)">
+          </app-text-input>
+        </div>
+
+        <!-- Save Button -->
+        <div class="button-container">
+          <app-primary-button
+            [text]="'Salvar'"
+            [disabled]="false"
+            (buttonClick)="onSave()">
+          </app-primary-button>
+
+          <app-outline-button
+            [text]="'Cancelar'"
+            [disabled]="false"
+            (buttonClick)="onCancel()">
+          </app-outline-button>
+        </div>
+      </form>
+    </ion-grid>
+  </div>
 </app-model-page>

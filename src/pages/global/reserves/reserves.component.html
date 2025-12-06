@@ -1,0 +1,14 @@
+t<app-model-page [title]="'Minhas Reservas'" class="ion-page" (backClick)="onBackClick()">
+  <div class="reserves-page">
+    <!-- Loading spinner -->
+    <app-loading-spinner
+      *ngIf="isLoading"
+      [color]="(secondaryColor$ | async) || '#8b5cf6'"
+      size="medium"
+      text="Carregando reservas...">
+    </app-loading-spinner>
+
+    <!-- Content will be added here -->
+  </div>
+</app-model-page>
+

@@ -21,7 +21,11 @@ import { ServiceDetailsComponent } from '../pages/client/services/service-detail
 import { OrderDetailsComponent } from '../pages/client/order/order-details/order-details.component';
 import { OrderAddressComponent } from '../pages/client/order/order-address/order-address.component';
 import { OrderConfirmationComponent } from '../pages/client/order/order-confirmation/order-confirmation.component';
-import {ProfileReservesComponent} from "../pages/client/profile/profile-reserves/profile-reserves.component";
+import {ProfileEditComponent} from "../pages/client/profile/profile-edit/profile-edit.component";
+import {ReservesComponent} from "../pages/global/reserves/reserves.component";
+import {ReserveDetailsComponent} from "../pages/global/reserves/reserve-details/reserve-details.component";
+import {EventsComponent} from "../pages/global/events/events.component";
+import {EventDetailsComponent} from "../pages/global/events/event-details/event-details.component";
 
 export const routes: Routes = [
   {
@@ -61,10 +65,36 @@ export const routes: Routes = [
     path: 'new-password',
     component: NewPasswordComponent
   },
+
+
+  // Rotas globais (protegidas)
   {
     path: 'notifications',
-    component: NotificationsComponent
+    component: NotificationsComponent,
+    canActivate: [AuthGuard]
   },
+  {
+    path: 'reserves',
+    component: ReservesComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'reserves/reserve-details',
+    component: ReserveDetailsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'events',
+    component: EventsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'events/event-details',
+    component: EventDetailsComponent,
+    canActivate: [AuthGuard]
+  },
+
+
   // Rotas do cliente (protegidas)
   {
     path: 'client',
@@ -111,8 +141,8 @@ export const routes: Routes = [
         component: ProfileComponent
       },
       {
-        path: 'profile-reserves',
-        component: ProfileReservesComponent
+        path: 'profile-edit',
+        component: ProfileEditComponent
       }
     ]
   }

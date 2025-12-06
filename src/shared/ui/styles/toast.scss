@@ -23,10 +23,12 @@
 
   // Animação suave de entrada
   &.toast-top {
+    margin-top: 10px !important;
     animation: slideInFromTop 0.3s ease-out;
   }
 
   &.toast-bottom {
+    margin-bottom: 10px !important;
     animation: slideInFromBottom 0.3s ease-out;
   }
 }

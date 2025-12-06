@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent} from '../../../shared/ui/templates/exports';
-import { NavController } from '@ionic/angular/standalone';
+import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent, LoadingSpinnerComponent} from '../../../shared/ui/templates/exports';
+import {IonInfiniteScroll, IonInfiniteScrollContent, NavController} from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { OrderService } from '../../../shared/services/order.service';
@@ -25,7 +25,10 @@ import {Subscription} from "rxjs";
     ClientNavbarComponent,
     SearchInputComponent,
     DefaultCategoriesComponent,
-    DefaultItemCardComponent
+    DefaultItemCardComponent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    LoadingSpinnerComponent
   ],
   host: { class: 'ion-page' }
 })
@@ -37,9 +40,15 @@ export class ServicesComponent implements OnInit, OnDestroy {
   cartItemCount = 0;
   searchQuery: string = '';
   selectedCategory: string = 'todos';
+  isLoading = true;
 
   services: ServicoListDTO[] = [];
   filteredServices: ServicoListDTO[] = [];
+  displayedServices: ServicoListDTO[] = [];
+
+  // Lazy loading configuration
+  private pageSize = 10;
+  private currentPage = 0;
 
   private subs = new Subscription();
 
@@ -91,15 +100,18 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   private fetchServices(buffetId: number) {
+    this.isLoading = true;
     this.subs.add(
       this.servicesApiService.getAll(buffetId).subscribe({
         next: services => {
           this.services = services;
           this.applyFilters();
+          this.isLoading = false;
         },
         error: err => {
           console.error('Erro ao carregar serviços', err);
           this.toastService.error('Não foi possível carregar os serviços.');
+          this.isLoading = false;
         }
       })
     );
@@ -151,6 +163,43 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }
 
     this.filteredServices = filtered;
+
+    // Reset lazy loading
+    this.currentPage = 0;
+    this.loadMoreItems();
+  }
+
+  /**
+   * Carrega mais itens para exibição (lazy loading)
+   */
+  private loadMoreItems() {
+    const start = this.currentPage * this.pageSize;
+    const end = start + this.pageSize;
+    const newItems = this.filteredServices.slice(start, end);
+
+    if (this.currentPage === 0) {
+      this.displayedServices = newItems;
+    } else {
+      this.displayedServices = [...this.displayedServices, ...newItems];
+    }
+
+    this.currentPage++;
+  }
+
+  /**
+   * Chamado quando o usuário rola até o fim da lista
+   */
+  onIonInfinite(event: any) {
+    const hasMoreItems = this.displayedServices.length < this.filteredServices.length;
+
+    if (hasMoreItems) {
+      setTimeout(() => {
+        this.loadMoreItems();
+        event.target.complete();
+      }, 300);
+    } else {
+      event.target.complete();
+    }
   }
 
   onAddToOrder(item: ServicoListDTO) {

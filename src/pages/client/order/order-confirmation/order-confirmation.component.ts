@@ -35,7 +35,7 @@ export class OrderConfirmationComponent implements OnInit {
   ngOnInit() {}
 
   onMyReservations() {
-    this.navCtrl.navigateForward('/client/profile-reserves');
+    this.navCtrl.navigateForward('/reserves');
   }
 
   onContactWhatsApp() {

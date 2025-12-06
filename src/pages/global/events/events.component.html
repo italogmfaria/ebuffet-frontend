@@ -1,0 +1,14 @@
+<app-model-page [title]="'Meus Eventos'" class="ion-page" (backClick)="onBackClick()">
+  <div class="events-page">
+    <!-- Loading spinner -->
+    <app-loading-spinner
+      *ngIf="isLoading"
+      [color]="(secondaryColor$ | async) || '#8b5cf6'"
+      size="medium"
+      text="Carregando eventos...">
+    </app-loading-spinner>
+
+    <!-- Content will be added here -->
+  </div>
+</app-model-page>
+

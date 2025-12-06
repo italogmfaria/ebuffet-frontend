@@ -4,5 +4,6 @@
   "accentColor": "#004b44",
   "logo": "assets/buffets/buffet1/logo.png",
   "banner": "assets/buffets/buffet1/banner.png",
-  "buffetId": 1
+  "buffetId": 1,
+  "nameBuffet": "Buffet Oliveira"
 }
