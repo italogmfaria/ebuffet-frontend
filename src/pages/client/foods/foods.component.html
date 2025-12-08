@@ -1,4 +1,4 @@
-<app-form-page [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
+<app-form-page [hasNavbar]="!isFromEdit" [showNotification]="!isFromEdit" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="foods-page">
     <form class="foods-form">
       <app-search-input

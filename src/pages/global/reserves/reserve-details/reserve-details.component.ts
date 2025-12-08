@@ -174,6 +174,14 @@ export class ReserveDetailsComponent implements OnInit {
       : 'Tem certeza que deseja<br>cancelar esta reserva?';
   }
 
+  get canEdit(): boolean {
+    return this.reserveStatus === 'pending';
+  }
+
+  get canCancel(): boolean {
+    return this.reserveStatus === 'pending';
+  }
+
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {

@@ -1,0 +1,76 @@
+.reserve-edit-page {
+  padding: 10px 0 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  ion-grid {
+    padding: 0;
+    width: 100%;
+    --ion-grid-padding: 0;
+  }
+
+  .section {
+    margin-bottom: 0;
+    padding: 20px 20px;
+    border-bottom: 0.1px solid #d0d0d0;
+    width: 100%;
+
+    &:first-child {
+      padding-top: 20px;
+    }
+
+    &.last-section {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      color: #000;
+    }
+
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+
+    .button-container {
+      margin-top: 0;
+      padding: 0;
+      width: 100%;
+
+      app-primary-button {
+        width: 100%;
+      }
+    }
+
+    app-text-input,
+    app-textarea-input,
+    app-calendar-input,
+    app-selected-input {
+      margin-bottom: 16px;
+      display: block;
+      width: 100%;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .save-button-container {
+    padding: 20px 20px 30px;
+    width: 100%;
+
+    app-primary-button {
+      width: 100%;
+    }
+  }
+}
+

@@ -83,6 +83,7 @@
       <!-- Botões de Ação -->
       <div class="actions-container">
         <app-primary-button
+          *ngIf="canEdit"
           [text]="'Editar'"
           [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
           (buttonClick)="onEdit()">
@@ -94,13 +95,13 @@
         </app-whatsapp-button>
 
         <app-cancel-button
-          *ngIf="!isCanceled"
+          *ngIf="!isCanceled && canCancel"
           [text]="'Cancelar'"
           (buttonClick)="onCancel()">
         </app-cancel-button>
 
         <app-primary-button
-          *ngIf="isCanceled"
+          *ngIf="isCanceled && canCancel"
           [text]="'Descancelar'"
           [customColor]="'#3b82f6'"
           (buttonClick)="onCancel()">

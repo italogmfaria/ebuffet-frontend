@@ -175,6 +175,14 @@ export class EventDetailsComponent implements OnInit {
       : 'Tem certeza que deseja<br>cancelar este evento?';
   }
 
+  get canEdit(): boolean {
+    return this.eventStatus === 'pending' || this.eventStatus === 'approved';
+  }
+
+  get canCancel(): boolean {
+    return this.eventStatus === 'pending' || this.eventStatus === 'approved';
+  }
+
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {

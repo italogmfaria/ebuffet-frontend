@@ -39,6 +39,10 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
   isFromOrder = false;
   private subs = new Subscription();
 
+  // Edit mode tracking
+  private fromEdit: string = '';
+  private editId: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -54,6 +58,10 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(params => {
         this.serviceName = params['name'] || 'Detalhes do Serviço';
         this.isFromOrder = params['fromOrder'] === 'true';
+
+        // Capture edit mode params
+        this.fromEdit = params['fromEdit'] || '';
+        this.editId = params['editId'] || '';
       })
     );
     this.loadServiceDetails();
@@ -94,7 +102,17 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    if (this.fromEdit === 'reserve') {
+      this.navCtrl.navigateBack('/reserves/reserve-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else if (this.fromEdit === 'event') {
+      this.navCtrl.navigateBack('/events/event-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else {
+      this.navCtrl.back();
+    }
   }
 
   onAddToReserve() {
@@ -106,10 +124,26 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
       imageUrl: this.serviceDetails.imageUrl || '',
       type: 'service'
     });
-    this.navCtrl.navigateForward('/client/order');
+
+    // Redireciona para a página de edição se vier de lá
+    if (this.fromEdit === 'reserve') {
+      this.navCtrl.navigateForward('/reserves/reserve-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else if (this.fromEdit === 'event') {
+      this.navCtrl.navigateForward('/events/event-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else {
+      this.navCtrl.navigateForward('/client/order');
+    }
   }
 
   onBackToOrder() {
     this.navCtrl.back();
+  }
+
+  get isInViewMode(): boolean {
+    return this.isFromOrder || !!this.fromEdit;
   }
 }

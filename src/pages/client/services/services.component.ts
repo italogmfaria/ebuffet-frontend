@@ -52,6 +52,10 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   private subs = new Subscription();
 
+  // Edit mode tracking
+  private fromEdit: string = '';
+  private editId: string = '';
+
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
@@ -77,6 +81,10 @@ export class ServicesComponent implements OnInit, OnDestroy {
           this.selectedCategory = category;
           this.applyFilters();
         }
+
+        // Capture edit mode params
+        this.fromEdit = params['fromEdit'] || '';
+        this.editId = params['editId'] || '';
       })
     );
   }
@@ -211,11 +219,31 @@ export class ServicesComponent implements OnInit, OnDestroy {
       type: 'service'
     });
     this.toastService.success(`${item.nome} adicionado ao pedido!`);
+
+    // Redireciona para a página de edição se vier de lá
+    if (this.fromEdit === 'reserve') {
+      this.navCtrl.navigateForward('/reserves/reserve-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else if (this.fromEdit === 'event') {
+      this.navCtrl.navigateForward('/events/event-edit', {
+        queryParams: { id: this.editId }
+      });
+    }
   }
 
   onServiceClick(service: ServicoListDTO) {
-    this.navCtrl.navigateForward(`/client/services/${service.id}`, {
-      queryParams: { name: service.nome }
-    });
+    const queryParams: any = { name: service.nome };
+
+    if (this.fromEdit) {
+      queryParams.fromEdit = this.fromEdit;
+      queryParams.editId = this.editId;
+    }
+
+    this.navCtrl.navigateForward(`/client/services/${service.id}`, { queryParams });
+  }
+
+  get isFromEdit(): boolean {
+    return !!this.fromEdit;
   }
 }
