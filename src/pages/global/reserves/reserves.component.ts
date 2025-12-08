@@ -115,7 +115,7 @@ export class ReservesComponent implements OnInit {
 
   onReserveClick(reserve: Reserve) {
     this.navCtrl.navigateForward('/reserves/reserve-details', {
-      queryParams: { id: reserve.id, title: reserve.title }
+      queryParams: { id: reserve.id, title: reserve.title, status: reserve.status }
     });
   }
 

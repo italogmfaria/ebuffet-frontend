@@ -24,8 +24,10 @@ import { OrderConfirmationComponent } from '../pages/client/order/order-confirma
 import {ProfileEditComponent} from "../pages/client/profile/profile-edit/profile-edit.component";
 import {ReservesComponent} from "../pages/global/reserves/reserves.component";
 import {ReserveDetailsComponent} from "../pages/global/reserves/reserve-details/reserve-details.component";
+import {ReserveEditComponent} from "../pages/global/reserves/reserve-edit/reserve-edit.component";
 import {EventsComponent} from "../pages/global/events/events.component";
 import {EventDetailsComponent} from "../pages/global/events/event-details/event-details.component";
+import {EventEditComponent} from "../pages/global/events/event-edit/event-edit.component";
 
 export const routes: Routes = [
   {
@@ -84,6 +86,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'reserves/reserve-edit',
+    component: ReserveEditComponent,
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'events',
     component: EventsComponent,
     canActivate: [AuthGuard]
@@ -91,6 +98,11 @@ export const routes: Routes = [
   {
     path: 'events/event-details',
     component: EventDetailsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'events/event-edit',
+    component: EventEditComponent,
     canActivate: [AuthGuard]
   },
 

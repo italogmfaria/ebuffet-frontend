@@ -27,7 +27,7 @@ import {
   remove,
   calendar,
   arrowDownCircle,
-  checkmark
+  checkmark, checkmarkCircle, closeCircle
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -58,7 +58,9 @@ addIcons({
   'restaurant-outline': restaurantOutline,
   balloon,
   calendar,
-  checkmark
+  checkmark,
+  'checkmark-circle': checkmark,
+  'close-circle': close
 });
 
 function initializeTheme(themeService: ThemeService): () => Promise<void> {

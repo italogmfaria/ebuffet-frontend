@@ -115,6 +115,6 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBackToOrder() {
-    this.navCtrl.navigateBack('/client/order');
+    this.navCtrl.back();
   }
 }
