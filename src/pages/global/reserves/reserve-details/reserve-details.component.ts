@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular/standalone';
+import { Location } from '@angular/common';
 import { ModelPageComponent } from '../../../../shared/ui/templates/pages/model-page/model-page.component';
 
 @Component({
@@ -18,11 +18,10 @@ export class ReserveDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private navCtrl: NavController
+    private location: Location
   ) {}
 
   ngOnInit() {
-    // Recebe os parâmetros da rota
     this.route.queryParams.subscribe(params => {
       this.reserveTitle = params['title'] || 'Reserva';
       this.reserveStatus = params['status'] || '';
@@ -30,6 +29,6 @@ export class ReserveDetailsComponent implements OnInit {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/profile');
+    this.location.back();
   }
 }

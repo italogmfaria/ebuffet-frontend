@@ -83,7 +83,7 @@ export class OrderDetailsComponent implements OnInit {
   async onContinue() {
     if (!this.isFormValid) return;
 
-    // Validar nome da reserva (máximo 25 caracteres)
+    // Validar nome da reserva (máximo 20 caracteres)
     const nameValidation = this.validationService.validateReservationName(this.reservationName);
     if (!nameValidation.isValid) {
       await this.toastService.warning(nameValidation.message!);

@@ -6,7 +6,7 @@
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: nowrap;
   touch-action: pan-x pan-y pinch-zoom;
   user-select: none;
@@ -26,11 +26,14 @@
     --padding-end: 16px;
     height: 32px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     flex-shrink: 0;
     scroll-snap-align: center;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
 
     &:first-child {
       font-weight: 600;
@@ -41,17 +44,40 @@
       margin-right: 16px;
     }
 
+    // Efeito hover - mais sutil
+    &:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.95);
+    }
+
+    // Efeito de clique
     &:active {
-      transform: scale(0.95);
+      transform: scale(0.97);
+      filter: brightness(0.9);
+      transition: all 0.1s ease;
     }
 
     &.selected {
       font-weight: 600;
+      transform: scale(1.02);
+      filter: brightness(1.1);
+
+      &:hover {
+        transform: scale(1.02) translateY(-1px);
+        filter: brightness(1.05);
+      }
+
+      &:active {
+        transform: scale(0.99);
+        filter: brightness(1);
+      }
     }
 
-    // Quando o chip contém um status-badge, remove o background do chip
-    &.status-badge.selected {
+    // Quando o chip contém um status-badge, remove o background e padding do chip
+    &.status-badge {
       --background: transparent !important;
+      --padding-start: 0;
+      --padding-end: 0;
       padding: 0;
       height: auto;
     }
@@ -66,8 +92,25 @@
         display: flex;
         align-items: center;
         height: 32px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
     }
+  }
+}
+
+// Animação de pulsação ao selecionar
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1.02);
+    filter: brightness(1.1);
   }
 }
 

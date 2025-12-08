@@ -2,12 +2,12 @@
   <ion-chip
     *ngFor="let status of statusItems"
     [id]="'status-' + status.id"
-    [style.--background]="status.selected && status.id === 'todos' ? (secondaryColor$ | async) : (primaryColor$ | async)"
+    [style.--background]="status.id === 'todos' && status.selected ? (secondaryColor$ | async) : (status.id === 'todos' ? (primaryColor$ | async) : 'transparent')"
     [style.--color]="'white'"
     class="status-chip"
     [class.selected]="status.selected"
     [class.status-badge]="status.id !== 'todos'"
-    (click)="onStatusClick(status.id)">
+    (click)="onStatusClick(status.id, $event)">
 
     <!-- TODOS chip -->
     <span *ngIf="status.id === 'todos'">{{ status.name }}</span>

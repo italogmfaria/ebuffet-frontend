@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular/standalone';
+import { Location } from '@angular/common';
 import { ModelPageComponent } from '../../../../shared/ui/templates/pages/model-page/model-page.component';
 
 @Component({
@@ -18,7 +18,7 @@ export class EventDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private navCtrl: NavController
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -30,6 +30,6 @@ export class EventDetailsComponent implements OnInit {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/profile');
+    this.location.back();
   }
 }

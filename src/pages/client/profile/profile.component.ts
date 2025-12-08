@@ -59,14 +59,14 @@ export class ProfileComponent implements OnInit {
   reserves: ReserveItem[] = [
     { title: 'Casamento', status: 'pending' },
     { title: 'Aniversário', status: 'approved' },
-    { title: 'Confraternização da Empr', status: 'canceled' }
+    { title: 'Confraternização', status: 'canceled' }
   ];
 
   events: EventItem[] = [
     { title: 'Casamento', status: 'pending' },
     { title: 'Chá Revelação', status: 'approved' },
     { title: 'Aniversário', status: 'completed' },
-    { title: 'Confraternização da Empr', status: 'canceled' }
+    { title: 'Confraternização', status: 'canceled' }
   ];
 
   constructor(

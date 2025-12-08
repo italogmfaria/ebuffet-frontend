@@ -1,6 +1,25 @@
 t<app-model-page [title]="'Minhas Reservas'" class="ion-page" (backClick)="onBackClick()">
   <div class="reserves-page">
-    <!-- Loading spinner -->
+    <!-- Search Input -->
+    <div class="search-section">
+      <app-search-input
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Pesquise sua reserva'"
+        name="reserve-search"
+        (searchChange)="onSearch($event)">
+      </app-search-input>
+    </div>
+
+    <!-- Status Filters -->
+    <div class="filters-section">
+      <app-default-status
+        [selectedStatusId]="selectedStatus"
+        [type]="'reserva'"
+        (statusSelected)="onStatusSelect($event)">
+      </app-default-status>
+    </div>
+
+    <!-- Loading Spinner -->
     <app-loading-spinner
       *ngIf="isLoading"
       [color]="(secondaryColor$ | async) || '#8b5cf6'"
@@ -8,7 +27,23 @@ t<app-model-page [title]="'Minhas Reservas'" class="ion-page" (backClick)="onBac
       text="Carregando reservas...">
     </app-loading-spinner>
 
-    <!-- Content will be added here -->
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredReserves.length === 0" class="empty-section">
+      <p class="empty-text">Nenhuma reserva encontrada</p>
+    </div>
+
+    <!-- Reserves List -->
+    <div *ngIf="!isLoading && filteredReserves.length > 0" class="reserves-list">
+      <app-event-reserve-card
+        *ngFor="let reserve of filteredReserves"
+        [title]="reserve.title"
+        [description]="reserve.description"
+        [status]="reserve.status"
+        [type]="'reserva'"
+        (cardClick)="onReserveClick(reserve)"
+        (openClick)="onReserveOpen(reserve)">
+      </app-event-reserve-card>
+    </div>
   </div>
 </app-model-page>
 

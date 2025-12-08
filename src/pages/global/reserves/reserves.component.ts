@@ -1,9 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
-import { ModelPageComponent } from "../../../shared/ui/templates/pages/model-page/model-page.component";
-import { LoadingSpinnerComponent } from "../../../shared/ui/templates/exports";
+import {
+  ModelPageComponent,
+  LoadingSpinnerComponent,
+  SearchInputComponent,
+  EventReserveCardComponent,
+  DefaultStatusComponent
+} from "../../../shared/ui/templates/exports";
 import { ThemeService } from '../../../shared/services/theme.service';
+
+interface Reserve {
+  id: number;
+  title: string;
+  description: string;
+  status: 'pending' | 'approved' | 'canceled' | 'completed';
+}
 
 @Component({
   selector: 'app-reserves',
@@ -12,13 +25,22 @@ import { ThemeService } from '../../../shared/services/theme.service';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ModelPageComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    SearchInputComponent,
+    EventReserveCardComponent,
+    DefaultStatusComponent
   ]
 })
 export class ReservesComponent implements OnInit {
   secondaryColor$ = this.themeService.secondaryColor$;
   isLoading = false;
+  searchQuery = '';
+  selectedStatus = 'todos';
+
+  reserves: Reserve[] = [];
+  filteredReserves: Reserve[] = [];
 
   constructor(
     private navCtrl: NavController,
@@ -26,10 +48,78 @@ export class ReservesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // TODO: Carregar reservas do backend
+    this.loadMockReserves();
+  }
+
+  /**
+   * Carrega reservas mockadas
+   * TODO: Substituir por chamada ao backend
+   */
+  private loadMockReserves() {
+    this.reserves = [
+      {
+        id: 1,
+        title: 'Casamento',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
+        status: 'pending'
+      },
+      {
+        id: 2,
+        title: 'Aniversário',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
+        status: 'approved'
+      },
+      {
+        id: 3,
+        title: 'Confraternização',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
+        status: 'canceled'
+      }
+    ];
+    this.applyFilters();
   }
 
   onBackClick() {
     this.navCtrl.navigateBack('/client/profile');
+  }
+
+  onSearch(query: string) {
+    this.searchQuery = query;
+    this.applyFilters();
+  }
+
+  onStatusSelect(statusId: string) {
+    this.selectedStatus = statusId;
+    this.applyFilters();
+  }
+
+  private applyFilters() {
+    let filtered = [...this.reserves];
+
+    // Filtrar por busca
+    if (this.searchQuery) {
+      const term = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(r =>
+        r.title.toLowerCase().includes(term) ||
+        r.description.toLowerCase().includes(term)
+      );
+    }
+
+    // Filtrar por status
+    if (this.selectedStatus !== 'todos') {
+      filtered = filtered.filter(r => r.status === this.selectedStatus);
+    }
+
+    this.filteredReserves = filtered;
+  }
+
+  onReserveClick(reserve: Reserve) {
+    this.navCtrl.navigateForward('/reserves/reserve-details', {
+      queryParams: { id: reserve.id, title: reserve.title }
+    });
+  }
+
+  onReserveOpen(reserve: Reserve) {
+    this.onReserveClick(reserve);
   }
 }

@@ -1,23 +1,24 @@
 <div class="event-reserve-card" (click)="onCardClick()">
-  <div class="card-content">
-    <div class="card-header">
-      <h3 class="card-title" [style.color]="secondaryColor$ | async">{{ title }}</h3>
+  <!-- Header fixo com título e status na mesma linha -->
+  <div class="card-fixed-header">
+    <h3 class="card-title" [style.color]="secondaryColor$ | async">{{ title }}</h3>
 
-      <!-- Status Badge -->
-      <app-pending-status *ngIf="status === 'pending'"></app-pending-status>
-      <app-approved-status *ngIf="status === 'approved'"></app-approved-status>
-      <app-canceled-status *ngIf="status === 'canceled'"></app-canceled-status>
-      <app-completed-status *ngIf="status === 'completed'"></app-completed-status>
-    </div>
-
-    <p class="card-description">{{ description }}</p>
+    <!-- Status Badge -->
+    <app-pending-status *ngIf="status === 'pending'"></app-pending-status>
+    <app-approved-status *ngIf="status === 'approved'" [type]="type"></app-approved-status>
+    <app-canceled-status *ngIf="status === 'canceled'" [type]="type"></app-canceled-status>
+    <app-completed-status *ngIf="status === 'completed'"></app-completed-status>
   </div>
 
-  <div class="card-action">
-    <app-open-circle
-      size="medium"
-      (buttonClick)="onOpenClick($event)">
-    </app-open-circle>
+  <div class="card-content">
+    <p class="card-description">{{ description }}</p>
+
+    <div class="card-action">
+      <app-open-circle
+        size="medium"
+        (buttonClick)="onOpenClick($event)">
+      </app-open-circle>
+    </div>
   </div>
 </div>
 

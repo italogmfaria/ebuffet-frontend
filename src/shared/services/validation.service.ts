@@ -252,7 +252,7 @@ export class ValidationService {
   }
 
   /**
-   * Valida nome de reserva (máximo 25 caracteres)
+   * Valida nome de reserva (máximo 20 caracteres)
    */
   validateReservationName(name: string): ValidationResult {
     if (!name || name.trim() === '') {
@@ -269,10 +269,10 @@ export class ValidationService {
       };
     }
 
-    if (name.trim().length > 25) {
+    if (name.trim().length > 20) {
       return {
         isValid: false,
-        message: 'O nome da reserva deve ter no máximo 25 caracteres.'
+        message: 'O nome da reserva deve ter no máximo 20 caracteres.'
       };
     }
 

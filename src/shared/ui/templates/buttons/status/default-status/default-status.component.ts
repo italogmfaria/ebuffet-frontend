@@ -138,7 +138,17 @@ export class DefaultStatusComponent implements OnInit, OnChanges, AfterViewInit 
     }
   }
 
-  onStatusClick(statusId: string) {
+  onStatusClick(statusId: string, event: Event) {
+    const target = event.currentTarget as HTMLElement;
+
+    // Adiciona a animação de pulso
+    target.style.animation = 'pulse 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
+    // Remove a animação após completar
+    setTimeout(() => {
+      target.style.animation = '';
+    }, 300);
+
     this.selectedStatusId = statusId;
     this.updateSelectedStatus();
     this.statusSelected.emit(statusId);

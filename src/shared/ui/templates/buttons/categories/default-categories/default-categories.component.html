@@ -5,7 +5,8 @@
     [style.--background]="category.selected ? (secondaryColor$ | async) : (primaryColor$ | async)"
     [style.--color]="'white'"
     class="category-chip"
-    (click)="onCategoryClick(category.id)">
+    [class.selected]="category.selected"
+    (click)="onCategoryClick(category.id, $event)">
     {{ category.name }}
   </ion-chip>
 </div>
