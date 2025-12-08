@@ -24,10 +24,17 @@ export class TextInputComponent implements ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Input() maxlength?: number;
   @Input() inputmode?: string;
+  @Input() showCounter: boolean = false;
   @Output() inputChange = new EventEmitter<string>();
   @Output() keypress = new EventEmitter<KeyboardEvent>();
 
   value: string = '';
+
+  get characterCount(): string {
+    if (!this.showCounter || !this.maxlength) return '';
+    const current = this.value?.length || 0;
+    return `${current}/${this.maxlength}`;
+  }
 
   onChange = (value: string) => {};
   onTouched = () => {};

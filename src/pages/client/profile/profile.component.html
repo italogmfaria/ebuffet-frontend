@@ -1,20 +1,95 @@
 <app-model-page [title]="'Perfil'" class="ion-page" (backClick)="onBackClick()">
   <div class="profile-page">
     <ion-grid>
+      <!-- Header Section -->
       <div class="profile-header">
         <app-logout-circle
-          size="medium"
+          size="large"
           (buttonClick)="onLogout()">
         </app-logout-circle>
 
-        <h2>{{ userName }}</h2>
+        <div class="profile-avatar">
+          <ion-img
+            *ngIf="userProfileImage"
+            [src]="userProfileImage"
+            class="profile-image">
+          </ion-img>
+          <app-profile-placeholder *ngIf="!userProfileImage"></app-profile-placeholder>
+        </div>
 
         <app-edit-circle
-          size="medium"
+          size="large"
           (buttonClick)="onEdit()">
         </app-edit-circle>
       </div>
-      <!-- TODO: Implementar dados do perfil do usuário -->
+
+      <!-- User Info Section -->
+      <div class="section profile-info-section">
+        <div class="profile-info">
+          <ion-text>
+            <h2 class="user-name">{{ userName }}</h2>
+          </ion-text>
+          <ion-text color="medium">
+            <p class="user-email">{{ userEmail }}</p>
+          </ion-text>
+          <ion-text color="medium">
+            <p class="user-phone">{{ userPhone }}</p>
+          </ion-text>
+        </div>
+      </div>
+
+      <!-- Reserves Section -->
+      <div class="section">
+        <div class="section-header" (click)="onViewAllReserves()">
+          <ion-text>
+            <h3 class="section-title">Minhas Reservas</h3>
+          </ion-text>
+          <ion-icon name="chevron-forward" [style.color]="secondaryColor$ | async"></ion-icon>
+        </div>
+
+        <!-- Empty state for reserves -->
+        <div *ngIf="reserves.length === 0" class="empty-section">
+          <p class="empty-text">Nenhuma reserva cadastrada</p>
+        </div>
+
+        <!-- Reserves list -->
+        <div *ngIf="reserves.length > 0" class="section-content">
+          <app-profile-list-item
+            *ngFor="let reserve of reserves"
+            [title]="reserve.title"
+            [status]="reserve.status"
+            [type]="'reserva'"
+            (itemClick)="onReserveClick(reserve)">
+          </app-profile-list-item>
+        </div>
+      </div>
+
+
+      <!-- Events Section -->
+      <div class="section last-section">
+        <div class="section-header" (click)="onViewAllEvents()">
+          <ion-text>
+            <h3 class="section-title">Meus Eventos</h3>
+          </ion-text>
+          <ion-icon name="chevron-forward" [style.color]="secondaryColor$ | async"></ion-icon>
+        </div>
+
+        <!-- Empty state for events -->
+        <div *ngIf="events.length === 0" class="empty-section">
+          <p class="empty-text">Nenhum evento cadastrado</p>
+        </div>
+
+        <!-- Events list -->
+        <div *ngIf="events.length > 0" class="section-content">
+          <app-profile-list-item
+            *ngFor="let event of events"
+            [title]="event.title"
+            [status]="event.status"
+            [type]="'evento'"
+            (itemClick)="onEventClick(event)">
+          </app-profile-list-item>
+        </div>
+      </div>
     </ion-grid>
   </div>
 </app-model-page>

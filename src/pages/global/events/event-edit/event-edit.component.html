@@ -1,0 +1,203 @@
+<app-model-page [title]="eventTitle" class="ion-page" (backClick)="onBackClick()">
+  <div class="event-edit-page">
+    <ion-grid>
+      <!-- Seção de Cardápio -->
+      <div class="section">
+        <h3 class="section-title">Comidas:</h3>
+        <div class="items-list">
+          <app-order-item-card
+            *ngFor="let item of menuItems"
+            [title]="item.title"
+            [description]="item.description"
+            [imageUrl]="item.imageUrl || ''"
+            [quantity]="item.quantity"
+            (cardClick)="onFoodItemClick(item)"
+            (removeClick)="onRemoveFood(item.title)"
+            (quantityChange)="onFoodQuantityChange(item.title, $event)">
+          </app-order-item-card>
+        </div>
+
+        <div class="button-container">
+          <app-primary-button
+            [text]="'Adicionar comidas'"
+            (buttonClick)="onAddFoods()">
+          </app-primary-button>
+        </div>
+      </div>
+
+      <!-- Seção de Serviços -->
+      <div class="section">
+        <h3 class="section-title">Serviços:</h3>
+        <div class="items-list">
+          <app-order-item-card
+            *ngFor="let service of services"
+            [title]="service.title"
+            [description]="service.description"
+            [imageUrl]="service.imageUrl || ''"
+            [quantity]="service.quantity"
+            (cardClick)="onServiceItemClick(service)"
+            (removeClick)="onRemoveService(service.title)"
+            (quantityChange)="onServiceQuantityChange(service.title, $event)">
+          </app-order-item-card>
+        </div>
+
+        <div class="button-container">
+          <app-primary-button
+            [text]="'Adicionar serviços'"
+            (buttonClick)="onAddServices()">
+          </app-primary-button>
+        </div>
+      </div>
+
+      <!-- Seção de Informações do Evento -->
+      <div class="section">
+        <app-text-input
+          [label]="'Nome do evento:'"
+          [placeholder]="'Digite o nome do evento'"
+          [maxlength]="20"
+          [showCounter]="true"
+          [(ngModel)]="eventName">
+        </app-text-input>
+
+        <app-textarea-input
+          [label]="'Descrição da reserva:'"
+          [placeholder]="'Digite sobre qual intuito do evento'"
+          [rows]="5"
+          [maxlength]="255"
+          [showCounter]="true"
+          [(ngModel)]="eventDescription">
+        </app-textarea-input>
+      </div>
+
+      <!-- Seção de Endereço -->
+      <div class="section medium-section">
+
+        <app-text-input
+          [label]="'Quantidade de pessoas:'"
+          [type]="'number'"
+          [placeholder]="'Digite a quantidade de pessoas'"
+          [(ngModel)]="peopleCount">
+        </app-text-input>
+
+        <app-text-input
+          [label]="'Horário:'"
+          [type]="'time'"
+          [placeholder]="'Digite o horário'"
+          [(ngModel)]="eventTime">
+        </app-text-input>
+
+        <app-calendar-input
+          [label]="'Data:'"
+          [placeholder]="'Escolha a data'"
+          [(ngModel)]="eventDate"
+          (inputClick)="onCalendarInputClick()">
+        </app-calendar-input>
+      </div>
+
+        <div class="section last-section">
+
+        <app-text-input
+          [label]="'Rua:'"
+          [placeholder]="'Digite a rua'"
+          [(ngModel)]="street">
+        </app-text-input>
+
+        <app-text-input
+          [label]="'Número:'"
+          [placeholder]="'Digite o número de residência'"
+          [(ngModel)]="number">
+        </app-text-input>
+
+        <app-text-input
+          [label]="'Complemento:'"
+          [placeholder]="'Digite o complemento'"
+          [(ngModel)]="complement">
+        </app-text-input>
+
+        <app-text-input
+          [label]="'Bairro:'"
+          [placeholder]="'Digite o bairro'"
+          [(ngModel)]="neighborhood">
+        </app-text-input>
+
+        <app-text-input
+          [label]="'Cidade:'"
+          [placeholder]="'Digite a cidade'"
+          [(ngModel)]="city">
+        </app-text-input>
+
+        <app-selected-input
+          [label]="'Estado:'"
+          [placeholder]="'Selecione o estado'"
+          [options]="stateOptions"
+          [(ngModel)]="state"
+          (inputClick)="onStateInputClick()">
+        </app-selected-input>
+
+        <app-text-input
+          [label]="'CEP:'"
+          [placeholder]="'Digite o CEP'"
+          [maxlength]="9"
+          [inputmode]="'numeric'"
+          [(ngModel)]="zipCode"
+          (inputChange)="onZipCodeChange($event)"
+          (keypress)="onZipCodeKeyPress($event)">
+        </app-text-input>
+      </div>
+
+      <!-- Botão Salvar -->
+      <div class="save-button-container">
+        <app-primary-button
+          [text]="'Salvar'"
+          [disabled]="!isFormValid"
+          (buttonClick)="onSave()">
+        </app-primary-button>
+      </div>
+    </ion-grid>
+  </div>
+</app-model-page>
+
+<!-- Modal do Calendário -->
+<app-calendar-modal
+  *ngIf="showCalendarModal"
+  (close)="onCalendarModalClose()"
+  (dateSelected)="onDateSelected($event)">
+</app-calendar-modal>
+
+<!-- Modal de Seleção de Estado -->
+<app-select-modal
+  *ngIf="showStateModal"
+  [title]="'Selecione o Estado'"
+  [options]="stateOptions"
+  [selectedValue]="state"
+  (close)="showStateModal = false"
+  (optionSelected)="onStateSelected($event)">
+</app-select-modal>
+
+<!-- Modal de Confirmação para Remover Comida -->
+<app-confirmation-modal
+  *ngIf="showRemoveFoodModal"
+  [title]="'Remover comida?'"
+  [subtitle]="'Tem certeza que deseja<br>remover esta comida do evento?'"
+  [icon]="'trash'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Cancelar'"
+  [primaryButtonText]="'Remover'"
+  (close)="onRemoveFoodModalClose()"
+  (confirm)="onRemoveFoodModalConfirm()"
+  (cancel)="onRemoveFoodModalCancel()">
+</app-confirmation-modal>
+
+<!-- Modal de Confirmação para Remover Serviço -->
+<app-confirmation-modal
+  *ngIf="showRemoveServiceModal"
+  [title]="'Remover serviço?'"
+  [subtitle]="'Tem certeza que deseja<br>remover este serviço do evento?'"
+  [icon]="'trash'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Cancelar'"
+  [primaryButtonText]="'Remover'"
+  (close)="onRemoveServiceModalClose()"
+  (confirm)="onRemoveServiceModalConfirm()"
+  (cancel)="onRemoveServiceModalCancel()">
+</app-confirmation-modal>

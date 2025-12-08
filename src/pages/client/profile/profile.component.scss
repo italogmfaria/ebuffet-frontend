@@ -1,24 +1,115 @@
 .profile-page {
-  padding: 20px;
+  padding: 20px 0 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  ion-grid {
+    padding: 0;
+    width: 100%;
+    --ion-grid-padding: 0;
+  }
 
   .profile-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 4rem;
+    align-items: flex-start;
     margin-bottom: 20px;
+    width: 100%;
+    padding: 0 20px;
 
-    h2 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 600;
+    app-logout-circle,
+    app-edit-circle {
+      margin-top: 10px;
+    }
+
+    .profile-avatar {
+      width: 150px;
+      height: 150px;
+      flex-shrink: 0;
+      margin-top: 0;
     }
   }
 
-  .profile-form {
-    ion-grid {
-      padding: 0;
+  .section {
+    margin-bottom: 0;
+    padding: 0 20px 30px;
+    border-bottom: 0.1px solid #d0d0d0;
+    width: 100%;
+
+    &.profile-info-section {
+      padding: 0 20px 25px;
+    }
+
+    &.last-section {
+      border-bottom: none;
+    }
+  }
+
+  .profile-info {
+    text-align: center;
+    width: 100%;
+
+    .user-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .user-email,
+    .user-phone {
+      font-size: 0.875rem;
+      margin: 4px 0;
+      color: #666;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    margin-top: 30px;
+    cursor: pointer;
+    padding: 4px 0;
+    -webkit-tap-highlight-color: transparent;
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .empty-section {
+    padding: 40px 20px;
+    text-align: center;
+
+    .empty-text {
+      color: #999;
+      font-size: 14px;
+      margin: 0;
+      font-style: italic;
     }
   }
 }
-

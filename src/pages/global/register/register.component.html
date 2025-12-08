@@ -35,6 +35,19 @@
 
         <ion-row>
           <ion-col>
+            <app-text-input
+              label="Telefone:"
+              type="tel"
+              placeholder="(XX) XXXXX-XXXX"
+              formControlName="phone"
+              [maxlength]="15"
+              (inputChange)="onPhoneInput($event)">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
             <app-password-input
               label="Senha:"
               placeholder="Digite sua senha"

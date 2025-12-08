@@ -5,6 +5,8 @@
       <app-text-input
         [label]="'Nome da reserva:'"
         [placeholder]="'Digite o nome de sua reserva'"
+        [maxlength]="20"
+        [showCounter]="true"
         [(ngModel)]="reservationName">
       </app-text-input>
 
@@ -13,6 +15,8 @@
         [label]="'Descrição da reserva:'"
         [placeholder]="'Digite sobre qual intuito da reserva'"
         [rows]="5"
+        [maxlength]="255"
+        [showCounter]="true"
         [(ngModel)]="reservationDescription">
       </app-textarea-input>
 

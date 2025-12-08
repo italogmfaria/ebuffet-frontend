@@ -40,6 +40,10 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   isFromOrder: boolean = false;
   private subs = new Subscription();
 
+  // Edit mode tracking
+  private fromEdit: string = '';
+  private editId: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -110,11 +114,26 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
         type: 'food'
       });
 
-      this.navCtrl.navigateForward('/client/order');
+      // Redireciona para a página de edição se vier de lá
+      if (this.fromEdit === 'reserve') {
+        this.navCtrl.navigateForward('/reserves/reserve-edit', {
+          queryParams: { id: this.editId }
+        });
+      } else if (this.fromEdit === 'event') {
+        this.navCtrl.navigateForward('/events/event-edit', {
+          queryParams: { id: this.editId }
+        });
+      } else {
+        this.navCtrl.navigateForward('/client/order');
+      }
     }
   }
 
   onBackToOrder() {
-    this.navCtrl.navigateBack('/client/order');
+    this.navCtrl.back();
+  }
+
+  get isInViewMode(): boolean {
+    return this.isFromOrder || !!this.fromEdit;
   }
 }

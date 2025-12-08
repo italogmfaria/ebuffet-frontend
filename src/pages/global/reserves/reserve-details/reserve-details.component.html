@@ -1,0 +1,120 @@
+<app-model-page [title]="reserveTitle" class="ion-page" (backClick)="onBackClick()">
+  <div class="reserve-details-page">
+    <ion-grid>
+      <!-- Status Section -->
+      <div class="section">
+        <h3 class="section-title">Status:</h3>
+        <div class="status-container">
+          <app-pending-status *ngIf="reserveStatus === 'pending'"></app-pending-status>
+          <app-approved-status *ngIf="reserveStatus === 'approved'" [type]="'reserva'"></app-approved-status>
+          <app-canceled-status *ngIf="reserveStatus === 'canceled'" [type]="'reserva'"></app-canceled-status>
+          <app-completed-status *ngIf="reserveStatus === 'completed'"></app-completed-status>
+        </div>
+      </div>
+
+      <!-- Data Section -->
+      <div class="section">
+        <h3 class="section-title">Data:</h3>
+        <p class="section-text">{{ date }}</p>
+      </div>
+
+      <!-- Descrição Section -->
+      <div class="section">
+        <h3 class="section-title">Descrição:</h3>
+        <p class="section-text">{{ description }}</p>
+      </div>
+
+      <!-- Endereço Section -->
+      <div class="section">
+        <h3 class="section-title">Endereço:</h3>
+        <p class="section-text">{{ address }}</p>
+      </div>
+
+      <!-- Horário Section -->
+      <div class="section">
+        <h3 class="section-title">Horário:</h3>
+        <p class="section-text">{{ time }}</p>
+      </div>
+
+      <!-- Quantidade de pessoas Section -->
+      <div class="section">
+        <h3 class="section-title">Quantidade de pessoas:</h3>
+        <p class="section-text">{{ peopleCount }}</p>
+      </div>
+
+      <!-- Cardápio Section -->
+      <div class="section">
+        <h3 class="section-title">Comidas:</h3>
+        <div class="items-list">
+          <app-default-item-card
+            *ngFor="let item of menuItems"
+            [title]="item.title"
+            [description]="item.description"
+            [imageUrl]="item.imageUrl"
+            [quantity]="item.quantity"
+            [circleType]="'none'"
+            (cardClick)="onFoodItemClick(item)">
+          </app-default-item-card>
+        </div>
+      </div>
+
+      <!-- Serviços Section -->
+      <div class="section last-section">
+        <h3 class="section-title">Serviços:</h3>
+        <div class="items-list">
+          <app-default-item-card
+            *ngFor="let service of services"
+            [title]="service.title"
+            [description]="service.description"
+            [imageUrl]="service.imageUrl"
+            [quantity]="service.quantity"
+            [circleType]="'none'"
+            (cardClick)="onServiceItemClick(service)">
+          </app-default-item-card>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="actions-container">
+        <app-primary-button
+          *ngIf="canEdit"
+          [text]="'Editar'"
+          [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+          (buttonClick)="onEdit()">
+        </app-primary-button>
+
+        <app-whatsapp-button
+          [text]="'Entrar em Contato'"
+          (buttonClick)="onContact()">
+        </app-whatsapp-button>
+
+        <app-cancel-button
+          *ngIf="!isCanceled && canCancel"
+          [text]="'Cancelar'"
+          (buttonClick)="onCancel()">
+        </app-cancel-button>
+
+        <app-primary-button
+          *ngIf="isCanceled && canCancel"
+          [text]="'Descancelar'"
+          [customColor]="'#3b82f6'"
+          (buttonClick)="onCancel()">
+        </app-primary-button>
+      </div>
+    </ion-grid>
+  </div>
+</app-model-page>
+
+<app-confirmation-modal
+  *ngIf="showCancelModal"
+  [title]="cancelModalTitle"
+  [subtitle]="cancelModalSubtitle"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onCancelModalClose()"
+  (confirm)="onCancelModalCancel()"
+  (cancel)="onCancelModalConfirm()">
+</app-confirmation-modal>
+

@@ -1,8 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent} from '../../../shared/ui/templates/exports';
-import { NavController } from '@ionic/angular/standalone';
+import {
+  FormPageComponent,
+  ClientNavbarComponent,
+  SearchInputComponent,
+  DefaultCategoriesComponent,
+  DefaultItemCardComponent,
+  LoadingSpinnerComponent
+} from '../../../shared/ui/templates/exports';
+import {IonInfiniteScroll, IonInfiniteScrollContent, NavController} from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { OrderService } from '../../../shared/services/order.service';
@@ -25,7 +32,10 @@ import {FoodsApiService} from "../../../shared/services/food.service";
     ClientNavbarComponent,
     SearchInputComponent,
     DefaultCategoriesComponent,
-    DefaultItemCardComponent
+    DefaultItemCardComponent,
+    LoadingSpinnerComponent,
+    IonInfiniteScrollContent,
+    IonInfiniteScroll
   ],
   host: { class: 'ion-page' }
 })
@@ -37,11 +47,21 @@ export class FoodsComponent implements OnInit, OnDestroy {
   cartItemCount = 0;
   searchQuery = '';
   selectedCategory: string = 'todos';
+  isLoading = true;
 
   foods: ComidaListDTO[] = [];
   filteredFoods: ComidaListDTO[] = [];
+  displayedFoods: ComidaListDTO[] = [];
+
+  // Lazy loading configuration
+  private pageSize = 10;
+  private currentPage = 0;
 
   private subs = new Subscription();
+
+  // Edit mode tracking
+  private fromEdit: string = '';
+  private editId: string = '';
 
   constructor(
     private themeService: ThemeService,
@@ -68,6 +88,10 @@ export class FoodsComponent implements OnInit, OnDestroy {
           this.selectedCategory = category;
           this.applyFilters();
         }
+
+        // Capture edit mode params
+        this.fromEdit = params['fromEdit'] || '';
+        this.editId = params['editId'] || '';
       })
     );
   }
@@ -91,15 +115,18 @@ export class FoodsComponent implements OnInit, OnDestroy {
   }
 
   private fetchFoods(buffetId: number) {
+    this.isLoading = true;
     this.subs.add(
       this.foodsApiService.getAll(buffetId).subscribe({
         next: foods => {
           this.foods = foods;
           this.applyFilters();
+          this.isLoading = false;
         },
         error: err => {
           console.error('Erro ao carregar comidas', err);
           this.toastService.error('Não foi possível carregar as comidas.');
+          this.isLoading = false;
         }
       })
     );
@@ -151,6 +178,43 @@ export class FoodsComponent implements OnInit, OnDestroy {
     }
 
     this.filteredFoods = filtered;
+
+    // Reset lazy loading
+    this.currentPage = 0;
+    this.loadMoreItems();
+  }
+
+  /**
+   * Carrega mais itens para exibição (lazy loading)
+   */
+  private loadMoreItems() {
+    const start = this.currentPage * this.pageSize;
+    const end = start + this.pageSize;
+    const newItems = this.filteredFoods.slice(start, end);
+
+    if (this.currentPage === 0) {
+      this.displayedFoods = newItems;
+    } else {
+      this.displayedFoods = [...this.displayedFoods, ...newItems];
+    }
+
+    this.currentPage++;
+  }
+
+  /**
+   * Chamado quando o usuário rola até o fim da lista
+   */
+  onIonInfinite(event: any) {
+    const hasMoreItems = this.displayedFoods.length < this.filteredFoods.length;
+
+    if (hasMoreItems) {
+      setTimeout(() => {
+        this.loadMoreItems();
+        event.target.complete();
+      }, 300);
+    } else {
+      event.target.complete();
+    }
   }
 
   onAddToOrder(item: ComidaListDTO) {
@@ -162,11 +226,32 @@ export class FoodsComponent implements OnInit, OnDestroy {
       type: 'food'
     });
     this.toastService.success(`${item.nome} adicionado ao pedido!`);
+
+    // Redireciona para a página de edição se vier de lá
+    if (this.fromEdit === 'reserve') {
+      this.navCtrl.navigateForward('/reserves/reserve-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else if (this.fromEdit === 'event') {
+      this.navCtrl.navigateForward('/events/event-edit', {
+        queryParams: { id: this.editId }
+      });
+    }
   }
 
   onFoodClick(food: ComidaListDTO) {
-    this.navCtrl.navigateForward(`/client/foods/${food.id}`, {
-      queryParams: { name: food.nome }
-    });
+    const queryParams: any = { name: food.nome };
+
+    if (this.fromEdit) {
+      queryParams.fromEdit = this.fromEdit;
+      queryParams.editId = this.editId;
+    }
+
+    this.navCtrl.navigateForward(`/client/foods/${food.id}`, { queryParams });
+  }
+
+  get isFromEdit(): boolean {
+    return !!this.fromEdit;
   }
 }
+

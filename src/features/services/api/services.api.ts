@@ -41,7 +41,7 @@ export class ServicesApiService {
 
   getAll(buffetId: number): Observable<ServicoListDTO[]> {
     return this.listByBuffet(buffetId).pipe(
-      map(page => page.content.map(s => ({...s, imageUrl: undefined})))
+      map(page => page.content.map((s: ServicoResponse) => ({...s, imageUrl: undefined})))
     );
   }
 

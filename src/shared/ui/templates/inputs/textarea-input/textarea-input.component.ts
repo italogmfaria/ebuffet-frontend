@@ -22,6 +22,8 @@ export class TextareaInputComponent implements ControlValueAccessor {
   @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() rows: number = 5;
+  @Input() maxlength?: number;
+  @Input() showCounter: boolean = false;
   @Output() inputChange = new EventEmitter<string>();
 
   value: string = '';

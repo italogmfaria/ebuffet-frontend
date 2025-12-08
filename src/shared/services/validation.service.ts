@@ -210,6 +210,76 @@ export class ValidationService {
   }
 
   /**
+   * Valida telefone brasileiro
+   */
+  validatePhone(phone: string): ValidationResult {
+    if (!phone || phone.trim() === '') {
+      return {
+        isValid: false,
+        message: 'Por favor, insira seu telefone.'
+      };
+    }
+
+    // Remove caracteres não numéricos
+    const cleanPhone = phone.replace(/\D/g, '');
+
+    // Telefone brasileiro deve ter 10 dígitos (fixo) ou 11 dígitos (celular)
+    if (cleanPhone.length < 10 || cleanPhone.length > 11) {
+      return {
+        isValid: false,
+        message: 'Telefone deve ter 10 ou 11 dígitos. Exemplo: (64) 99999-9999'
+      };
+    }
+
+    // Verifica se começa com DDD válido (11-99)
+    const ddd = parseInt(cleanPhone.substring(0, 2));
+    if (ddd < 11 || ddd > 99) {
+      return {
+        isValid: false,
+        message: 'DDD inválido. Use um DDD brasileiro válido (11-99)'
+      };
+    }
+
+    // Se tiver 11 dígitos, o terceiro dígito deve ser 9 (celular)
+    if (cleanPhone.length === 11 && cleanPhone[2] !== '9') {
+      return {
+        isValid: false,
+        message: 'Celular deve começar com 9. Exemplo: (64) 99999-9999'
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * Valida nome de reserva (máximo 20 caracteres)
+   */
+  validateReservationName(name: string): ValidationResult {
+    if (!name || name.trim() === '') {
+      return {
+        isValid: false,
+        message: 'Por favor, insira o nome da reserva.'
+      };
+    }
+
+    if (name.trim().length < 2) {
+      return {
+        isValid: false,
+        message: 'O nome da reserva deve ter pelo menos 2 caracteres.'
+      };
+    }
+
+    if (name.trim().length > 20) {
+      return {
+        isValid: false,
+        message: 'O nome da reserva deve ter no máximo 20 caracteres.'
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
    * Valida código numérico
    */
   validateCode(code: string, length: number = 6): ValidationResult {

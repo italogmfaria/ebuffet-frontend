@@ -7,9 +7,13 @@
       [value]="value"
       [rows]="rows"
       [autoGrow]="false"
+      [maxlength]="maxlength"
       (ionInput)="onInputChange($event)"
       (ionBlur)="onBlur()">
     </ion-textarea>
   </ion-item>
+  <div *ngIf="showCounter && maxlength" class="character-counter">
+    {{ value?.length || 0 }}/{{ maxlength }}
+  </div>
 </div>
 

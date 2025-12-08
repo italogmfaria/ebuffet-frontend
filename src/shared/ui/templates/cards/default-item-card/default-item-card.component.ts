@@ -17,6 +17,7 @@ export class DefaultItemCardComponent implements OnInit {
   @Input() description: string = '';
   @Input() imageUrl: string = '';
   @Input() circleType: 'add' | 'close' | 'none' = 'none';
+  @Input() quantity?: number;
   @Output() circleClick = new EventEmitter<{ title: string; description: string; imageUrl: string }>();
   @Output() cardClick = new EventEmitter<void>();
 

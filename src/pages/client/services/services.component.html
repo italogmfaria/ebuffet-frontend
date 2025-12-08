@@ -1,4 +1,4 @@
-<app-form-page [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
+<app-form-page [hasNavbar]="!isFromEdit" [showNotification]="!isFromEdit" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="services-page">
     <form class="services-form">
       <app-search-input
@@ -11,9 +11,24 @@
         [selectedCategoryId]="selectedCategory"
         (categorySelected)="onCategorySelect($event)">
       </app-default-categories>
-      <div class="services-grid">
+
+      <!-- Loading spinner -->
+      <app-loading-spinner
+        *ngIf="isLoading"
+        [color]="(secondaryColor$ | async) || '#8b5cf6'"
+        size="medium"
+        text="Carregando serviços...">
+      </app-loading-spinner>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && displayedServices.length === 0" class="empty-section">
+        <p class="empty-text">Nenhum serviço encontrado</p>
+      </div>
+
+      <!-- Services grid -->
+      <div *ngIf="!isLoading && displayedServices.length > 0" class="services-grid">
         <app-default-item-card
-          *ngFor="let service of filteredServices"
+          *ngFor="let service of displayedServices"
           [title]="service.nome"
           [description]="service.descricao"
           [imageUrl]="service.imageUrl || ''"
@@ -22,6 +37,17 @@
           (circleClick)="onAddToOrder(service)">
         </app-default-item-card>
       </div>
+
+      <!-- Infinite scroll -->
+      <ion-infinite-scroll
+        *ngIf="displayedServices.length > 0"
+        threshold="100px"
+        (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content
+          loadingSpinner="bubbles"
+          loadingText="Carregando mais serviços...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </form>
   </div>
 </app-form-page>

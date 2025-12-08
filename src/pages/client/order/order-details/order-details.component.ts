@@ -11,6 +11,8 @@ import {
   PrimaryButtonComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { ValidationService } from '../../../../shared/services/validation.service';
+import { ToastService } from '../../../../shared/services/toast.service';
 import {ReservationBuilderService} from "../../../../shared/services/reservation.builder.service";
 
 @Component({
@@ -44,7 +46,9 @@ export class OrderDetailsComponent implements OnInit {
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
-    private reservationBuilder: ReservationBuilderService
+    private reservationBuilder: ReservationBuilderService,
+    private validationService: ValidationService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {}
@@ -76,11 +80,19 @@ export class OrderDetailsComponent implements OnInit {
     this.showCalendarModal = false;
   }
 
-  onContinue() {
+  async onContinue() {
     if (!this.isFormValid) return;
+
+    // Validar nome da reserva (máximo 20 caracteres)
+    const nameValidation = this.validationService.validateReservationName(this.reservationName);
+    if (!nameValidation.isValid) {
+      await this.toastService.warning(nameValidation.message!);
+      return;
+    }
 
     const qtd = Number(this.peopleCount);
     if (!Number.isFinite(qtd) || qtd <= 0) {
+      await this.toastService.warning('Por favor, insira uma quantidade válida de pessoas.');
       return;
     }
 
