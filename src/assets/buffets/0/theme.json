@@ -2,8 +2,8 @@
   "primaryColor": "#9747FF",
   "secondaryColor": "#48008C",
   "accentColor": "#FFFFFF",
-  "logo": "assets/buffets/buffet0/logo.png",
-  "banner": "assets/buffets/buffet0/banner.png",
+  "logo": "assets/buffets/0/logo.png",
+  "banner": "assets/buffets/0/banner.png",
   "buffetId": 0,
   "nameBuffet": "eBuffet"
 }

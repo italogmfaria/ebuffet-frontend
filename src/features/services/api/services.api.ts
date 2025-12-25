@@ -11,10 +11,9 @@ import {SpringPage} from "../../shared/page/page";
 export class ServicesApiService {
 
   private api = inject(ApiClient);
-  private readonly basePath = '/buffets';
+  private readonly basePath = '/servicos';
 
   listByBuffet(
-    buffetId: number,
     opts?: {
       categoria?: EnumCategoria;
       status?: EnumStatus;
@@ -34,25 +33,25 @@ export class ServicesApiService {
     if (opts?.q) params['q'] = opts.q;
 
     return this.api.get<SpringPage<ServicoResponse>>(
-      `${this.basePath}/${buffetId}/servicos`,
+      `${this.basePath}`,
       params
     );
   }
 
-  getAll(buffetId: number): Observable<ServicoListDTO[]> {
-    return this.listByBuffet(buffetId).pipe(
+  getAll(): Observable<ServicoListDTO[]> {
+    return this.listByBuffet().pipe(
       map(page => page.content.map((s: ServicoResponse) => ({...s, imageUrl: undefined})))
     );
   }
 
-  getById(buffetId: number, id: number): Observable<ServicoDetailDTO> {
+  getById(id: number): Observable<ServicoDetailDTO> {
     return this.api
-      .get<ServicoResponse>(`${this.basePath}/${buffetId}/servicos/${id}`)
+      .get<ServicoResponse>(`${this.basePath}/${id}`)
       .pipe(map(s => ({ ...s, imageUrl: undefined })));
   }
 
-  getServiceById(buffetId: number, id: number) {
-    return this.getById(buffetId, id);
+  getServiceById(id: number) {
+    return this.getById(id);
   }
 }
 

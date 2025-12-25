@@ -8,10 +8,9 @@ import {ApiClient} from "../api/api.client";
 @Injectable({providedIn: 'root'})
 export class FoodsApiService {
   private api = inject(ApiClient);
-  private readonly basePath = '/buffets';
+  private readonly basePath = '/comidas';
 
   listByBuffet(
-    buffetId: number,
     opts?: {
       categoria?: EnumCategoria;
       status?: EnumStatus;
@@ -29,21 +28,21 @@ export class FoodsApiService {
     if (opts?.status) params['status'] = opts.status;
 
     return this.api.get<SpringPage<ComidaResponse>>(
-      `${this.basePath}/${buffetId}/comidas`,
+      `${this.basePath}`,
       params
     );
   }
 
 
-  getAll(buffetId: number): Observable<ComidaListDTO[]> {
-    return this.listByBuffet(buffetId).pipe(
+  getAll(): Observable<ComidaListDTO[]> {
+    return this.listByBuffet().pipe(
       map(page => page.content.map((c: ComidaResponse) => ({...c, imageUrl: undefined})))
     );
   }
 
-  getById(buffetId: number, id: number): Observable<ComidaDetailDTO> {
+  getById(id: number): Observable<ComidaDetailDTO> {
     return this.api
-      .get<ComidaResponse>(`${this.basePath}/${buffetId}/comidas/${id}`)
+      .get<ComidaResponse>(`${this.basePath}/${id}`)
       .pipe(map(c => ({...c, imageUrl: undefined})));
   }
 }

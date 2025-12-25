@@ -82,22 +82,23 @@ export class ReservationBuilderService {
     if (!details) throw new Error('Detalhes da reserva não informados');
     if (!address) throw new Error('Endereço da reserva não informado');
 
-    // Observações: combine nome + descrição (o back não tem nome/descrição)
     const observacoesParts: string[] = [];
     if ((details as any).nome) observacoesParts.push(`Nome: ${(details as any).nome}`);
     if ((details as any).descricao) observacoesParts.push(`Descrição: ${(details as any).descricao}`);
     const observacoes = observacoesParts.length ? observacoesParts.join(' | ') : undefined;
 
-    // Apenas IDs (sem quantidades) conforme o contrato atual
     const comidaIds = (foodIds ?? []).map(f => f.id);
     const servicoIds = serviceIds ?? [];
 
     return {
       buffetId,
       qtdPessoas: details.qtdPessoas,
-      dataDesejada: details.dataDesejada,      // "YYYY-MM-DD"
-      horarioDesejado: details.horarioDesejado, // "HH:mm"
-      endereco: address,
+      dataDesejada: toIsoDate(details.dataDesejada),       // <-- ISO yyyy-MM-dd
+      horarioDesejado: toIsoTime(details.horarioDesejado), // <-- HH:mm
+      endereco: {
+        ...address,
+        cep: String(address.cep).replace(/\D/g, '')        // garante só números
+      },
       comidaIds: comidaIds.length ? comidaIds : undefined,
       servicoIds: servicoIds.length ? servicoIds : undefined,
       observacoes
@@ -112,4 +113,29 @@ export class ReservationBuilderService {
   private persist() {
     localStorage.setItem('reservationDraft', JSON.stringify(this.draft));
   }
+}
+
+function toIsoDate(dateStr: string): string {
+  if (!dateStr) return dateStr;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dateStr);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mm}-${dd}`;
+  }
+  return dateStr;
+}
+
+function toIsoTime(timeStr: string): string {
+  if (!timeStr) return timeStr;
+  const m1 = /^(\d{2}):(\d{2})$/.exec(timeStr);
+  if (m1) return timeStr;
+  const m2 = /^(\d{2}):(\d{2}):(\d{2})$/.exec(timeStr);
+  if (m2) return `${m2[1]}:${m2[2]}`;
+  return timeStr;
 }

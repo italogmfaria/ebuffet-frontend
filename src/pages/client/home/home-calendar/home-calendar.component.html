@@ -4,9 +4,11 @@
     <app-detail-bagde [text]="'INDISPONÍVEL'"></app-detail-bagde>
   </div>
 
-  <div class="calendar-wrapper"
-       [style.--secondary-color]="secondaryColor$ | async"
-       [style.--accent-color]="accentColor$ | async">
+  <div
+    class="calendar-wrapper"
+    [style.--secondary-color]="secondaryColor$ | async"
+    [style.--accent-color]="accentColor$ | async"
+  >
     <ion-datetime
       presentation="date"
       [(ngModel)]="selectedDate"

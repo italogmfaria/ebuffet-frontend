@@ -96,21 +96,21 @@ export class ServicesComponent implements OnInit, OnDestroy {
   loadServices() {
     const buffetIdSync = this.themeService.getBuffetIdSync?.() ?? null;
     if (buffetIdSync) {
-      this.fetchServices(buffetIdSync);
+      this.fetchServices();
       return;
     }
 
     this.subs.add(
       this.themeService.buffetId$
         .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchServices(id))
+        .subscribe(id => this.fetchServices())
     );
   }
 
-  private fetchServices(buffetId: number) {
+  private fetchServices() {
     this.isLoading = true;
     this.subs.add(
-      this.servicesApiService.getAll(buffetId).subscribe({
+      this.servicesApiService.getAll().subscribe({
         next: services => {
           this.services = services;
           this.applyFilters();

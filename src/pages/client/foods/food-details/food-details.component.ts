@@ -73,20 +73,20 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   private loadFoodDetails() {
     const buffetIdSync = this.themeService.getBuffetIdSync();
     if (buffetIdSync) {
-      this.fetchDetails(buffetIdSync, this.foodId);
+      this.fetchDetails(this.foodId);
       return;
     }
 
     this.subs.add(
       this.themeService.buffetId$
         .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchDetails(id, this.foodId))
+        .subscribe(id => this.fetchDetails(this.foodId))
     );
   }
 
-  private fetchDetails(buffetId: number, id: number) {
+  private fetchDetails(id: number) {
     this.subs.add(
-      this.foodsApiService.getById(buffetId, id).subscribe({
+      this.foodsApiService.getById(id).subscribe({
         next: (food) => {
           this.foodDetails = food;
           this.foodName = food?.nome || this.foodName;

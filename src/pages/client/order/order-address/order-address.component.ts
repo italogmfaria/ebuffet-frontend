@@ -12,6 +12,11 @@ import {
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ViaCepService, State } from '../../../../shared/services/viacep.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
+import {ReservationsApiService} from "../../../../features/reservation/api/reservations-api.service";
+import {ReservationBuilderService} from "../../../../shared/services/reservation.builder.service";
+import {OrderService} from "../../../../shared/services/order.service";
+import {SessionService} from "../../../../shared/services/session.service";
+import {EnderecoRequest} from "../../../../features/reservation/model/reservation.models";
 
 @Component({
   selector: 'app-order-address',
@@ -46,7 +51,11 @@ export class OrderAddressComponent implements OnInit {
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
-    private viaCepService: ViaCepService
+    private viaCepService: ViaCepService,
+    private reservationsApi: ReservationsApiService,
+    private builder: ReservationBuilderService,
+    private orderService: OrderService,
+    private session: SessionService
   ) {}
 
   ngOnInit() {
@@ -144,18 +153,45 @@ export class OrderAddressComponent implements OnInit {
   }
 
   onMakeReservation() {
-    if (this.isFormValid) {
-      console.log('Endereço da reserva:', {
-        street: this.street,
-        number: this.number,
-        complement: this.complement,
-        neighborhood: this.neighborhood,
-        city: this.city,
-        state: this.state,
-        zipCode: this.zipCode
-      });
+    if (!this.isFormValid) return;
 
-      this.navCtrl.navigateForward('/client/order/order-confirmation');
+    const endereco: EnderecoRequest = {
+      rua: this.street,
+      numero: this.number,
+      bairro: this.neighborhood,
+      cidade: this.city,
+      estado: this.state,
+      cep: this.zipCode.replace(/\D/g, ''),
+      complemento: this.complement || null,
+    };
+
+    this.builder.setAddress(endereco);
+
+    const user = this.session.getUser();
+    if (!user?.id) {
+      console.error('Usuário não encontrado na sessão.');
+      return;
+    }
+
+    this.confirmarReserva(user.id);
+  }
+
+  confirmarReserva(clienteId: number) {
+    try {
+      const body = this.builder.buildReservaRequest();
+      this.reservationsApi.create(clienteId, body).subscribe({
+        next: (res) => {
+          console.log('Reserva criada com sucesso:', res);
+          this.orderService.clearOrder();
+          this.builder.clear();
+          this.navCtrl.navigateForward('/client/order/order-confirmation');
+        },
+        error: (err) => {
+          console.error('Erro ao criar reserva:', err);
+        },
+      });
+    } catch (e) {
+      console.error('Erro ao montar reserva:', e);
     }
   }
 }
