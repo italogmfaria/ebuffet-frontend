@@ -10,7 +10,7 @@ import {LoginComponent} from "../pages/global/login/login.component";
 import {ForgotPasswordComponent} from "../pages/global/login/forgot-password/forgot-password.component";
 import {NewPasswordComponent} from "../pages/global/login/forgot-password/new-password/new-password.component";
 import {HomeComponent} from "../pages/client/home/home.component";
-import { AuthGuard } from '../shared/guards/auth.guard';
+import { AuthGuard } from '../core/guards/auth.guard';
 import {NotificationsComponent} from "../pages/global/notifications/notifications.component";
 import {FoodsComponent} from "../pages/client/foods/foods.component";
 import {FoodDetailsComponent} from "../pages/client/foods/food-details/food-details.component";

@@ -2,12 +2,12 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import { FormPageComponent, ConfirmationModalComponent, ClientNavbarComponent } from '../../../shared/ui/templates/exports';
 import { IonGrid, NavController } from "@ionic/angular/standalone";
-import { ThemeService } from '../../../shared/services/theme.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import {HomeCarouselComponent} from "./home-carousel/home-carousel.component";
 import {HomeCategoriesComponent} from "./home-categories/home-categories.component";
 import {HomeCalendarComponent} from "./home-calendar/home-calendar.component";
-import { SessionService } from '../../../shared/services/session.service';
-import { OrderService } from '../../../shared/services/order.service';
+import { SessionService } from '../../../core/services/session.service';
+import { OrderService } from '../../../features/orders/services/order.service';
 
 @Component({
     selector: 'app-home',

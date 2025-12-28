@@ -2,9 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonIcon, IonBadge, NavController } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../../services/theme.service';
-import { OrderService } from '../../../../services/order.service';
 import { filter } from 'rxjs/operators';
+import {ThemeService} from "../../../../../core/services/theme.service";
+import {OrderService} from "../../../../../features/orders/services/order.service";
 
 @Component({
   selector: 'app-client-navbar',

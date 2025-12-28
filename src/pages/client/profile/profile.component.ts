@@ -11,10 +11,10 @@ import {
   ProfilePlaceholderComponent
 } from '../../../shared/ui/templates/exports';
 import {NavController} from '@ionic/angular/standalone';
-import {ThemeService} from '../../../shared/services/theme.service';
-import {SessionService} from '../../../shared/services/session.service';
-import {OrderService} from '../../../shared/services/order.service';
-import {ReservationsApiService} from "../../../features/reservation/api/reservations-api.service";
+import {ThemeService} from '../../../core/services/theme.service';
+import {SessionService} from '../../../core/services/session.service';
+import {OrderService} from '../../../features/orders/services/order.service';
+import {ReservationsApiService} from "../../../features/reservations/api/reservations-api.service";
 import {Subscription} from "rxjs";
 import {
   EventItem,

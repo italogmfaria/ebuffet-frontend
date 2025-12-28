@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ThemeService } from '../../../../services/theme.service';
 import { chevronForward } from 'ionicons/icons';
 import {
   PendingStatusComponent,
@@ -9,6 +8,7 @@ import {
   CanceledStatusComponent,
   CompletedStatusComponent
 } from '../../exports';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-profile-list-item',

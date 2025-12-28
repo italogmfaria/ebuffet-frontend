@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import {AuthApi} from "../../features/auth/api/auth.api";
-import {MeResponse} from "../../features/auth/model/auth.type";
-
+import {AuthApi} from "../api/auth.api";
+import {MeResponse} from "../model/auth.type";
 const ACCESS_TOKEN_KEY = 'access_token';
 
 @Injectable({ providedIn: 'root' })

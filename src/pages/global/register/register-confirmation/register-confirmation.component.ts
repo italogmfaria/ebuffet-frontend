@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModelPageComponent, PrimaryButtonComponent } from "../../../../shared/ui/templates/exports";
 import { NavController } from "@ionic/angular/standalone";
-import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-register-confirmation',

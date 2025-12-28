@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../shared/services/theme.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-index',

@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { ThemeService } from '../../../../services/theme.service';
-import { NotificationService } from '../../../../services/notification.service';
 import { NotificationCircleComponent } from '../../buttons/circles/notification-circle/notification-circle.component';
+import {ThemeService} from "../../../../../core/services/theme.service";
+import {NotificationService} from "../../../../../core/services/notification.service";
 
 @Component({
   selector: 'app-form-page',

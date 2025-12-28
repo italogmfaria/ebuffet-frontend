@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../../../../services/theme.service';
 import { IonChip } from '@ionic/angular/standalone';
 import {
   PendingStatusComponent,
@@ -8,6 +7,7 @@ import {
   CanceledStatusComponent,
   CompletedStatusComponent
 } from '../../../exports';
+import {ThemeService} from "../../../../../../core/services/theme.service";
 
 interface StatusItem {
   id: string;

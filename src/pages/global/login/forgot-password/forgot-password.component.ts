@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
 import {CodeInputComponent, ModelPageComponent, PrimaryButtonComponent} from "../../../../shared/ui/templates/exports";
-import { ToastService } from '../../../../shared/services/toast.service';
-import { ValidationService } from '../../../../shared/services/validation.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ValidationService } from '../../../../core/services/validation.service';
 
 @Component({
     selector: 'app-forgot-password',

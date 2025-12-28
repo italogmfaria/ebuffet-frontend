@@ -11,14 +11,14 @@ import {
 } from '../../../shared/ui/templates/exports';
 import {IonInfiniteScroll, IonInfiniteScrollContent, NavController} from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { ThemeService } from '../../../shared/services/theme.service';
-import { OrderService } from '../../../shared/services/order.service';
-import { ToastService } from '../../../shared/services/toast.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { OrderService } from '../../../features/orders/services/order.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ComidaListDTO } from '../../../features/foods/model/foods.model';
-import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../features/shared/enums/categoria.enum';
+import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../core/enums/categoria.enum';
 import {Subscription} from "rxjs";
 import {filter} from "rxjs/operators";
-import {FoodsApiService} from "../../../shared/services/food.service";
+import {FoodsApiService} from "../../../features/foods/services/food.service";
 
 @Component({
   selector: 'app-foods',

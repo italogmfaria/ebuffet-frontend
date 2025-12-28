@@ -16,7 +16,7 @@ import {
   CompletedStatusComponent,
   ConfirmationModalComponent
 } from '../../../../shared/ui/templates/exports';
-import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 import {
   mapReservaStatusToUi,
   MenuItem,
@@ -24,8 +24,8 @@ import {
   UiStatus
 } from "../../../../features/cliente-profile/model/cliente-profile.model";
 import {Subscription} from "rxjs";
-import {ReservationsApiService} from "../../../../features/reservation/api/reservations-api.service";
-import {SessionService} from "../../../../shared/services/session.service";
+import {ReservationsApiService} from "../../../../features/reservations/api/reservations-api.service";
+import {SessionService} from "../../../../core/services/session.service";
 
 @Component({
   selector: 'app-reserve-details',

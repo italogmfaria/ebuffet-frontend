@@ -7,7 +7,7 @@ import {
   WhatsappButtonComponent,
   PrimaryButtonComponent
 } from '../../../../shared/ui/templates/exports';
-import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-order-confirmation',

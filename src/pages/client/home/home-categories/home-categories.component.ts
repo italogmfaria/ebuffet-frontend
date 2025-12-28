@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
 import { IonicModule, NavController } from '@ionic/angular';
-import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 import { CommonModule } from '@angular/common';
 import {
   PrimaryButtonComponent

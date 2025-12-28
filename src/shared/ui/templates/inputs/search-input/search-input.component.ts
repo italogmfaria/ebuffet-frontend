@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@ang
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonItem, IonInput, IonIcon } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../../services/theme.service';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-search-input',

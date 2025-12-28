@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalController } from "@ionic/angular/standalone";
-import { ThemeService } from '../../../shared/services/theme.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { NavController, IonGrid, IonRow, IonCol } from "@ionic/angular/standalone";
 import {
   PrimaryButtonComponent,
@@ -12,8 +12,8 @@ import {
   FormPageComponent
 } from '../../../shared/ui/templates/exports';
 import { TermsComponent } from './terms/terms.component';
-import { ToastService } from '../../../shared/services/toast.service';
-import { ValidationService } from '../../../shared/services/validation.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ValidationService } from '../../../core/services/validation.service';
 import {AuthApi} from "../../../features/auth/api/auth.api";
 import {firstValueFrom} from "rxjs";
 

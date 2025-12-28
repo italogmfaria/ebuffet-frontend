@@ -9,7 +9,7 @@ import {
   EventReserveCardComponent,
   DefaultStatusComponent
 } from "../../../shared/ui/templates/exports";
-import { ThemeService } from '../../../shared/services/theme.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 interface Event {
   id: number;

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import {ThemeService} from "./theme.service";
-import {OrderService} from "./order.service";
-import {EnderecoRequest, ReservaRequest, ReservationDetails} from "../../features/reservation/model/reservation.models";
+import {ThemeService} from "../../../core/services/theme.service";
+import {OrderService} from "../../orders/services/order.service";
+import {EnderecoRequest, ReservaRequest, ReservationDetails} from "../model/reservation.models";
 
 type FlowState = {
   details?: ReservationDetails;

@@ -10,10 +10,10 @@ import {
   CalendarModalComponent,
   PrimaryButtonComponent
 } from '../../../../shared/ui/templates/exports';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { ValidationService } from '../../../../shared/services/validation.service';
-import { ToastService } from '../../../../shared/services/toast.service';
-import {ReservationFlowService} from "../../../../shared/services/reservation-flow.service";
+import { ThemeService } from '../../../../core/services/theme.service';
+import { ValidationService } from '../../../../core/services/validation.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import {ReservationFlowService} from "../../../../features/reservations/services/reservation-flow.service";
 
 @Component({
   selector: 'app-order-details',

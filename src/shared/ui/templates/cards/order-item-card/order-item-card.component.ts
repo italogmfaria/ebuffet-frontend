@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { ThemeService } from '../../../../services/theme.service';
 import { CommonModule } from '@angular/common';
 import { ImagePlaceholderComponent } from '../../placeholders/image-placeholder/image-placeholder.component';
 import {DeleteCircleComponent} from '../../exports';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-order-item-card',

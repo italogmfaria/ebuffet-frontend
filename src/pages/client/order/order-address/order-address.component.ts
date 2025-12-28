@@ -9,13 +9,13 @@ import {
   SelectModalComponent,
   PrimaryButtonComponent
 } from '../../../../shared/ui/templates/exports';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { ViaCepService, State } from '../../../../shared/services/viacep.service';
+import { ThemeService } from '../../../../core/services/theme.service';
+import { ViaCepService, State } from '../../../../core/services/viacep.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
-import {ReservationsApiService} from "../../../../features/reservation/api/reservations-api.service";
-import {OrderService} from "../../../../shared/services/order.service";
-import {SessionService} from "../../../../shared/services/session.service";
-import {ReservationFlowService} from "../../../../shared/services/reservation-flow.service";
+import {ReservationsApiService} from "../../../../features/reservations/api/reservations-api.service";
+import {OrderService} from "../../../../features/orders/services/order.service";
+import {SessionService} from "../../../../core/services/session.service";
+import {ReservationFlowService} from "../../../../features/reservations/services/reservation-flow.service";
 
 @Component({
   selector: 'app-order-address',

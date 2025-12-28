@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModelPageComponent, ClientNavbarComponent, OrderItemCardComponent, PrimaryButtonComponent, ConfirmationModalComponent } from '../../../shared/ui/templates/exports';
 import { NavController } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../shared/services/theme.service';
-import { OrderService, OrderItem } from '../../../shared/services/order.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { OrderService, OrderItem } from '../../../features/orders/services/order.service';
 import { IonicModule } from '@ionic/angular';
 
 @Component({

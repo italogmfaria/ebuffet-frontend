@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { FormPageComponent, ClientNavbarComponent, SearchInputComponent, DefaultCategoriesComponent, DefaultItemCardComponent, LoadingSpinnerComponent} from '../../../shared/ui/templates/exports';
 import {IonInfiniteScroll, IonInfiniteScrollContent, NavController} from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { ThemeService } from '../../../shared/services/theme.service';
-import { OrderService } from '../../../shared/services/order.service';
-import { ToastService } from '../../../shared/services/toast.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { OrderService } from '../../../features/orders/services/order.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
 import { ServicoListDTO } from '../../../features/services/model/services.model';
-import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../features/shared/enums/categoria.enum';
+import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../core/enums/categoria.enum';
 import {filter} from "rxjs/operators";
 import {Subscription} from "rxjs";
 

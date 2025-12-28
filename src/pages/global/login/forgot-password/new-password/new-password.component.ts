@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
 import { ModelPageComponent, PasswordInputComponent, PrimaryButtonComponent } from "../../../../../shared/ui/templates/exports";
-import { ToastService } from '../../../../../shared/services/toast.service';
-import { ValidationService } from '../../../../../shared/services/validation.service';
+import { ToastService } from '../../../../../core/services/toast.service';
+import { ValidationService } from '../../../../../core/services/validation.service';
 
 @Component({
     selector: 'app-new-password',

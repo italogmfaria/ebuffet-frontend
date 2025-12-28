@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../../../services/theme.service';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-detail-bagde',

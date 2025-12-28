@@ -1,8 +1,8 @@
 import {inject, Injectable} from "@angular/core";
-import {ApiClient} from "../../../shared/api/api.client";
+import {ApiClient} from "../../../core/api/api.client";
 import {map, Observable} from "rxjs";
-import {DatasIndisponiveisResponse, EventCard, EventoResponse, mapEventoStatusToUi} from "../model/evento.models";
-import {SpringPage} from "../../shared/page/page";
+import {DatasIndisponiveisResponse, EventCard, EventoResponse, mapEventoStatusToUi} from "../model/events.models";
+import {SpringPage} from "../../../core/models/page.model";
 
 @Injectable({
   providedIn: 'root'

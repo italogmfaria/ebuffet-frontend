@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonDatetime } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../../services/theme.service';
 import { CloseCircleComponent, PrimaryButtonComponent } from '../../exports';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-calendar-modal',

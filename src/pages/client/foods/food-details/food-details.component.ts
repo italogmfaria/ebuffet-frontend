@@ -5,13 +5,13 @@ import { NavController, IonImg } from '@ionic/angular/standalone';
 import { ModelPageComponent } from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 import { ImagePlaceholderComponent, PrimaryButtonComponent } from '../../../../shared/ui/templates/exports';
 import { DetailBagdeComponent } from '../../../../shared/ui/templates/badges/detail-bagde/detail-bagde.component';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { OrderService } from '../../../../shared/services/order.service';
+import { ThemeService } from '../../../../core/services/theme.service';
+import { OrderService } from '../../../../features/orders/services/order.service';
 import { ComidaDetailDTO } from '../../../../features/foods/model/foods.model';
-import { CategoriasLabels } from '../../../../features/shared/enums/categoria.enum';
+import { CategoriasLabels } from '../../../../core/enums/categoria.enum';
 import {filter} from "rxjs/operators";
-import {FoodsApiService} from "../../../../shared/services/food.service";
-import {ToastService} from "../../../../shared/services/toast.service";
+import {FoodsApiService} from "../../../../features/foods/services/food.service";
+import {ToastService} from "../../../../core/services/toast.service";
 import {Subscription} from "rxjs";
 
 @Component({

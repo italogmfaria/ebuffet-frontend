@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ThemeService } from '../../../../services/theme.service';
 import { QueryBadgeComponent, CloseCircleComponent, PrimaryButtonComponent, OutlineButtonComponent } from '../../exports';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-confirmation-modal',

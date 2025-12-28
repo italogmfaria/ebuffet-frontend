@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {map, Observable} from 'rxjs';
 import {EnumStatus, ServicoDetailDTO, ServicoListDTO, ServicoResponse} from '../model/services.model';
-import {EnumCategoria} from '../../shared/enums/categoria.enum';
-import {ApiClient} from "../../../shared/api/api.client";
-import {SpringPage} from "../../shared/page/page";
+import {EnumCategoria} from '../../../core/enums/categoria.enum';
+import {ApiClient} from "../../../core/api/api.client";
+import {SpringPage} from "../../../core/models/page.model";
 
 @Injectable({
   providedIn: 'root'

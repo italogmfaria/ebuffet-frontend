@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import {ApiClient} from "../../../shared/api/api.client";
+import {ApiClient} from "../../../core/api/api.client";
 import {ReservaRequest, ReservaResponse} from "../model/reservation.models";
-import {SpringPage} from "../../shared/page/page";
+import {SpringPage} from "../../../core/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class ReservationsApiService {

@@ -7,7 +7,7 @@ import {
   CanceledStatusComponent,
   CompletedStatusComponent
 } from '../../exports';
-import { ThemeService } from '../../../../services/theme.service';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-event-reserve-card',

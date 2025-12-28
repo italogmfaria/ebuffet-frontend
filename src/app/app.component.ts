@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet, NavController } from '@ionic/angular/standalone';
-import { SessionService } from '../shared/services/session.service';
+import { SessionService } from '../core/services/session.service';
 
 @Component({
   selector: 'app-root',

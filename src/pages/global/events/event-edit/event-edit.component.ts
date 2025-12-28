@@ -16,9 +16,9 @@ import {
   SelectModalComponent,
   ConfirmationModalComponent
 } from '../../../../shared/ui/templates/exports';
-import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
-import { ViaCepService, State } from '../../../../shared/services/viacep.service';
+import { ViaCepService, State } from '../../../../core/services/viacep.service';
 
 interface MenuItem {
   id?: number;

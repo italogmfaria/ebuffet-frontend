@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/cor
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonItem, IonInput, IonIcon } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../../services/theme.service';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 export interface SelectOption {
   value: string;

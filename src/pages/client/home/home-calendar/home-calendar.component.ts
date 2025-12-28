@@ -3,8 +3,8 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonDatetime} from '@ionic/angular/standalone';
 import {DetailBagdeComponent} from '../../../../shared/ui/templates/badges/detail-bagde/detail-bagde.component';
-import {ThemeService} from '../../../../shared/services/theme.service';
-import {EventoService} from "../../../../features/evento/api/evento.api.service";
+import {ThemeService} from '../../../../core/services/theme.service';
+import {EventoService} from "../../../../features/events/api/evento.api.service";
 
 @Component({
   selector: 'app-home-calendar',

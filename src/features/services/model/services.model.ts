@@ -1,4 +1,4 @@
-import { EnumCategoria } from '../../shared/enums/categoria.enum';
+import {EnumCategoria} from "../../../core/enums/categoria.enum";
 
 export enum Categoria {
   Casamento = 'CASAMENTO',

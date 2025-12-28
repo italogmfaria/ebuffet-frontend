@@ -32,10 +32,10 @@ import {
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { ThemeService } from './shared/services/theme.service';
-import {SessionService} from "./shared/services/session.service";
-import {authInterceptor} from "./shared/interceptors/auth-interceptor";
-import {buffetIdInterceptor} from "./shared/interceptors/buffet-id.interceptor";
+import { ThemeService } from './core/services/theme.service';
+import {SessionService} from "./core/services/session.service";
+import {authInterceptor} from "./core/interceptors/auth-interceptor";
+import {buffetIdInterceptor} from "./core/interceptors/buffet-id.interceptor";
 
 addIcons({
   add,

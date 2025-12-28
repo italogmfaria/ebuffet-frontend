@@ -10,10 +10,10 @@ import { PrimaryButtonComponent } from "../../../../shared/ui/templates/buttons/
 import { OutlineButtonComponent } from "../../../../shared/ui/templates/buttons/pills/outline-button/outline-button.component";
 import { ImageCircleComponent } from "../../../../shared/ui/templates/buttons/circles/image-circle/image-circle.component";
 import { ProfilePlaceholderComponent } from "../../../../shared/ui/templates/placeholders/profile-placeholder/profile-placeholder.component";
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { SessionService } from '../../../../shared/services/session.service';
-import { ValidationService } from '../../../../shared/services/validation.service';
-import { ToastService } from '../../../../shared/services/toast.service';
+import { ThemeService } from '../../../../core/services/theme.service';
+import { SessionService } from '../../../../core/services/session.service';
+import { ValidationService } from '../../../../core/services/validation.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-profile-edit',

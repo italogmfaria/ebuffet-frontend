@@ -9,11 +9,11 @@ import {
 } from '../../../shared/ui/templates/exports';
 import {CommonModule} from "@angular/common";
 import {NavController, IonGrid, IonRow, IonCol} from "@ionic/angular/standalone";
-import { ThemeService } from '../../../shared/services/theme.service';
-import { ToastService } from '../../../shared/services/toast.service';
-import { ValidationService } from '../../../shared/services/validation.service';
-import { SessionService } from '../../../shared/services/session.service';
-import {AuthService} from "../../../shared/services/auth.service";
+import { ThemeService } from '../../../core/services/theme.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ValidationService } from '../../../core/services/validation.service';
+import { SessionService } from '../../../core/services/session.service';
+import {AuthService} from "../../../features/auth/services/auth.service";
 
 @Component({
   selector: 'app-login',

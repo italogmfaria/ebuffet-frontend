@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CloseCircleComponent } from '../../exports';
-import { ThemeService } from '../../../../services/theme.service';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-notification-modal',

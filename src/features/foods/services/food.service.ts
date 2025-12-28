@@ -1,9 +1,9 @@
 import {inject, Injectable} from "@angular/core";
-import {EnumCategoria} from "src/features/shared/enums/categoria.enum";
-import {ComidaDetailDTO, ComidaListDTO, ComidaResponse, EnumStatus} from "../../features/foods/model/foods.model";
+import {EnumCategoria} from "../../../core/enums/categoria.enum";
+import {ComidaDetailDTO, ComidaListDTO, ComidaResponse, EnumStatus} from "../model/foods.model";
 import {map, Observable} from "rxjs";
-import {SpringPage} from "../../features/shared/page/page";
-import {ApiClient} from "../api/api.client";
+import {SpringPage} from "../../../core/models/page.model";
+import {ApiClient} from "../../../core/api/api.client";
 
 @Injectable({providedIn: 'root'})
 export class FoodsApiService {

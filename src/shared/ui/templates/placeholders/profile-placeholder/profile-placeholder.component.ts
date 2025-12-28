@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { person } from 'ionicons/icons';
-import { ThemeService } from '../../../../services/theme.service';
 import { CommonModule } from '@angular/common';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-profile-placeholder',

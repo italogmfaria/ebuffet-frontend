@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { ApiClient } from '../../../shared/api/api.client';
+import { ApiClient } from '../../../core/api/api.client';
 import { Observable } from 'rxjs';
 import {AuthRequest, AuthResponse, MeResponse, RegisterRequest, UserResponse} from "../model/auth.type";
 

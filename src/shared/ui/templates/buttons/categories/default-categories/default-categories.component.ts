@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../../../../services/theme.service';
 import { IonChip } from '@ionic/angular/standalone';
-import { EnumCategoria, CategoriasLabels } from '../../../../../../features/shared/enums/categoria.enum';
+import { EnumCategoria, CategoriasLabels } from '../../../../../../core/enums/categoria.enum';
+import {ThemeService} from "../../../../../../core/services/theme.service";
 
 interface Category {
   id: string;

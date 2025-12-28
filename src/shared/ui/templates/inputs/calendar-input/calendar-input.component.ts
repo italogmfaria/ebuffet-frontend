@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { IonItem, IonInput, IonIcon } from '@ionic/angular/standalone';
-import { ThemeService } from '../../../../services/theme.service';
+import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {IonIcon, IonInput, IonItem} from '@ionic/angular/standalone';
+import {ThemeService} from "../../../../../core/services/theme.service";
 
 @Component({
   selector: 'app-calendar-input',
@@ -28,10 +28,13 @@ export class CalendarInputComponent implements ControlValueAccessor {
   value: string = '';
   secondaryColor$ = this.themeService.secondaryColor$;
 
-  onChange = (value: string) => {};
-  onTouched = () => {};
+  onChange = (value: string) => {
+  };
+  onTouched = () => {
+  };
 
-  constructor(private themeService: ThemeService) {}
+  constructor(private themeService: ThemeService) {
+  }
 
   writeValue(value: string): void {
     this.value = value || '';
