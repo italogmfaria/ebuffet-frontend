@@ -89,7 +89,7 @@
         </app-whatsapp-button>
 
         <app-cancel-button
-          *ngIf="!isCanceled && canCancel"
+          *ngIf="canCancel"
           [text]="'Cancelar'"
           (buttonClick)="onCancel()">
         </app-cancel-button>
@@ -107,8 +107,8 @@
 
 <app-confirmation-modal
   *ngIf="showCancelModal"
-  [title]="cancelModalTitle"
-  [subtitle]="cancelModalSubtitle"
+  [title]="'Cancelar reserva?'"
+  [subtitle]="'Tem certeza que deseja<br>cancelar esta reserva?'"
   [icon]="'help'"
   [iconColor]="'#fff'"
   [outlineButtonText]="'Sim'"

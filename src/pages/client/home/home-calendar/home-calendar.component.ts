@@ -1,11 +1,10 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonDatetime } from '@ionic/angular/standalone';
-import { DetailBagdeComponent } from '../../../../shared/ui/templates/badges/detail-bagde/detail-bagde.component';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import {EventoService} from "../../../../features/evento/api/evento.api";
-import {environment} from "../../../../environments/environment";
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {IonDatetime} from '@ionic/angular/standalone';
+import {DetailBagdeComponent} from '../../../../shared/ui/templates/badges/detail-bagde/detail-bagde.component';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {EventoService} from "../../../../features/evento/api/evento.api.service";
 
 @Component({
   selector: 'app-home-calendar',

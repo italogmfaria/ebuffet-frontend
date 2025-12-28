@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -17,22 +17,15 @@ import {
   ConfirmationModalComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../shared/services/theme.service';
-
-interface MenuItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
-
-interface ServiceItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
+import {
+  mapReservaStatusToUi,
+  MenuItem,
+  ServiceItem,
+  UiStatus
+} from "../../../../features/cliente-profile/model/cliente-profile.model";
+import {Subscription} from "rxjs";
+import {ReservationsApiService} from "../../../../features/reservation/api/reservations-api.service";
+import {SessionService} from "../../../../shared/services/session.service";
 
 @Component({
   selector: 'app-reserve-details',
@@ -55,123 +48,112 @@ interface ServiceItem {
   ],
   host: { class: 'ion-page' }
 })
-export class ReserveDetailsComponent implements OnInit {
-  reserveTitle: string = '';
-  reserveStatus: string = '';
-  previousStatus: string = ''; // Armazena o status anterior ao cancelamento
-  showCancelModal: boolean = false; // Controla a exibição do modal de cancelamento
+export class ReserveDetailsComponent implements OnInit, OnDestroy {
+  reserveId: number = 0;
 
-  // Dados mockados
-  date: string = '12/09/2025';
-  description: string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.';
-  address: string = 'Rua Joaquim Justino, 39, Centro, Urutaí, Goiás, 7579000';
-  time: string = '19:00 horas';
-  peopleCount: string = '15 pessoas';
+  reserveTitle: string = 'Reserva';
+  reserveStatus: UiStatus = 'pending';
+  showCancelModal = false;
 
-  menuItems: MenuItem[] = [
-    {
-      id: 1,
-      title: 'Bolo de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
+  date: string = '';
+  time: string = '';
+  peopleCount: string = '';
+  description: string = '';
+  address: string = '';
 
-  services: ServiceItem[] = [
-    {
-      id: 1,
-      title: 'Decoração de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
+  menuItems: MenuItem[] = [];
+  services: ServiceItem[] = [];
 
   secondaryColor$ = this.themeService.secondaryColor$;
+
+  private subs = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
     private location: Location,
     private themeService: ThemeService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private reservationsApi: ReservationsApiService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.reserveTitle = params['title'] || 'Nome da Reserva';
-      this.reserveStatus = params['status'] || '';
-      // Armazena o status inicial apenas se não for cancelado
-      if (this.reserveStatus !== 'canceled') {
-        this.previousStatus = this.reserveStatus;
-      }
-    });
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        this.reserveId = Number(params['id'] || 0);
+        this.reserveTitle = params['title'] || 'Reserva';
+
+        if (this.reserveId) {
+          this.loadReserve();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private loadReserve() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.reservationsApi.getById(this.reserveId, user.id).subscribe({
+        next: (r) => {
+          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+
+          this.date = this.formatDatePtBr(r.dataDesejada);
+          this.time = this.formatTimePtBr(r.horarioDesejado);
+          this.peopleCount = `${r.qtdPessoas} pessoa${r.qtdPessoas === 1 ? '' : 's'}`;
+
+          this.reserveTitle = this.reserveTitle || `Reserva #${r.id}`;
+
+          this.description = r.observacoes || '';
+
+          this.address = r.endereco
+            ? this.formatAddress(r.endereco)
+            : '';
+
+          this.menuItems = (r.comidas ?? []).map(c => ({
+            id: c.id,
+            title: c.nome,
+            description: c.descricao,
+            imageUrl: '',
+            quantity: 1
+          }));
+
+          this.services = (r.servicos ?? []).map(s => ({
+            id: s.id,
+            title: s.nome,
+            description: s.descricao,
+            imageUrl: '',
+            quantity: 1
+          }));
+        },
+        error: (err) => console.error('Erro ao carregar reserva', err)
+      })
+    );
+  }
+
+  private formatAddress(e: any): string {
+    const parts = [
+      `${e.rua ?? ''}${e.numero ? ', ' + e.numero : ''}`.trim(),
+      e.bairro,
+      `${e.cidade ?? ''}${e.estado ? ', ' + e.estado : ''}`.trim(),
+      e.cep,
+      e.complemento
+    ].filter(Boolean);
+
+    return parts.join(' - ');
   }
 
   onBackClick() {
     this.location.back();
   }
 
-  onEdit() {
-    console.log('Editar reserva');
-    this.navCtrl.navigateForward('/reserves/reserve-edit', {
-      queryParams: {
-        id: this.route.snapshot.queryParams['id'] || '',
-        title: this.reserveTitle,
-        status: this.reserveStatus
-      }
-    });
-  }
-
-  onContact() {
-    console.log('Entrar em contato via WhatsApp');
-    // TODO: Abrir WhatsApp
-  }
-
-  onCancel() {
-    // Mostra o modal de confirmação
-    this.showCancelModal = true;
-  }
-
-  onCancelModalClose() {
-    this.showCancelModal = false;
-  }
-
-  onCancelModalConfirm() {
-    if (this.reserveStatus === 'canceled') {
-      // Descancelar - volta ao status anterior
-      this.reserveStatus = this.previousStatus || 'pending';
-      console.log('Reserva descancelada, voltando para:', this.reserveStatus);
-    } else {
-      // Cancelar - guarda o status atual e muda para canceled
-      this.previousStatus = this.reserveStatus;
-      this.reserveStatus = 'canceled';
-      console.log('Reserva cancelada');
-    }
-    this.showCancelModal = false;
-    // TODO: Implementar lógica de cancelamento/descancelamento no backend
-  }
-
-  onCancelModalCancel() {
-    this.showCancelModal = false;
-  }
-
   get isCanceled(): boolean {
     return this.reserveStatus === 'canceled';
-  }
-
-  get cancelButtonText(): string {
-    return this.isCanceled ? 'Descancelar' : 'Cancelar';
-  }
-
-  get cancelModalTitle(): string {
-    return this.isCanceled ? 'Descancelar reserva?' : 'Cancelar reserva?';
-  }
-
-  get cancelModalSubtitle(): string {
-    return this.isCanceled
-      ? 'Tem certeza que deseja<br>descancelar esta reserva?'
-      : 'Tem certeza que deseja<br>cancelar esta reserva?';
   }
 
   get canEdit(): boolean {
@@ -182,13 +164,54 @@ export class ReserveDetailsComponent implements OnInit {
     return this.reserveStatus === 'pending';
   }
 
+  onEdit() {
+    this.navCtrl.navigateForward('/reserves/reserve-edit', {
+      queryParams: {
+        id: this.reserveId,
+        title: this.reserveTitle,
+        status: this.reserveStatus
+      }
+    });
+  }
+
+  onContact() {
+    // TODO: abrir whatsapp com número do buffet (precisa vir do backend ou theme.json)
+    console.log('Entrar em contato via WhatsApp');
+  }
+
+  onCancel() {
+    this.showCancelModal = true;
+  }
+
+  onCancelModalClose() {
+    this.showCancelModal = false;
+  }
+
+  onCancelModalCancel() {
+    this.showCancelModal = false;
+  }
+
+  onCancelModalConfirm() {
+    this.showCancelModal = false;
+
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.reservationsApi.cancel(this.reserveId, user.id).subscribe({
+        next: (r) => {
+          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+          this.loadReserve();
+        },
+        error: (err) => console.error('Erro ao cancelar reserva', err)
+      })
+    );
+  }
+
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromOrder: 'true'
-        }
+        queryParams: { name: item.title, fromOrder: 'true' }
       });
     }
   }
@@ -196,12 +219,21 @@ export class ReserveDetailsComponent implements OnInit {
   onServiceItemClick(item: ServiceItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromOrder: 'true'
-        }
+        queryParams: { name: item.title, fromOrder: 'true' }
       });
     }
+  }
+
+  private formatDatePtBr(iso: string): string {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    if (!y || !m || !d) return iso;
+    return `${d}/${m}/${y}`;
+  }
+
+  private formatTimePtBr(t: string): string {
+    if (!t) return '';
+    return t.length >= 5 ? `${t.substring(0, 5)} horas` : t;
   }
 }
 

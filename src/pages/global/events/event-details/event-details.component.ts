@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
+import { Subscription } from 'rxjs';
+
 import {
   ModelPageComponent,
   DefaultItemCardComponent,
@@ -16,7 +17,13 @@ import {
   CompletedStatusComponent,
   ConfirmationModalComponent
 } from '../../../../shared/ui/templates/exports';
+
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { EventoService } from '../../../../features/evento/api/evento.api.service';
+import { ReservationsApiService } from '../../../../features/reservation/api/reservations-api.service';
+import { mapEventoStatusToUi } from '../../../../features/evento/model/evento.models';
+import {SessionService} from "../../../../shared/services/session.service";
+import {mapReservaStatusToUi, UiStatus} from "../../../../features/cliente-profile/model/cliente-profile.model";
 
 interface MenuItem {
   id?: number;
@@ -55,58 +62,129 @@ interface ServiceItem {
   ],
   host: { class: 'ion-page' }
 })
-export class EventDetailsComponent implements OnInit {
-  eventTitle: string = '';
-  eventStatus: string = '';
-  previousStatus: string = ''; // Armazena o status anterior ao cancelamento
-  showCancelModal: boolean = false; // Controla a exibição do modal de cancelamento
+export class EventDetailsComponent implements OnInit, OnDestroy {
+  eventId = 0;
+  reservaId = 0;
 
-  // Dados mockados
-  date: string = '12/09/2025';
-  budgetValue: string = 'R$ 5.000,00';
-  description: string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.';
-  address: string = 'Rua Joaquim Justino, 39, Centro, Urutaí, Goiás, 7579000';
-  time: string = '19:00 horas';
-  peopleCount: string = '15 pessoas';
+  eventTitle = 'Nome do Evento';
+  eventStatus: 'pending' | 'approved' | 'canceled' | 'completed' = 'pending';
 
-  menuItems: MenuItem[] = [
-    {
-      id: 1,
-      title: 'Bolo de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
+  reserveTitle: string = 'Reserva';
+  reserveStatus: UiStatus = 'pending';
 
-  services: ServiceItem[] = [
-    {
-      id: 1,
-      title: 'Decoração de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
+  showCancelModal = false;
+
+  date = '';
+  budgetValue = '';
+  description = '';
+  address = '';
+  time = '';
+  peopleCount = '';
+
+  menuItems: MenuItem[] = [];
+  services: ServiceItem[] = [];
 
   secondaryColor$ = this.themeService.secondaryColor$;
+
+  private subs = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
     private location: Location,
     private themeService: ThemeService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private eventoApi: EventoService,
+    private reservasApi: ReservationsApiService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.eventTitle = params['title'] || 'Nome do Evento';
-      this.eventStatus = params['status'] || '';
-      // Armazena o status inicial apenas se não for cancelado
-      if (this.eventStatus !== 'canceled') {
-        this.previousStatus = this.eventStatus;
-      }
-    });
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        this.eventId = Number(params['id'] ?? 0);
+        this.reservaId = Number(params['reservaId'] ?? 0);
+
+        if (this.eventId) this.loadEvento();
+        if (this.reservaId) this.loadReserve();
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private loadEvento() {
+    this.subs.add(
+      this.eventoApi.getById(this.eventId).subscribe({
+        next: (ev) => {
+          this.eventTitle = ev.nome || `Evento #${ev.id}`;
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+
+          this.budgetValue = ev.valor != null && ev.valor !== ''
+            ? `R$ ${ev.valor}`
+            : '';
+
+          if (ev.inicio) {
+            this.date = this.formatDatePtBr(ev.inicio);
+            this.time = this.formatTimePtBr(ev.inicio);
+          }
+        },
+        error: (err) => console.error('Erro ao carregar evento', err)
+      })
+    );
+  }
+
+  private loadReserve() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.reservasApi.getById(this.reservaId, user.id).subscribe({
+        next: (r) => {
+          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+
+          this.date = this.formatDatePtBr(r.dataDesejada);
+          this.time = this.formatTimePtBr(r.horarioDesejado);
+          this.peopleCount = `${r.qtdPessoas} pessoa${r.qtdPessoas === 1 ? '' : 's'}`;
+
+          this.reserveTitle = this.reserveTitle || `Reserva #${r.id}`;
+
+          this.description = r.observacoes || '';
+
+          this.address = r.endereco
+            ? this.formatAddress(r.endereco)
+            : '';
+
+          this.menuItems = (r.comidas ?? []).map(c => ({
+            id: c.id,
+            title: c.nome,
+            description: c.descricao,
+            imageUrl: '',
+            quantity: 1
+          }));
+
+          this.services = (r.servicos ?? []).map(s => ({
+            id: s.id,
+            title: s.nome,
+            description: s.descricao,
+            imageUrl: '',
+            quantity: 1
+          }));
+        },
+        error: (err) => console.error('Erro ao carregar reserva', err)
+      })
+    );
+  }
+
+  private formatDatePtBr(isoDateTime: string) {
+    const d = new Date(isoDateTime);
+    return d.toLocaleDateString('pt-BR');
+  }
+
+  private formatTimePtBr(isoDateTime: string) {
+    const d = new Date(isoDateTime);
+    return `${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} horas`;
   }
 
   onBackClick() {
@@ -114,23 +192,21 @@ export class EventDetailsComponent implements OnInit {
   }
 
   onEdit() {
-    console.log('Editar evento');
     this.navCtrl.navigateForward('/events/event-edit', {
       queryParams: {
-        id: this.route.snapshot.queryParams['id'] || '',
+        id: this.eventId,
         title: this.eventTitle,
-        status: this.eventStatus
+        status: this.eventStatus,
+        reservaId: this.reservaId
       }
     });
   }
 
   onContact() {
-    console.log('Entrar em contato via WhatsApp');
-    // TODO: Abrir WhatsApp com o contato do buffet
+    // TODO: abrir WhatsApp com o contato do buffet
   }
 
   onCancel() {
-    // Mostra o modal de confirmação
     this.showCancelModal = true;
   }
 
@@ -139,18 +215,8 @@ export class EventDetailsComponent implements OnInit {
   }
 
   onCancelModalConfirm() {
-    if (this.eventStatus === 'canceled') {
-      // Descancelar - volta ao status anterior
-      this.eventStatus = this.previousStatus || 'pending';
-      console.log('Evento descancelado, voltando para:', this.eventStatus);
-    } else {
-      // Cancelar - guarda o status atual e muda para canceled
-      this.previousStatus = this.eventStatus;
-      this.eventStatus = 'canceled';
-      console.log('Evento cancelado');
-    }
+    // TODO: ligar com endpoint de cancelar evento (quando existir)
     this.showCancelModal = false;
-    // TODO: Implementar lógica de cancelamento/descancelamento no backend
   }
 
   onCancelModalCancel() {
@@ -186,10 +252,7 @@ export class EventDetailsComponent implements OnInit {
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromOrder: 'true'
-        }
+        queryParams: { name: item.title, fromOrder: 'true' }
       });
     }
   }
@@ -197,12 +260,20 @@ export class EventDetailsComponent implements OnInit {
   onServiceItemClick(item: ServiceItem) {
     if (item.id) {
       this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromOrder: 'true'
-        }
+        queryParams: { name: item.title, fromOrder: 'true' }
       });
     }
   }
-}
 
+  private formatAddress(e: any): string {
+    const parts = [
+      `${e.rua ?? ''}${e.numero ? ', ' + e.numero : ''}`.trim(),
+      e.bairro,
+      `${e.cidade ?? ''}${e.estado ? ', ' + e.estado : ''}`.trim(),
+      e.cep,
+      e.complemento
+    ].filter(Boolean);
+
+    return parts.join(' - ');
+  }
+}

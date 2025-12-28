@@ -2,28 +2,25 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
 import {
-  ModelPageComponent,
   ClientNavbarComponent,
-  LogoutCircleComponent,
-  EditCircleComponent,
   ConfirmationModalComponent,
-  ProfilePlaceholderComponent,
-  ProfileListItemComponent
+  EditCircleComponent,
+  LogoutCircleComponent,
+  ModelPageComponent,
+  ProfileListItemComponent,
+  ProfilePlaceholderComponent
 } from '../../../shared/ui/templates/exports';
 import {NavController} from '@ionic/angular/standalone';
-import { ThemeService } from '../../../shared/services/theme.service';
-import { SessionService } from '../../../shared/services/session.service';
-import { OrderService } from '../../../shared/services/order.service';
-
-interface ReserveItem {
-  title: string;
-  status: 'pending' | 'approved' | 'canceled' | 'completed';
-}
-
-interface EventItem {
-  title: string;
-  status: 'pending' | 'approved' | 'canceled' | 'completed';
-}
+import {ThemeService} from '../../../shared/services/theme.service';
+import {SessionService} from '../../../shared/services/session.service';
+import {OrderService} from '../../../shared/services/order.service';
+import {ReservationsApiService} from "../../../features/reservation/api/reservations-api.service";
+import {Subscription} from "rxjs";
+import {
+  EventItem,
+  mapReservaStatusToUi,
+  ReserveItem
+} from "../../../features/cliente-profile/model/cliente-profile.model";
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +38,7 @@ interface EventItem {
     ProfilePlaceholderComponent,
     ProfileListItemComponent
   ],
-  host: { class: 'ion-page' }
+  host: {class: 'ion-page'}
 })
 export class ProfileComponent implements OnInit {
   primaryColor$ = this.themeService.primaryColor$;
@@ -56,55 +53,76 @@ export class ProfileComponent implements OnInit {
 
   showLogoutModal = false;
 
-  reserves: ReserveItem[] = [
-    { title: 'Casamento', status: 'pending' },
-    { title: 'Aniversário', status: 'approved' },
-    { title: 'Confraternização', status: 'canceled' }
-  ];
+  reserves: ReserveItem[] = [];
+  events: EventItem[] = [];
 
-  events: EventItem[] = [
-    { title: 'Casamento', status: 'pending' },
-    { title: 'Chá Revelação', status: 'approved' },
-    { title: 'Aniversário', status: 'completed' },
-    { title: 'Confraternização', status: 'canceled' }
-  ];
+  private subs = new Subscription();
 
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
     private sessionService: SessionService,
-    private orderService: OrderService
-  ) {}
+    private orderService: OrderService,
+    private reservationsApi: ReservationsApiService,
+  ) {
+  }
 
   ngOnInit() {
-    // Inscrever no observable do carrinho
-    this.orderService.orderItems$.subscribe(() => {
-      this.cartItemCount = this.orderService.getTotalItems();
-    });
+    this.subs.add(
+      this.orderService.orderItems$.subscribe(() => {
+        this.cartItemCount = this.orderService.getTotalItems();
+      })
+    );
+
+    this.loadUserData();
+    this.loadReservesAndEvents();
   }
 
-  /**
-   * Ionic lifecycle: executado toda vez que a página está prestes a ser exibida
-   * Usado para recarregar os dados do usuário quando voltar de profile-edit
-   */
   ionViewWillEnter() {
     this.loadUserData();
+    this.loadReservesAndEvents();
   }
 
-  /**
-   * Carrega os dados do usuário da sessão
-   */
   private loadUserData() {
     const user = this.sessionService.getUser();
     if (user) {
       this.userName = user.nome || 'Nome';
       this.userEmail = user.email || 'email@gmail.com';
-      // Formatar telefone ao carregar
       this.userPhone = this.formatPhone(user.telefone || '');
-      // TODO: Integrar com backend - user.profileImage ou user.fotoPerfil
-      this.userProfileImage = null; // Mockado: null = sem imagem, mostra placeholder
-      // Exemplo para quando integrar: this.userProfileImage = user.fotoPerfil || null;
+      this.userProfileImage = null;
     }
+  }
+
+  private loadReservesAndEvents() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.reservationsApi.listMine(user.id, {page: 0, size: 50}).subscribe({
+        next: (page) => {
+          const content = page.content ?? [];
+
+          this.reserves = content.slice(0, 3).map(r => ({
+            id: r.id,
+            title: `Reserva #${r.id}`,
+            status: mapReservaStatusToUi(r.statusReserva)
+          }));
+
+          const events = content
+            .filter(r => !!r.eventoId)
+            .slice(0, 4)
+            .map(r => ({
+              id: r.eventoId as number,
+              reservaId: r.id,
+              title: `Evento da Reserva #${r.id}`,
+              status: mapReservaStatusToUi(r.statusReserva)
+            }));
+
+          this.events = events;
+        },
+        error: (err) => console.error('Erro ao carregar reservas', err)
+      })
+    );
   }
 
   /**
@@ -164,16 +182,14 @@ export class ProfileComponent implements OnInit {
   }
 
   onReserveClick(reserve: ReserveItem) {
-    console.log('Reserve clicked:', reserve);
     this.navCtrl.navigateForward('/reserves/reserve-details', {
-      queryParams: { title: reserve.title, status: reserve.status }
+      queryParams: {id: reserve.id}
     });
   }
 
   onEventClick(event: EventItem) {
-    console.log('Event clicked:', event);
     this.navCtrl.navigateForward('/events/event-details', {
-      queryParams: { title: event.title, status: event.status }
+      queryParams: {id: event.id, reservaId: event.reservaId}
     });
   }
 

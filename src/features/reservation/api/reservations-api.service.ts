@@ -1,4 +1,3 @@
-// features/reservations/api/reservations-api.service.ts
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {ApiClient} from "../../../shared/api/api.client";
@@ -10,11 +9,11 @@ export class ReservationsApiService {
   private api = inject(ApiClient);
 
   create(clienteId: number, body: ReservaRequest): Observable<ReservaResponse> {
-    return this.api.post<ReservaResponse>('/reservas', body, { clienteId });
+    return this.api.post<ReservaResponse>('/clientes/reservas', body, { clienteId });
   }
 
-  getById(id: number): Observable<ReservaResponse> {
-    return this.api.get<ReservaResponse>(`/reservas/${id}`);
+  getById(id: number, clienteId: number): Observable<ReservaResponse> {
+    return this.api.get<ReservaResponse>(`/clientes/reservas/${id}`, { clienteId });
   }
 
   listMine(
@@ -27,7 +26,7 @@ export class ReservationsApiService {
       size: opts?.size ?? 20,
       sort: opts?.sort ?? 'dataCriacao,DESC'
     };
-    return this.api.get<SpringPage<ReservaResponse>>('/reservas/me', params);
+    return this.api.get<SpringPage<ReservaResponse>>('/clientes/reservas/me', params);
   }
 
   updateItems(
@@ -35,11 +34,11 @@ export class ReservationsApiService {
     clienteId: number,
     payload: { comidaIds?: number[]; servicoIds?: number[] }
   ): Observable<ReservaResponse> {
-    return this.api.put<ReservaResponse>(`/reservas/${id}/itens`, payload, { clienteId });
+    return this.api.put<ReservaResponse>(`/clientes/reservas/${id}/itens`, payload, { clienteId });
   }
 
   cancel(id: number, clienteId: number, motivo?: string): Observable<ReservaResponse> {
     const body = motivo ? { motivo } : {};
-    return this.api.put<ReservaResponse>(`/reservas/${id}/cancelar`, body, { clienteId });
+    return this.api.put<ReservaResponse>(`/clientes/reservas/${id}/cancelar`, body, { clienteId });
   }
 }

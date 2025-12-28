@@ -102,7 +102,6 @@ export class EventsComponent implements OnInit {
   private applyFilters() {
     let filtered = [...this.events];
 
-    // Filtrar por busca
     if (this.searchQuery) {
       const term = this.searchQuery.toLowerCase();
       filtered = filtered.filter(e =>
@@ -111,7 +110,6 @@ export class EventsComponent implements OnInit {
       );
     }
 
-    // Filtrar por status
     if (this.selectedStatus !== 'todos') {
       filtered = filtered.filter(e => e.status === this.selectedStatus);
     }

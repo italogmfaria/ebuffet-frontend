@@ -13,7 +13,7 @@ import {
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ValidationService } from '../../../../shared/services/validation.service';
 import { ToastService } from '../../../../shared/services/toast.service';
-import {ReservationBuilderService} from "../../../../shared/services/reservation.builder.service";
+import {ReservationFlowService} from "../../../../shared/services/reservation-flow.service";
 
 @Component({
   selector: 'app-order-details',
@@ -46,9 +46,9 @@ export class OrderDetailsComponent implements OnInit {
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
-    private reservationBuilder: ReservationBuilderService,
     private validationService: ValidationService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private reservationFlow: ReservationFlowService
   ) {}
 
   ngOnInit() {}
@@ -96,12 +96,10 @@ export class OrderDetailsComponent implements OnInit {
       return;
     }
 
-    this.reservationBuilder.captureCartSnapshot();
-
-    this.reservationBuilder.setDetails({
-      nome: this.reservationName.trim(),
-      descricao: this.reservationDescription.trim(),
-      qtdPessoas: qtd,
+    this.reservationFlow.setDetails({
+      nome: this.reservationName,
+      descricao: this.reservationDescription,
+      qtdPessoas: Number(this.peopleCount),
       horarioDesejado: this.desiredTime,
       dataDesejada: this.desiredDate
     });
