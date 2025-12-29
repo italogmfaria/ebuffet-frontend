@@ -43,6 +43,7 @@
 
 // Cards componentes
 export { DefaultItemCardComponent } from './cards/default-item-card/default-item-card.component';
+export { ManageItemCardComponent } from './cards/manage-item-card/manage-item-card.component';
 export { OrderItemCardComponent } from './cards/order-item-card/order-item-card.component';
 export { ProfileListItemComponent } from './cards/profile-list-item/profile-list-item.component';
 export { EventReserveCardComponent } from './cards/event-reserve-card/event-reserve-card.component';
@@ -53,6 +54,7 @@ export { NotificationCardComponent } from './cards/notification-card/notificatio
   export { CalendarModalComponent } from './modals/calendar-modal/calendar-modal.component';
   export { SelectModalComponent } from './modals/select-modal/select-modal.component';
   export { NotificationModalComponent } from './modals/notification-modal/notification-modal.component';
+  export { BudgetModalComponent } from './modals/budget-modal/budget-modal.component';
 
 
 // Navbars componentes
@@ -71,6 +73,7 @@ export { NotificationCardComponent } from './cards/notification-card/notificatio
   export { CalendarInputComponent } from './inputs/calendar-input/calendar-input.component';
   export { SelectedInputComponent } from './inputs/selected-input/selected-input.component';
   export { TextareaInputComponent } from './inputs/textarea-input/textarea-input.component';
+  export { BudgetInputComponent } from './inputs/budget-input/budget-input.component';
 
 // Squares componentes
 

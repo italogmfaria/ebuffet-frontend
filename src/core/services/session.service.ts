@@ -66,4 +66,21 @@ export class SessionService {
   public getUser(): any {
     return this.session.user;
   }
+
+  public getUserRoles(): string[] {
+    return this.session.user?.roles || [];
+  }
+
+  public hasRole(role: string): boolean {
+    const roles = this.getUserRoles();
+    return roles.includes(role);
+  }
+
+  public isAdmin(): boolean {
+    return this.hasRole('ADMIN') || this.hasRole('BUFFET');
+  }
+
+  public isClient(): boolean {
+    return this.hasRole('CLIENTE');
+  }
 }

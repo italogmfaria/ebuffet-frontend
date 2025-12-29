@@ -1,0 +1,19 @@
+<div class="input-container">
+  <div class="label-container">
+    <label *ngIf="label" class="field-label">{{ label }}</label>
+  </div>
+  <ion-item lines="none" class="input-outline">
+    <span class="currency-prefix">R$</span>
+    <ion-input
+      type="text"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="displayValue"
+      inputmode="decimal"
+      (ionInput)="onInputChange($event)"
+      (ionFocus)="onFocus($event)"
+      (ionBlur)="onBlur()">
+    </ion-input>
+  </ion-item>
+</div>
+

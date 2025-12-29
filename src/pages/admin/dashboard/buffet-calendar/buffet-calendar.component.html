@@ -1,0 +1,24 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h4 class="calendar-title">Calendário</h4>
+    <app-detail-bagde [text]="'EVENTOS'"></app-detail-bagde>
+  </div>
+
+  <div class="calendar-wrapper"
+       [style.--primary-color]="primaryColor$ | async"
+       [style.--secondary-color]="secondaryColor$ | async"
+       [style.--accent-color]="accentColor$ | async">
+    <ion-datetime
+      presentation="date"
+      [(ngModel)]="selectedDate"
+      [highlightedDates]="highlightedDates"
+      [showDefaultButtons]="false"
+      [min]="minDate"
+      [max]="maxDate"
+      locale="pt-BR"
+      [readonly]="true"
+    >
+    </ion-datetime>
+  </div>
+</div>
+

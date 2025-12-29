@@ -12,6 +12,14 @@
         </div>
       </div>
 
+      <!-- Client Section (only for admin) -->
+      <div class="section" *ngIf="isAdmin">
+        <h3 class="section-title">Cliente:</h3>
+        <p class="section-text">{{ clientName || 'Carregando...' }}</p>
+        <p class="section-text" *ngIf="clientEmail">{{ clientEmail }}</p>
+        <p class="section-text" *ngIf="clientPhone">{{ clientPhone }}</p>
+      </div>
+
       <!-- Data Section -->
       <div class="section">
         <h3 class="section-title">Data:</h3>
@@ -76,11 +84,20 @@
 
       <!-- Botões de Ação -->
       <div class="actions-container">
+        <!-- Cliente: Editar reserva -->
         <app-primary-button
           *ngIf="canEdit"
           [text]="'Editar'"
           [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
           (buttonClick)="onEdit()">
+        </app-primary-button>
+
+        <!-- Admin: Aprovar reserva -->
+        <app-primary-button
+          *ngIf="canApprove"
+          [text]="'Aprovar'"
+          [customColor]="'#10b981'"
+          (buttonClick)="onApprove()">
         </app-primary-button>
 
         <app-whatsapp-button
@@ -89,7 +106,7 @@
         </app-whatsapp-button>
 
         <app-cancel-button
-          *ngIf="canCancel"
+          *ngIf="!isCanceled && canCancel"
           [text]="'Cancelar'"
           (buttonClick)="onCancel()">
         </app-cancel-button>
@@ -117,4 +134,13 @@
   (confirm)="onCancelModalCancel()"
   (cancel)="onCancelModalConfirm()">
 </app-confirmation-modal>
+
+<app-budget-modal
+  *ngIf="showApproveModal"
+  [title]="'Aprovar Reserva'"
+  [subtitle]="'Defina o valor orçado para aprovar esta reserva'"
+  (close)="onApproveModalClose()"
+  (confirm)="onApproveModalConfirm($event)"
+  (cancel)="onApproveModalCancel()">
+</app-budget-modal>
 

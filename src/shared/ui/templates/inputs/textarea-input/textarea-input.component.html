@@ -1,5 +1,8 @@
 <div class="input-container">
-  <label *ngIf="label" class="field-label">{{ label }}</label>
+  <div class="label-container">
+    <label *ngIf="label" class="field-label">{{ label }}</label>
+    <span *ngIf="showCounter && maxlength" class="character-counter">{{ value.length || 0 }}/{{ maxlength }}</span>
+  </div>
   <ion-item lines="none" class="textarea-outline">
     <ion-textarea
       [placeholder]="placeholder"
@@ -12,8 +15,5 @@
       (ionBlur)="onBlur()">
     </ion-textarea>
   </ion-item>
-  <div *ngIf="showCounter && maxlength" class="character-counter">
-    {{ value.length || 0 }}/{{ maxlength }}
-  </div>
 </div>
 

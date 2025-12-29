@@ -18,6 +18,7 @@ export class SelectModalComponent {
   @Input() options: SelectOption[] = [];
   @Input() selectedValue: string = '';
   @Output() close = new EventEmitter<void>();
+  @Output() select = new EventEmitter<string>();
   @Output() optionSelected = new EventEmitter<string>();
 
   onClose() {
@@ -25,6 +26,7 @@ export class SelectModalComponent {
   }
 
   onSelectOption(value: string) {
+    this.select.emit(value);
     this.optionSelected.emit(value);
   }
 

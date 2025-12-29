@@ -16,6 +16,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { ValidationService } from '../../../core/services/validation.service';
 import {AuthApi} from "../../../features/auth/api/auth.api";
 import {firstValueFrom} from "rxjs";
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -129,6 +130,7 @@ export class RegisterComponent implements OnInit {
       email,
       telefone: phone,
       senha: password,
+      buffetId: environment.buffetId
     };
 
     try {

@@ -76,30 +76,24 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const isAuthenticated = await this.authenticateUser(email, password);
+    const loginResult = await this.authService.login(email, password, this.sessionService);
 
-    if (!isAuthenticated) {
-      await this.toastService.error('E-mail ou senha incorretos. Tente novamente.');
-      return;
-    }
-
-    const ok = await this.authService.login(email, password, this.sessionService);
-    if (!ok) {
+    if (!loginResult.success) {
       await this.toastService.error('E-mail ou senha incorretos. Tente novamente.');
       return;
     }
 
     try {
-      await this.navCtrl.navigateRoot('/client/home', { animated: true, skipLocationChange: false });
-    } catch {
-      await this.toastService.error('Erro ao salvar sessão. Tente novamente.');
+      if (loginResult.roles?.includes('BUFFET') || loginResult.roles?.includes('ADMIN')) {
+        await this.navCtrl.navigateRoot('/admin/dashboard', { animated: true });
+      } else {
+        await this.navCtrl.navigateRoot('/client/home', { animated: true });
+      }
+    } catch (error) {
+      await this.toastService.error('Erro ao redirecionar. Tente novamente.');
     }
   }
 
-  private async authenticateUser(email: string, password: string): Promise<boolean> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return true;
-  }
 
   goToForgotPassword(event: any) {
     event.target.blur();

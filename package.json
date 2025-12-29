@@ -17,7 +17,7 @@
     "setup:android": "ts-node --project tsconfig.scripts.json scripts/setup-android-buffet.ts",
     "android:cleanweb": "cmd /C if exist android\\app\\src\\main\\assets\\public rmdir /S /Q android\\app\\src\\main\\assets\\public",
     "android:run": "npm run setup:android && npm run build:prod && npm run cap:sync && npx cap run android",
-    "android:open": "npm run setup:android && ionic build && npm run cap:copy && npm run cap:sync && npx cap open android",
+    "android:open": "npm run setup:android && ng build && npm run cap:copy && npm run cap:sync && npx cap open android",
     "android:apk:debug": "npm run setup:android && npm run build:prod && npm run cap:sync && cd android && gradlew.bat assembleDebug",
     "android:apk:release": "npm run setup:android && npm run build:prod && npm run cap:sync && cd android && gradlew.bat assembleRelease",
     "android:aab:release": "npm run setup:android && npm run build:prod && npm run cap:sync && cd android && gradlew.bat bundleRelease"

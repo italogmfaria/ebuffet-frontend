@@ -31,12 +31,22 @@ export class AppComponent implements OnInit {
       ]);
 
       const isAuthenticated = this.sessionService.isAuthenticated();
-      const targetRoute = isAuthenticated ? '/client/home' : '/welcome';
 
-      await this.navCtrl.navigateRoot(targetRoute, {
-        animated: true,
-        skipLocationChange: false
-      });
+      if (!isAuthenticated) {
+        await this.navCtrl.navigateRoot('/welcome', { animated: true, skipLocationChange: false });
+      } else {
+        const user = this.sessionService.getUser();
+        const roles = user?.roles || [];
+
+        const targetRoute = (roles.includes('BUFFET') || roles.includes('ADMIN'))
+          ? '/admin/dashboard'
+          : '/client/home';
+
+        await this.navCtrl.navigateRoot(targetRoute, {
+          animated: true,
+          skipLocationChange: false
+        });
+      }
     } catch (e) {
       await this.navCtrl.navigateRoot('/welcome', { animated: true });
     } finally {

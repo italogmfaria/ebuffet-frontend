@@ -8,10 +8,10 @@ const ACCESS_TOKEN_KEY = 'access_token';
 export class AuthService {
   private api = inject(AuthApi);
 
-  async login(email: string, password: string, sessionService: { login: (user?: any) => void }): Promise<boolean> {
+  async login(email: string, password: string, sessionService: { login: (user?: any) => void }): Promise<{ success: boolean; roles?: string[] }> {
     try {
-      const { token } = await firstValueFrom(this.api.login({ username: email, password }));
-      if (!token) return false;
+      const { token, roles } = await firstValueFrom(this.api.login({ username: email, password }));
+      if (!token) return { success: false };
 
       localStorage.setItem(ACCESS_TOKEN_KEY, token);
 
@@ -25,10 +25,10 @@ export class AuthService {
         roles: me.roles
       });
 
-      return true;
+      return { success: true, roles: me.roles };
     } catch {
       try { localStorage.removeItem(ACCESS_TOKEN_KEY); } catch {}
-      return false;
+      return { success: false };
     }
   }
 

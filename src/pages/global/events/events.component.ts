@@ -10,6 +10,8 @@ import {
   DefaultStatusComponent
 } from "../../../shared/ui/templates/exports";
 import { ThemeService } from '../../../core/services/theme.service';
+import {NavigationService} from "../../../core/services/navigation.service";
+import {TitleService} from "../../../core/services/title.service";
 
 interface Event {
   id: number;
@@ -38,16 +40,20 @@ export class EventsComponent implements OnInit {
   isLoading = false;
   searchQuery = '';
   selectedStatus = 'todos';
+  pageTitle = '';
 
   events: Event[] = [];
   filteredEvents: Event[] = [];
 
   constructor(
     private navCtrl: NavController,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private navigationService: NavigationService,
+    private titleService: TitleService
   ) { }
 
   ngOnInit() {
+    this.pageTitle = this.titleService.getEventsTitle();
     this.loadMockEvents();
   }
 
@@ -83,10 +89,6 @@ export class EventsComponent implements OnInit {
       }
     ];
     this.applyFilters();
-  }
-
-  onBackClick() {
-    this.navCtrl.navigateBack('/client/profile');
   }
 
   onSearch(query: string) {
@@ -125,5 +127,9 @@ export class EventsComponent implements OnInit {
 
   onEventOpen(event: Event) {
     this.onEventClick(event);
+  }
+
+  async onBackClick() {
+    await this.navigationService.navigateToHome();
   }
 }

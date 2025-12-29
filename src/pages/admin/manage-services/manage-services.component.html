@@ -1,0 +1,74 @@
+<app-model-page [title]="'Gerenciar Serviços'" class="ion-page" (backClick)="onBackClick()">
+  <div class="manage-services-page">
+    <form class="manage-services-form">
+      <app-search-input
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Pesquise serviços'"
+        name="service-search"
+        (searchChange)="onSearch($event)">
+      </app-search-input>
+      <app-default-categories
+        [selectedCategoryId]="selectedCategory"
+        (categorySelected)="onCategorySelect($event)">
+      </app-default-categories>
+
+      <!-- Loading spinner -->
+      <app-loading-spinner
+        *ngIf="isLoading"
+        [color]="(secondaryColor$ | async) || '#8b5cf6'"
+        size="medium"
+        text="Carregando serviços...">
+      </app-loading-spinner>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && displayedServices.length === 0" class="empty-section">
+        <p class="empty-text">Nenhum serviço encontrado</p>
+      </div>
+
+      <!-- Services grid -->
+      <div *ngIf="!isLoading && displayedServices.length > 0" class="services-grid">
+        <app-manage-item-card
+          *ngFor="let service of displayedServices"
+          [title]="service.nome"
+          [description]="service.descricao"
+          [imageUrl]="service.imageUrl || ''"
+          (cardClick)="onServiceClick(service)"
+          (editClick)="onEditService(service)"
+          (deleteClick)="onDeleteService(service)">
+        </app-manage-item-card>
+      </div>
+
+      <!-- Infinite scroll -->
+      <ion-infinite-scroll
+        *ngIf="displayedServices.length > 0"
+        threshold="100px"
+        (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content
+          loadingSpinner="bubbles"
+          loadingText="Carregando mais serviços...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </form>
+
+    <!-- Add button -->
+    <app-add-circle
+      size="large"
+      [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+      (buttonClick)="onAddService()">
+    </app-add-circle>
+  </div>
+</app-model-page>
+
+<app-confirmation-modal
+  *ngIf="showDeleteModal"
+  [title]="'Excluir Serviço?'"
+  [subtitle]="'Tem certeza que deseja excluir<br>&quot;' + (serviceToDelete?.nome || '') + '&quot;?'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onDeleteModalClose()"
+  (confirm)="onDeleteModalConfirm()"
+  (cancel)="onDeleteModalCancel()">
+</app-confirmation-modal>
+

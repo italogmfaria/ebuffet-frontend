@@ -1,8 +1,51 @@
-<app-form-page title="Dashboard" class="ion-page" backRoute="/welcome">
-  <div class="home-page">
-    <form class="home-form">
-      <ion-grid>
-      </ion-grid>
-    </form>
+<app-form-page title="Administração do Buffet" class="ion-page" (backClick)="onBackClick()">
+  <div class="dashboard-content">
+    <!-- Grid de Cards -->
+    <ion-grid class="cards-grid">
+      <ion-row>
+        <ion-col size="6" sizeMd="3">
+          <div class="admin-card" (click)="navigateToFoods()">
+            <ion-icon name="restaurant" class="card-icon"></ion-icon>
+            <p class="card-label">COMIDAS</p>
+          </div>
+        </ion-col>
+
+        <ion-col size="6" sizeMd="3">
+          <div class="admin-card" (click)="navigateToServices()">
+            <ion-icon name="balloon" class="card-icon"></ion-icon>
+            <p class="card-label">SERVIÇOS</p>
+          </div>
+        </ion-col>
+
+        <ion-col size="6" sizeMd="3">
+          <div class="admin-card" (click)="navigateToReserves()">
+            <ion-icon name="checkmark-circle" class="card-icon"></ion-icon>
+            <p class="card-label">RESERVAS</p>
+          </div>
+        </ion-col>
+
+        <ion-col size="6" sizeMd="3">
+          <div class="admin-card" (click)="navigateToEvents()">
+            <ion-icon name="star" class="card-icon"></ion-icon>
+            <p class="card-label">EVENTOS</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Seção Calendário -->
+    <app-buffet-calendar [eventDays]="eventDays"></app-buffet-calendar>
   </div>
 </app-form-page>
+
+<app-confirmation-modal
+  *ngIf="showExitModal"
+  [title]="'Deseja sair?'"
+  [subtitle]="'Você será redirecionado <br> para a tela inicial.'"
+  [icon]="'log-out'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (confirm)="onCancelExit()"
+  (cancel)="onConfirmExit()"
+  (close)="onCloseModal()"
+></app-confirmation-modal>

@@ -12,6 +12,14 @@
         </div>
       </div>
 
+      <!-- Client Section (only for admin) -->
+      <div class="section" *ngIf="isAdmin">
+        <h3 class="section-title">Cliente:</h3>
+        <p class="section-text">{{ clientName || 'Carregando...' }}</p>
+        <p class="section-text" *ngIf="clientEmail">{{ clientEmail }}</p>
+        <p class="section-text" *ngIf="clientPhone">{{ clientPhone }}</p>
+      </div>
+
       <!-- Data Section -->
       <div class="section">
         <h3 class="section-title">Data:</h3>
@@ -82,11 +90,28 @@
 
       <!-- Botões de Ação -->
       <div class="actions-container">
+        <!-- Cliente: Editar evento completo -->
         <app-primary-button
-          *ngIf="canEdit"
+          *ngIf="showEditEvent"
           [text]="'Editar'"
           [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
           (buttonClick)="onEdit()">
+        </app-primary-button>
+
+        <!-- Admin: Editar apenas valor orçado -->
+        <app-primary-button
+          *ngIf="showEditBudget"
+          [text]="'Editar Valor Orçado'"
+          [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+          (buttonClick)="onEditBudget()">
+        </app-primary-button>
+
+        <!-- Admin: Concluir evento -->
+        <app-primary-button
+          *ngIf="canComplete"
+          [text]="'Concluir'"
+          [customColor]="'#10b981'"
+          (buttonClick)="onComplete()">
         </app-primary-button>
 
         <app-whatsapp-button
@@ -124,3 +149,24 @@
   (cancel)="onCancelModalConfirm()">
 </app-confirmation-modal>
 
+<app-confirmation-modal
+  *ngIf="showCompleteModal"
+  [title]="'Concluir Evento?'"
+  [subtitle]="'Tem certeza que deseja<br>marcar este evento como concluído?'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onCompleteModalClose()"
+  (confirm)="onCompleteModalCancel()"
+  (cancel)="onCompleteModalConfirm()">
+</app-confirmation-modal>
+
+<app-budget-modal
+  *ngIf="showBudgetModal"
+  [title]="'Editar Valor Orçado'"
+  [subtitle]="'Defina o novo valor orçado para este evento'"
+  (close)="onBudgetModalClose()"
+  (confirm)="onBudgetModalConfirm($event)"
+  (cancel)="onBudgetModalCancel()">
+</app-budget-modal>

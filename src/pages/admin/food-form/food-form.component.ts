@@ -1,0 +1,259 @@
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import {
+  ModelPageComponent,
+  ConfirmationModalComponent,
+  TextInputComponent,
+  TextareaInputComponent,
+  SelectedInputComponent,
+  SelectModalComponent,
+  ImagePlaceholderComponent,
+  PrimaryButtonComponent, ImageCircleComponent
+} from '../../../shared/ui/templates/exports';
+import { NavController } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
+import { ThemeService } from '../../../core/services/theme.service';
+import { FoodsApiService } from '../../../features/foods/services/food.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { SelectOption } from '../../../shared/ui/templates/inputs/selected-input/selected-input.component';
+import { EnumCategoria, CategoriasLabels } from '../../../core/enums/categoria.enum';
+
+@Component({
+  selector: 'app-food-form',
+  templateUrl: './food-form.component.html',
+  styleUrls: ['./food-form.component.scss'],
+  standalone: true,
+  imports: [
+    IonicModule,
+    CommonModule,
+    FormsModule,
+    ModelPageComponent,
+    TextInputComponent,
+    TextareaInputComponent,
+    SelectedInputComponent,
+    SelectModalComponent,
+    ImagePlaceholderComponent,
+    PrimaryButtonComponent,
+    ConfirmationModalComponent,
+    ImageCircleComponent
+  ],
+  host: { class: 'ion-page' }
+})
+export class FoodFormComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  primaryColor$ = this.themeService.primaryColor$;
+  secondaryColor$ = this.themeService.secondaryColor$;
+  accentColor$ = this.themeService.accentColor$;
+
+  isEditMode = false;
+  foodId: number | null = null;
+  pageTitle = 'Nova Comida';
+
+  foodName = '';
+  foodDescription = '';
+  selectedCategory = '';
+  imagePreview: string | null = null;
+  selectedFile: File | null = null;
+
+  showDeleteModal = false;
+  showCategoryModal = false;
+  categoryOptions: SelectOption[] = [];
+
+  private subs = new Subscription();
+
+  constructor(
+    private navCtrl: NavController,
+    private route: ActivatedRoute,
+    private themeService: ThemeService,
+    private foodsApiService: FoodsApiService,
+    private toastService: ToastService
+  ) {
+    this.initializeCategoryOptions();
+  }
+
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.foodId = Number(id);
+      this.isEditMode = true;
+      this.pageTitle = 'Editar Comida';
+      this.loadFood(this.foodId);
+    }
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private initializeCategoryOptions() {
+    this.categoryOptions = [
+      { value: EnumCategoria.ALMOCO, label: CategoriasLabels[EnumCategoria.ALMOCO] },
+      { value: EnumCategoria.CAFE_DA_MANHA, label: CategoriasLabels[EnumCategoria.CAFE_DA_MANHA] },
+      { value: EnumCategoria.JANTAR, label: CategoriasLabels[EnumCategoria.JANTAR] },
+      { value: EnumCategoria.HAPPY_HOUR, label: CategoriasLabels[EnumCategoria.HAPPY_HOUR] }
+    ];
+  }
+
+  loadFood(id: number) {
+    const buffetIdSync = this.themeService.getBuffetIdSync();
+    if (buffetIdSync) {
+      this.fetchFood(buffetIdSync, id);
+      return;
+    }
+
+    this.subs.add(
+      this.themeService.buffetId$
+        .pipe(filter((buffetId): buffetId is number => buffetId !== null))
+        .subscribe(buffetId => this.fetchFood(buffetId, id))
+    );
+  }
+
+  private fetchFood(buffetId: number, id: number) {
+    this.subs.add(
+      this.foodsApiService.getById(buffetId, id).subscribe({
+        next: (food) => {
+          this.foodName = food.nome;
+          this.foodDescription = food.descricao;
+          this.selectedCategory = food.categoria;
+          this.imagePreview = food.imageUrl || null;
+        },
+        error: (err: any) => {
+          console.error('Erro ao carregar comida', err);
+          this.toastService.error('Não foi possível carregar os dados da comida.');
+          this.navCtrl.navigateBack('/buffet/foods');
+        }
+      })
+    );
+  }
+
+  onImageSelect() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.selectedFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onCategoryClick() {
+    this.showCategoryModal = true;
+  }
+
+  onCategoryModalClose() {
+    this.showCategoryModal = false;
+  }
+
+  onCategorySelect(value: string) {
+    this.selectedCategory = value;
+    this.showCategoryModal = false;
+  }
+
+  onBackClick() {
+    this.navCtrl.back();
+  }
+
+  onSubmit() {
+    if (!this.foodName || !this.foodDescription || !this.selectedCategory) {
+      this.toastService.warning('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    if (this.isEditMode && this.foodId) {
+      this.updateFood(this.foodId);
+    } else {
+      this.createFood();
+    }
+  }
+
+  private createFood() {
+    const buffetIdSync = this.themeService.getBuffetIdSync();
+    if (!buffetIdSync) {
+      this.toastService.error('Erro ao identificar buffet');
+      return;
+    }
+
+    // TODO: Implementar upload de imagem e criação no backend
+    console.log('Create food:', {
+      nome: this.foodName,
+      descricao: this.foodDescription,
+      categoria: this.selectedCategory,
+      image: this.selectedFile
+    });
+    this.toastService.success('Comida criada com sucesso!');
+    this.navCtrl.navigateBack('/buffet/foods');
+  }
+
+  private updateFood(id: number) {
+    const buffetIdSync = this.themeService.getBuffetIdSync();
+    if (!buffetIdSync) {
+      this.toastService.error('Erro ao identificar buffet');
+      return;
+    }
+
+    // TODO: Implementar upload de imagem e atualização no backend
+    console.log('Update food:', id, {
+      nome: this.foodName,
+      descricao: this.foodDescription,
+      categoria: this.selectedCategory,
+      image: this.selectedFile
+    });
+    this.toastService.success('Comida atualizada com sucesso!');
+    this.navCtrl.navigateBack('/buffet/foods');
+  }
+
+  onDeleteClick() {
+    this.showDeleteModal = true;
+  }
+
+  onDeleteModalClose() {
+    this.showDeleteModal = false;
+  }
+
+  onDeleteModalConfirm() {
+    this.showDeleteModal = false;
+  }
+
+  onDeleteModalCancel() {
+    if (this.isEditMode && this.foodId) {
+      this.deleteFood(this.foodId);
+    }
+    this.showDeleteModal = false;
+  }
+
+  private deleteFood(id: number) {
+    const buffetIdSync = this.themeService.getBuffetIdSync();
+    if (!buffetIdSync) {
+      this.toastService.error('Erro ao identificar buffet');
+      return;
+    }
+
+    this.subs.add(
+      this.foodsApiService.delete(buffetIdSync, id).subscribe({
+        next: () => {
+          this.toastService.success('Comida excluída com sucesso!');
+          this.navCtrl.navigateBack('/buffet/foods');
+        },
+        error: (err: any) => {
+          console.error('Erro ao excluir comida', err);
+          this.toastService.error('Não foi possível excluir a comida.');
+        }
+      })
+    );
+  }
+}
+

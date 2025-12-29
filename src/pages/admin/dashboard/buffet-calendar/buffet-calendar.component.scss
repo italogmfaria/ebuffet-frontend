@@ -1,0 +1,120 @@
+.calendar-container {
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 100%;
+
+    .calendar-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+  }
+
+  .calendar-wrapper {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  ion-datetime {
+    --background: transparent !important;
+    --ion-color-base: var(--secondary-color, var(--ion-color-secondary)) !important;
+    --ion-text-color: var(--secondary-color, var(--ion-color-secondary)) !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    height: auto;
+    font-family: 'Inter', sans-serif !important;
+    padding: 1.5rem !important;
+    box-sizing: border-box !important;
+    display: block !important;
+
+    & > * {
+      max-width: 100% !important;
+    }
+
+    // Dias com eventos destacados
+    ::part(calendar-day-highlighted) {
+      background: var(--secondary-color, var(--ion-color-secondary)) !important;
+      color: #ffffff !important;
+      border-radius: 50% !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    // Dias normais
+    ::part(calendar-day),
+    ::part(calendar-day-today) {
+      font-size: 1rem !important;
+      font-weight: 400 !important;
+      color: var(--ion-color-dark) !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    // Dias da semana (header)
+    ::part(calendar-day-of-week) {
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+      color: var(--ion-color-medium) !important;
+      opacity: 1 !important;
+      text-transform: capitalize !important;
+      padding: 0.5rem 0 !important;
+    }
+
+    // Botão do mês/ano
+    ::part(month-year-button) {
+      font-size: 1.125rem !important;
+      font-weight: 600 !important;
+      color: var(--ion-color-dark) !important;
+      background: transparent !important;
+    }
+
+    // Botões de navegação
+    ::part(calendar-next-button),
+    ::part(calendar-prev-button) {
+      color: var(--ion-color-medium) !important;
+      background: transparent !important;
+
+      &:hover {
+        color: var(--ion-color-dark) !important;
+      }
+    }
+
+    // Dias desabilitados (outros meses)
+    ::part(calendar-day-disabled) {
+      opacity: 0.3 !important;
+      color: var(--ion-color-medium-tint) !important;
+    }
+
+    // Hover nos dias
+    ::part(calendar-day):hover {
+      background: rgba(var(--ion-color-primary-rgb), 0.1) !important;
+      cursor: pointer;
+    }
+
+    // Today (dia atual)
+    ::part(calendar-day-today) {
+      border: 2px solid var(--primary-color, var(--ion-color-primary)) !important;
+      border-radius: 50% !important;
+    }
+  }
+}
+
+

@@ -74,20 +74,20 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
   private loadServiceDetails() {
     const buffetIdSync = this.themeService.getBuffetIdSync?.() ?? null;
     if (buffetIdSync) {
-      this.fetchDetails(this.serviceId);
+      this.fetchDetails(buffetIdSync, this.serviceId);
       return;
     }
 
     this.subs.add(
       this.themeService.buffetId$
         .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchDetails(this.serviceId))
+        .subscribe(buffetId => this.fetchDetails(buffetId, this.serviceId))
     );
   }
 
-  private fetchDetails(id: number) {
+  private fetchDetails(buffetId: number, id: number) {
     this.subs.add(
-      this.servicesApiService.getById(id).subscribe({
+      this.servicesApiService.getById(buffetId, id).subscribe({
         next: service => {
           this.serviceDetails = service;
           this.serviceName = service?.nome || this.serviceName;

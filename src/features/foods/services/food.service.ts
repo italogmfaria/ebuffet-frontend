@@ -11,6 +11,7 @@ export class FoodsApiService {
   private readonly basePath = '/comidas';
 
   listByBuffet(
+    buffetId: number,
     opts?: {
       categoria?: EnumCategoria;
       status?: EnumStatus;
@@ -28,21 +29,24 @@ export class FoodsApiService {
     if (opts?.status) params['status'] = opts.status;
 
     return this.api.get<SpringPage<ComidaResponse>>(
-      `${this.basePath}`,
+      this.basePath,
       params
     );
   }
 
-
-  getAll(): Observable<ComidaListDTO[]> {
-    return this.listByBuffet().pipe(
+  getAll(buffetId: number): Observable<ComidaListDTO[]> {
+    return this.listByBuffet(buffetId).pipe(
       map(page => page.content.map((c: ComidaResponse) => ({...c, imageUrl: undefined})))
     );
   }
 
-  getById(id: number): Observable<ComidaDetailDTO> {
+  getById(buffetId: number, id: number): Observable<ComidaDetailDTO> {
     return this.api
       .get<ComidaResponse>(`${this.basePath}/${id}`)
       .pipe(map(c => ({...c, imageUrl: undefined})));
+  }
+
+  delete(buffetId: number, id: number): Observable<void> {
+    return this.api.delete<void>(`${this.basePath}/${id}`);
   }
 }

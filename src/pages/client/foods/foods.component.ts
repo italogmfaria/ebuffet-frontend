@@ -103,21 +103,21 @@ export class FoodsComponent implements OnInit, OnDestroy {
   loadFoods() {
     const buffetIdSync = this.themeService.getBuffetIdSync();
     if (buffetIdSync) {
-      this.fetchFoods();
+      this.fetchFoods(buffetIdSync);
       return;
     }
 
     this.subs.add(
       this.themeService.buffetId$
         .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchFoods())
+        .subscribe(id => this.fetchFoods(id))
     );
   }
 
-  private fetchFoods() {
+  private fetchFoods(buffetId: number) {
     this.isLoading = true;
     this.subs.add(
-      this.foodsApiService.getAll().subscribe({
+      this.foodsApiService.getAll(buffetId).subscribe({
         next: foods => {
           this.foods = foods;
           this.applyFilters();

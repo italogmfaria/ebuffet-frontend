@@ -15,7 +15,7 @@ import {
   ApprovedStatusComponent,
   CanceledStatusComponent,
   CompletedStatusComponent,
-  ConfirmationModalComponent
+  ConfirmationModalComponent, BudgetModalComponent
 } from '../../../../shared/ui/templates/exports';
 
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -58,7 +58,8 @@ interface ServiceItem {
     ApprovedStatusComponent,
     CanceledStatusComponent,
     CompletedStatusComponent,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    BudgetModalComponent
   ],
   host: { class: 'ion-page' }
 })
@@ -73,6 +74,8 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   reserveStatus: UiStatus = 'pending';
 
   showCancelModal = false;
+  showBudgetModal = false;
+  showCompleteModal = false;
 
   date = '';
   budgetValue = '';
@@ -80,6 +83,9 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   address = '';
   time = '';
   peopleCount = '';
+  clientName = '';
+  clientEmail = '';
+  clientPhone = '';
 
   menuItems: MenuItem[] = [];
   services: ServiceItem[] = [];
@@ -97,6 +103,14 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     private reservasApi: ReservationsApiService,
     private sessionService: SessionService
   ) {}
+
+  get isAdmin(): boolean {
+    return this.sessionService.isAdmin();
+  }
+
+  get isClient(): boolean {
+    return !this.isAdmin;
+  }
 
   ngOnInit() {
     this.subs.add(
@@ -129,6 +143,24 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
             this.date = this.formatDatePtBr(ev.inicio);
             this.time = this.formatTimePtBr(ev.inicio);
           }
+
+          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
+          // Carrega nome do cliente (para admin)
+          // if (ev.cliente) {
+          //   this.clientName = ev.cliente.nome || ev.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = ev.cliente.email || '';
+          //   this.clientPhone = ev.cliente.telefone || '';
+          // } else if (ev.reserva?.cliente) {
+          //   this.clientName = ev.reserva.cliente.nome || ev.reserva.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = ev.reserva.cliente.email || '';
+          //   this.clientPhone = ev.reserva.cliente.telefone || '';
+          // }
+          // Por enquanto, usar clienteId como fallback
+          if (this.isAdmin) {
+            this.clientName = `Cliente ID: ${ev.clienteId}`;
+            this.clientEmail = 'Email não disponível';
+            this.clientPhone = 'Telefone não disponível';
+          }
         },
         error: (err) => console.error('Erro ao carregar evento', err)
       })
@@ -155,6 +187,20 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           this.address = r.endereco
             ? this.formatAddress(r.endereco)
             : '';
+
+          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
+          // Carrega nome do cliente (para admin)
+          // if (r.cliente) {
+          //   this.clientName = r.cliente.nome || r.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = r.cliente.email || '';
+          //   this.clientPhone = r.cliente.telefone || '';
+          // }
+          // Por enquanto, usar clienteId como fallback
+          if (this.isAdmin && !this.clientName) {
+            this.clientName = `Cliente ID: ${r.clienteId}`;
+            this.clientEmail = 'Email não disponível';
+            this.clientPhone = 'Telefone não disponível';
+          }
 
           this.menuItems = (r.comidas ?? []).map(c => ({
             id: c.id,
@@ -203,7 +249,26 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   onContact() {
-    // TODO: abrir WhatsApp com o contato do buffet
+    if (this.isAdmin) {
+      // Admin entra em contato com o cliente
+      if (this.clientPhone && this.clientPhone !== 'Telefone não disponível') {
+        const phoneNumber = this.clientPhone.replace(/\D/g, ''); // Remove caracteres não numéricos
+        const message = encodeURIComponent(`Olá! Sobre seu evento "${this.eventTitle}"`);
+        window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      } else {
+        console.warn('Telefone do cliente não disponível');
+      }
+    } else {
+      // Cliente entra em contato com o buffet
+      // TODO: Implementar quando backend retornar telefone do buffet
+      console.warn('Funcionalidade de contato com buffet ainda não implementada');
+      // const buffetPhone = this.themeService.getBuffetPhone();
+      // if (buffetPhone) {
+      //   const phoneNumber = buffetPhone.replace(/\D/g, '');
+      //   const message = encodeURIComponent(`Olá! Tenho dúvidas sobre o evento "${this.eventTitle}"`);
+      //   window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      // }
+    }
   }
 
   onCancel() {
@@ -221,6 +286,43 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
 
   onCancelModalCancel() {
     this.showCancelModal = false;
+  }
+
+  onComplete() {
+    this.showCompleteModal = true;
+  }
+
+  onCompleteModalClose() {
+    this.showCompleteModal = false;
+  }
+
+  onCompleteModalConfirm() {
+    // TODO: Implementar conclusão do evento no backend
+    this.showCompleteModal = false;
+    console.log('Evento concluído');
+  }
+
+  onCompleteModalCancel() {
+    this.showCompleteModal = false;
+  }
+
+  onEditBudget() {
+    this.showBudgetModal = true;
+  }
+
+  onBudgetModalClose() {
+    this.showBudgetModal = false;
+  }
+
+  onBudgetModalConfirm(value: string) {
+    // TODO: Implementar atualização do valor orçado no backend
+    this.showBudgetModal = false;
+    this.budgetValue = `R$ ${value}`;
+    console.log('Valor orçado atualizado:', value);
+  }
+
+  onBudgetModalCancel() {
+    this.showBudgetModal = false;
   }
 
   get isCanceled(): boolean {
@@ -246,7 +348,30 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   get canCancel(): boolean {
-    return this.eventStatus === 'pending' || this.eventStatus === 'approved';
+    if (this.isAdmin) {
+      // Admin pode cancelar/descancelar se pendente, agendado ou cancelado
+      return this.eventStatus === 'pending' ||
+             this.eventStatus === 'approved' ||
+             this.eventStatus === 'canceled';
+    } else {
+      // Cliente pode cancelar apenas se pendente (não pode descancelar)
+      return this.eventStatus === 'pending';
+    }
+  }
+
+  get canComplete(): boolean {
+    // Apenas admin pode concluir, se pendente ou aprovado
+    return this.isAdmin && (this.eventStatus === 'pending' || this.eventStatus === 'approved');
+  }
+
+  get showEditBudget(): boolean {
+    // Admin vê botão de editar valor orçado
+    return this.isAdmin && this.canEdit;
+  }
+
+  get showEditEvent(): boolean {
+    // Cliente vê botão de editar evento
+    return this.isClient && this.canEdit;
   }
 
   onFoodItemClick(item: MenuItem) {

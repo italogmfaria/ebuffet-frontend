@@ -27,7 +27,14 @@ function getBuffetIdFromEnvironment(): string {
   try {
     const envPath = join(rootDir, 'src/environments/environment.ts');
     const envContent = readFileSync(envPath, 'utf-8');
-    const buffetIdMatch = envContent.match(/buffetId:\s*['"]([^'"]+)['"]/);
+
+    // Tenta primeiro como string: buffetId: 'valor'
+    let buffetIdMatch = envContent.match(/buffetId:\s*['"]([^'"]+)['"]/);
+
+    // Se não encontrar, tenta como número: buffetId: 123
+    if (!buffetIdMatch) {
+      buffetIdMatch = envContent.match(/buffetId:\s*(\d+)/);
+    }
 
     if (!buffetIdMatch) {
       throw new Error('buffetId não encontrado no environment.ts');

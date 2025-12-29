@@ -20,6 +20,7 @@ export interface AuthRequest {
 
 export interface AuthResponse {
   token: string;
+  roles: string[];
 }
 
 export interface MeResponse {

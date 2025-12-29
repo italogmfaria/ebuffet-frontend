@@ -11,6 +11,7 @@ import {ForgotPasswordComponent} from "../pages/global/login/forgot-password/for
 import {NewPasswordComponent} from "../pages/global/login/forgot-password/new-password/new-password.component";
 import {HomeComponent} from "../pages/client/home/home.component";
 import { AuthGuard } from '../core/guards/auth.guard';
+import { RoleGuard } from '../core/guards/role.guard';
 import {NotificationsComponent} from "../pages/global/notifications/notifications.component";
 import {FoodsComponent} from "../pages/client/foods/foods.component";
 import {FoodDetailsComponent} from "../pages/client/foods/food-details/food-details.component";
@@ -28,6 +29,11 @@ import {ReserveEditComponent} from "../pages/global/reserves/reserve-edit/reserv
 import {EventsComponent} from "../pages/global/events/events.component";
 import {EventDetailsComponent} from "../pages/global/events/event-details/event-details.component";
 import {EventEditComponent} from "../pages/global/events/event-edit/event-edit.component";
+import {DashboardComponent} from "../pages/admin/dashboard/dashboard.component";
+import {ManageFoodsComponent} from "../pages/admin/manage-foods/manage-foods.component";
+import {FoodFormComponent} from "../pages/admin/food-form/food-form.component";
+import {ManageServicesComponent} from "../pages/admin/manage-services/manage-services.component";
+import {ServiceFormComponent} from "../pages/admin/service-form/service-form.component";
 
 export const routes: Routes = [
   {
@@ -155,6 +161,43 @@ export const routes: Routes = [
       {
         path: 'profile-edit',
         component: ProfileEditComponent
+      }
+    ]
+  },
+
+  // Rotas do admin/buffet (protegidas)
+  {
+    path: 'admin',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['BUFFET', 'ADMIN'] },
+    children: [
+      {
+        path: 'dashboard',
+        component: DashboardComponent
+      },
+      {
+        path: 'manage-foods',
+        component: ManageFoodsComponent
+      },
+      {
+        path: 'food-form',
+        component: FoodFormComponent
+      },
+      {
+        path: 'food-form/:id',
+        component: FoodFormComponent
+      },
+      {
+        path: 'manage-services',
+        component: ManageServicesComponent
+      },
+      {
+        path: 'service-form',
+        component: ServiceFormComponent
+      },
+      {
+        path: 'service-form/:id',
+        component: ServiceFormComponent
       }
     ]
   }

@@ -14,7 +14,7 @@ import {
   ApprovedStatusComponent,
   CanceledStatusComponent,
   CompletedStatusComponent,
-  ConfirmationModalComponent
+  ConfirmationModalComponent, BudgetModalComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import {
@@ -44,7 +44,8 @@ import {SessionService} from "../../../../core/services/session.service";
     ApprovedStatusComponent,
     CanceledStatusComponent,
     CompletedStatusComponent,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    BudgetModalComponent
   ],
   host: { class: 'ion-page' }
 })
@@ -54,12 +55,16 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
   reserveTitle: string = 'Reserva';
   reserveStatus: UiStatus = 'pending';
   showCancelModal = false;
+  showApproveModal = false;
 
   date: string = '';
   time: string = '';
   peopleCount: string = '';
   description: string = '';
   address: string = '';
+  clientName: string = '';
+  clientEmail: string = '';
+  clientPhone: string = '';
 
   menuItems: MenuItem[] = [];
   services: ServiceItem[] = [];
@@ -76,6 +81,14 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     private reservationsApi: ReservationsApiService,
     private sessionService: SessionService
   ) {}
+
+  get isAdmin(): boolean {
+    return this.sessionService.isAdmin();
+  }
+
+  get isClient(): boolean {
+    return !this.isAdmin;
+  }
 
   ngOnInit() {
     this.subs.add(
@@ -114,6 +127,20 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
           this.address = r.endereco
             ? this.formatAddress(r.endereco)
             : '';
+
+          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
+          // Carrega nome do cliente (para admin)
+          // if (r.cliente) {
+          //   this.clientName = r.cliente.nome || r.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = r.cliente.email || '';
+          //   this.clientPhone = r.cliente.telefone || '';
+          // }
+          // Por enquanto, usar clienteId como fallback
+          if (this.isAdmin) {
+            this.clientName = `Cliente ID: ${r.clienteId}`;
+            this.clientEmail = 'Email não disponível';
+            this.clientPhone = 'Telefone não disponível';
+          }
 
           this.menuItems = (r.comidas ?? []).map(c => ({
             id: c.id,
@@ -157,11 +184,25 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
   }
 
   get canEdit(): boolean {
-    return this.reserveStatus === 'pending';
+    // Cliente pode editar apenas se pendente
+    return this.isClient && this.reserveStatus === 'pending';
   }
 
   get canCancel(): boolean {
-    return this.reserveStatus === 'pending';
+    if (this.isAdmin) {
+      // Admin pode cancelar se pendente, ou descancelar se cancelado
+      // Reservas aprovadas NÃO podem ser canceladas (viram eventos)
+      return this.reserveStatus === 'pending' ||
+             this.reserveStatus === 'canceled';
+    } else {
+      // Cliente pode cancelar apenas se pendente (não pode descancelar)
+      return this.reserveStatus === 'pending';
+    }
+  }
+
+  get canApprove(): boolean {
+    // Apenas admin pode aprovar, e apenas se pendente
+    return this.isAdmin && this.reserveStatus === 'pending';
   }
 
   onEdit() {
@@ -175,8 +216,26 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
   }
 
   onContact() {
-    // TODO: abrir whatsapp com número do buffet (precisa vir do backend ou theme.json)
-    console.log('Entrar em contato via WhatsApp');
+    if (this.isAdmin) {
+      // Admin entra em contato com o cliente
+      if (this.clientPhone && this.clientPhone !== 'Telefone não disponível') {
+        const phoneNumber = this.clientPhone.replace(/\D/g, ''); // Remove caracteres não numéricos
+        const message = encodeURIComponent(`Olá! Sobre sua reserva "${this.reserveTitle}"`);
+        window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      } else {
+        console.warn('Telefone do cliente não disponível');
+      }
+    } else {
+      // Cliente entra em contato com o buffet
+      // TODO: Implementar quando backend retornar telefone do buffet
+      console.warn('Funcionalidade de contato com buffet ainda não implementada');
+      // const buffetPhone = this.themeService.getBuffetPhone();
+      // if (buffetPhone) {
+      //   const phoneNumber = buffetPhone.replace(/\D/g, '');
+      //   const message = encodeURIComponent(`Olá! Tenho dúvidas sobre a reserva "${this.reserveTitle}"`);
+      //   window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      // }
+    }
   }
 
   onCancel() {
@@ -206,6 +265,25 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
         error: (err) => console.error('Erro ao cancelar reserva', err)
       })
     );
+  }
+
+  onApprove() {
+    this.showApproveModal = true;
+  }
+
+  onApproveModalClose() {
+    this.showApproveModal = false;
+  }
+
+  onApproveModalConfirm(budgetValue: string) {
+    // TODO: Implementar aprovação de reserva e criação de evento no backend
+    this.showApproveModal = false;
+    console.log('Reserva aprovada com valor orçado:', budgetValue);
+    // Após aprovação, a reserva deve ter status 'approved' e um evento deve ser criado
+  }
+
+  onApproveModalCancel() {
+    this.showApproveModal = false;
   }
 
   onFoodItemClick(item: MenuItem) {
