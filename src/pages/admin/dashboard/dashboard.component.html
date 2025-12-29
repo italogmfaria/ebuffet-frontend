@@ -1,4 +1,4 @@
-<app-form-page title="Administração do Buffet" class="ion-page" (backClick)="onBackClick()">
+<app-form-page title="Administração do Buffet" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
   <div class="dashboard-content">
     <!-- Grid de Cards -->
     <ion-grid class="cards-grid">

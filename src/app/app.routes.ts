@@ -116,7 +116,8 @@ export const routes: Routes = [
   // Rotas do cliente (protegidas)
   {
     path: 'client',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CLIENT'] },
     children: [
       {
         path: 'home',
@@ -169,7 +170,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['BUFFET', 'ADMIN'] },
+    data: { roles: ['BUFFET'] },
     children: [
       {
         path: 'dashboard',

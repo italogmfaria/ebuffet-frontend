@@ -94,8 +94,18 @@ export class FoodFormComponent implements OnInit, OnDestroy {
     this.categoryOptions = [
       { value: EnumCategoria.ALMOCO, label: CategoriasLabels[EnumCategoria.ALMOCO] },
       { value: EnumCategoria.CAFE_DA_MANHA, label: CategoriasLabels[EnumCategoria.CAFE_DA_MANHA] },
+      { value: EnumCategoria.HAPPY_HOUR, label: CategoriasLabels[EnumCategoria.HAPPY_HOUR] },
       { value: EnumCategoria.JANTAR, label: CategoriasLabels[EnumCategoria.JANTAR] },
-      { value: EnumCategoria.HAPPY_HOUR, label: CategoriasLabels[EnumCategoria.HAPPY_HOUR] }
+      { value: EnumCategoria.CASAMENTO, label: CategoriasLabels[EnumCategoria.CASAMENTO] },
+      { value: EnumCategoria.ANIVERSARIO, label: CategoriasLabels[EnumCategoria.ANIVERSARIO] },
+      { value: EnumCategoria.FORMATURA, label: CategoriasLabels[EnumCategoria.FORMATURA] },
+      { value: EnumCategoria.CONFRATERNIZACAO, label: CategoriasLabels[EnumCategoria.CONFRATERNIZACAO] },
+      { value: EnumCategoria.BATIZADO, label: CategoriasLabels[EnumCategoria.BATIZADO] },
+      { value: EnumCategoria.BODAS, label: CategoriasLabels[EnumCategoria.BODAS] },
+      { value: EnumCategoria.CHA_REVELACAO, label: CategoriasLabels[EnumCategoria.CHA_REVELACAO] },
+      { value: EnumCategoria.NOIVADO, label: CategoriasLabels[EnumCategoria.NOIVADO] },
+      { value: EnumCategoria.NATAL, label: CategoriasLabels[EnumCategoria.NATAL] },
+      { value: EnumCategoria.OUTROS, label: CategoriasLabels[EnumCategoria.OUTROS] }
     ];
   }
 
@@ -125,7 +135,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
         error: (err: any) => {
           console.error('Erro ao carregar comida', err);
           this.toastService.error('Não foi possível carregar os dados da comida.');
-          this.navCtrl.navigateBack('/buffet/foods');
+          this.navCtrl.navigateBack('/admin/manage-foods');
         }
       })
     );
@@ -195,7 +205,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
       image: this.selectedFile
     });
     this.toastService.success('Comida criada com sucesso!');
-    this.navCtrl.navigateBack('/buffet/foods');
+    this.navCtrl.navigateBack('/admin/manage-foods');
   }
 
   private updateFood(id: number) {
@@ -213,7 +223,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
       image: this.selectedFile
     });
     this.toastService.success('Comida atualizada com sucesso!');
-    this.navCtrl.navigateBack('/buffet/foods');
+    this.navCtrl.navigateBack('/admin/manage-foods');
   }
 
   onDeleteClick() {
@@ -246,7 +256,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
       this.foodsApiService.delete(buffetIdSync, id).subscribe({
         next: () => {
           this.toastService.success('Comida excluída com sucesso!');
-          this.navCtrl.navigateBack('/buffet/foods');
+          this.navCtrl.navigateBack('/admin/manage-foods');
         },
         error: (err: any) => {
           console.error('Erro ao excluir comida', err);

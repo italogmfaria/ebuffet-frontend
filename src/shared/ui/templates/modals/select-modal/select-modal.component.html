@@ -1,15 +1,18 @@
 <div class="modal-overlay" (click)="onClose()"></div>
 <div class="select-modal-container">
-  <div class="close-btn-wrapper">
-    <app-close-circle
-      size="large"
-      (buttonClick)="onClose()"
-      aria-label="Fechar">
-    </app-close-circle>
-  </div>
+  <div class="modal-handle"></div>
 
   <div class="content-wrapper">
-    <h2 class="title">{{ title }}</h2>
+    <div class="header">
+      <h2 class="title">{{ title }}</h2>
+      <div class="close-btn-wrapper">
+        <app-close-circle
+          size="large"
+          (buttonClick)="onClose()"
+          aria-label="Fechar">
+        </app-close-circle>
+      </div>
+    </div>
 
     <div class="options-list">
       <div

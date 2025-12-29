@@ -58,6 +58,10 @@ export class DashboardComponent implements OnInit {
     this.showExitModal = false;
   }
 
+  onNotificationClick() {
+    this.navCtrl.navigateForward('/notifications');
+  }
+
   navigateToFoods() {
     this.navCtrl.navigateForward('/admin/manage-foods');
   }

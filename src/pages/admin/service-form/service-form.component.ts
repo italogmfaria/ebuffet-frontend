@@ -132,7 +132,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
         error: (err: any) => {
           console.error('Erro ao carregar serviço', err);
           this.toastService.error('Não foi possível carregar os dados do serviço.');
-          this.navCtrl.navigateBack('/buffet/services');
+          this.navCtrl.navigateBack('/admin/manage-services');
         }
       })
     );
@@ -202,7 +202,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
       image: this.selectedFile
     });
     this.toastService.success('Serviço criado com sucesso!');
-    this.navCtrl.navigateBack('/buffet/services');
+    this.navCtrl.navigateBack('/admin/manage-services');
   }
 
   private updateService(id: number) {
@@ -220,7 +220,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
       image: this.selectedFile
     });
     this.toastService.success('Serviço atualizado com sucesso!');
-    this.navCtrl.navigateBack('/buffet/services');
+    this.navCtrl.navigateBack('/admin/manage-services');
   }
 
   onDeleteClick() {
@@ -253,7 +253,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
       this.servicesApiService.delete(buffetIdSync, id).subscribe({
         next: () => {
           this.toastService.success('Serviço excluído com sucesso!');
-          this.navCtrl.navigateBack('/buffet/services');
+          this.navCtrl.navigateBack('/admin/manage-services');
         },
         error: (err: any) => {
           console.error('Erro ao excluir serviço', err);
