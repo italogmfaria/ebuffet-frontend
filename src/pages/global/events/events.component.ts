@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
@@ -10,14 +10,19 @@ import {
   DefaultStatusComponent
 } from "../../../shared/ui/templates/exports";
 import { ThemeService } from '../../../core/services/theme.service';
-import {NavigationService} from "../../../core/services/navigation.service";
-import {TitleService} from "../../../core/services/title.service";
+import { NavigationService } from "../../../core/services/navigation.service";
+import { TitleService } from "../../../core/services/title.service";
+import { SessionService } from '../../../core/services/session.service';
+import { EventoService } from "../../../features/events/api/evento.api.service";
+import { Subscription } from "rxjs";
+import { UiStatus } from "../../../features/events/model/events.models";
 
 interface Event {
   id: number;
   title: string;
   description: string;
-  status: 'pending' | 'approved' | 'canceled' | 'completed';
+  status: UiStatus;
+  reservaId: number;
 }
 
 @Component({
@@ -35,7 +40,7 @@ interface Event {
     DefaultStatusComponent
   ]
 })
-export class EventsComponent implements OnInit {
+export class EventsComponent implements OnInit, OnDestroy {
   secondaryColor$ = this.themeService.secondaryColor$;
   isLoading = false;
   searchQuery = '';
@@ -45,50 +50,48 @@ export class EventsComponent implements OnInit {
   events: Event[] = [];
   filteredEvents: Event[] = [];
 
+  private subs = new Subscription();
+
   constructor(
     private navCtrl: NavController,
     private themeService: ThemeService,
     private navigationService: NavigationService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private sessionService: SessionService,
+    private eventoService: EventoService
   ) { }
 
   ngOnInit() {
     this.pageTitle = this.titleService.getEventsTitle();
-    this.loadMockEvents();
+    this.loadEvents();
   }
 
   /**
-   * Carrega eventos mockados
-   * TODO: Substituir por chamada ao backend
+   * Carrega os eventos do usuário através da API
    */
-  private loadMockEvents() {
-    this.events = [
-      {
-        id: 1,
-        title: 'Casamento',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-        status: 'pending'
-      },
-      {
-        id: 2,
-        title: 'Chá Revelação',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-        status: 'approved'
-      },
-      {
-        id: 3,
-        title: 'Aniversário',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-        status: 'completed'
-      },
-      {
-        id: 4,
-        title: 'Confraternização',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-        status: 'canceled'
-      }
-    ];
-    this.applyFilters();
+  private loadEvents() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      console.error('Usuário não autenticado');
+      return;
+    }
+
+    this.isLoading = true;
+    this.subs.add(
+      this.eventoService.getAllMine(user.id).subscribe({
+        next: (events) => {
+          this.events = events;
+          this.isLoading = false;
+          this.applyFilters();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar eventos', err);
+          this.isLoading = false;
+          this.events = [];
+          this.applyFilters();
+        }
+      })
+    );
   }
 
   onSearch(query: string) {
@@ -127,6 +130,10 @@ export class EventsComponent implements OnInit {
 
   onEventOpen(event: Event) {
     this.onEventClick(event);
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
   async onBackClick() {
