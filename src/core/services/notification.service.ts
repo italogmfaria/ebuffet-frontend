@@ -1,16 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { NotificacoesApiService } from '../../features/notifications/api/notificacoes-api.service';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  private hasNewNotificationSubject = new BehaviorSubject<boolean>(true);
+  private hasNewNotificationSubject = new BehaviorSubject<boolean>(false);
   public hasNewNotification$: Observable<boolean> = this.hasNewNotificationSubject.asObservable();
 
+  private notificacoesApi = inject(NotificacoesApiService);
+  private sessionService = inject(SessionService);
+
   constructor() {
-    // TODO: Aqui você pode carregar o estado inicial das notificações
-    // this.checkForNewNotifications();
+    // Carregar estado inicial das notificações
+    this.checkForNewNotifications();
   }
 
   /**
@@ -29,17 +34,27 @@ export class NotificationService {
 
   /**
    * Verifica no backend se há notificações novas
-   * TODO: Implementar chamada ao backend
    */
   async checkForNewNotifications(): Promise<void> {
-    try {
-      // Exemplo: const response = await this.http.get('/api/notifications/has-new').toPromise();
-      // this.setHasNewNotification(response.hasNew);
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.setHasNewNotification(false);
+      return;
+    }
 
-      // Simulação para teste (remover quando implementar o backend)
-      this.setHasNewNotification(true);
+    try {
+      this.notificacoesApi.countUnread(user.id).subscribe({
+        next: (count) => {
+          this.setHasNewNotification(count > 0);
+        },
+        error: (err) => {
+          console.error('Erro ao verificar notificações:', err);
+          this.setHasNewNotification(false);
+        }
+      });
     } catch (error) {
       console.error('Erro ao verificar notificações:', error);
+      this.setHasNewNotification(false);
     }
   }
 
