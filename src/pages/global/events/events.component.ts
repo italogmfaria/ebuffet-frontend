@@ -162,7 +162,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   onEventClick(event: Event) {
     this.navCtrl.navigateForward('/events/event-details', {
-      queryParams: { id: event.id, title: event.title, status: event.status }
+      queryParams: { id: event.id, reservaId: event.reservaId }
     });
   }
 
