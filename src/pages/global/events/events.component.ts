@@ -13,9 +13,9 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { NavigationService } from "../../../core/services/navigation.service";
 import { TitleService } from "../../../core/services/title.service";
 import { SessionService } from '../../../core/services/session.service';
-import { EventoService } from "../../../features/events/api/evento.api.service";
+import { ReservationsApiService } from "../../../features/reservations/api/reservations-api.service";
 import { Subscription } from "rxjs";
-import { UiStatus } from "../../../features/events/model/events.models";
+import { mapReservaStatusToUi, UiStatus } from "../../../features/cliente-profile/model/cliente-profile.model";
 
 interface Event {
   id: number;
@@ -58,7 +58,7 @@ export class EventsComponent implements OnInit, OnDestroy {
     private navigationService: NavigationService,
     private titleService: TitleService,
     private sessionService: SessionService,
-    private eventoService: EventoService
+    private reservationsApi: ReservationsApiService
   ) { }
 
   ngOnInit() {
@@ -67,7 +67,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega os eventos do usuário através da API
+   * Carrega os eventos do usuário através da API de reservas
    */
   private loadEvents() {
     const user = this.sessionService.getUser();
@@ -78,9 +78,21 @@ export class EventsComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.subs.add(
-      this.eventoService.getAllMine(user.id).subscribe({
-        next: (events) => {
-          this.events = events;
+      this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+        next: (page) => {
+          const content = page.content ?? [];
+
+          // Filtrar apenas reservas que possuem evento
+          this.events = content
+            .filter(r => !!r.eventoId)
+            .map(r => ({
+              id: r.eventoId as number,
+              reservaId: r.id,
+              title: `Evento da Reserva #${r.id}`,
+              description: this.buildDescription(r),
+              status: mapReservaStatusToUi(r.statusReserva)
+            }));
+
           this.isLoading = false;
           this.applyFilters();
         },
@@ -92,6 +104,32 @@ export class EventsComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  /**
+   * Constrói a descrição do evento com base nos dados da reserva
+   */
+  private buildDescription(reserva: any): string {
+    const parts: string[] = [];
+
+    if (reserva.dataDesejada) {
+      const date = new Date(reserva.dataDesejada);
+      parts.push(`Data: ${date.toLocaleDateString('pt-BR')}`);
+    }
+
+    if (reserva.horarioDesejado) {
+      parts.push(`Horário: ${reserva.horarioDesejado}`);
+    }
+
+    if (reserva.qtdPessoas) {
+      parts.push(`Pessoas: ${reserva.qtdPessoas}`);
+    }
+
+    if (reserva.observacoes) {
+      parts.push(reserva.observacoes);
+    }
+
+    return parts.join(' • ') || 'Sem descrição disponível';
   }
 
   onSearch(query: string) {
