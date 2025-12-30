@@ -10,11 +10,9 @@ export class NotificacoesApiService {
   private readonly basePath = '/notificacoes';
 
   list(
-    usuarioId: number,
     opts?: { page?: number; size?: number; sort?: string }
   ): Observable<SpringPage<NotificacaoResponse>> {
     const params: Record<string, any> = {
-      usuarioId,
       page: opts?.page ?? 0,
       size: opts?.size ?? 20,
       sort: opts?.sort ?? 'dataCriacao,DESC'
@@ -22,15 +20,15 @@ export class NotificacoesApiService {
     return this.api.get<SpringPage<NotificacaoResponse>>(this.basePath, params);
   }
 
-  countUnread(usuarioId: number): Observable<number> {
-    return this.api.get<number>(`${this.basePath}/unread-count`, { usuarioId });
+  countUnread(): Observable<number> {
+    return this.api.get<number>(`${this.basePath}/unread-count`);
   }
 
-  markAsRead(id: number, usuarioId: number): Observable<NotificacaoResponse> {
-    return this.api.put<NotificacaoResponse>(`${this.basePath}/${id}/mark-as-read`, {}, { usuarioId });
+  markAsRead(id: number): Observable<NotificacaoResponse> {
+    return this.api.put<NotificacaoResponse>(`${this.basePath}/${id}/mark-as-read`, {});
   }
 
-  delete(id: number, usuarioId: number): Observable<void> {
-    return this.api.delete<void>(`${this.basePath}/${id}`, { usuarioId });
+  delete(id: number): Observable<void> {
+    return this.api.delete<void>(`${this.basePath}/${id}`);
   }
 }

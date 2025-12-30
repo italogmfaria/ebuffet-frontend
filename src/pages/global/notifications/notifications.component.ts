@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavController } from '@ionic/angular/standalone';
 import { ModelPageComponent, NotificationCardComponent, NotificationModalComponent } from "../../../shared/ui/templates/exports";
-import { SessionService } from '../../../core/services/session.service';
 import { NotificacoesApiService } from '../../../features/notifications/api/notificacoes-api.service';
 import { Subscription } from 'rxjs';
 
@@ -37,7 +36,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private navCtrl: NavController,
-    private sessionService: SessionService,
     private notificacoesApi: NotificacoesApiService
   ) {}
 
@@ -49,15 +47,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    * Carrega notificações do usuário através da API
    */
   private loadNotifications() {
-    const user = this.sessionService.getUser();
-    if (!user?.id) {
-      console.error('Usuário não autenticado');
-      return;
-    }
-
     this.isLoading = true;
     this.subs.add(
-      this.notificacoesApi.list(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+      this.notificacoesApi.list({ page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
         next: (page) => {
           const content = page.content ?? [];
 
@@ -92,22 +84,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   onModalClose() {
     if (this.selectedNotification && this.selectedNotification.isNew) {
-      const user = this.sessionService.getUser();
-      if (user?.id) {
-        // Marca a notificação como lida via API
-        this.subs.add(
-          this.notificacoesApi.markAsRead(this.selectedNotification.id, user.id).subscribe({
-            next: () => {
-              // Atualiza localmente
-              const index = this.notifications.findIndex(n => n.id === this.selectedNotification!.id);
-              if (index !== -1) {
-                this.notifications[index].isNew = false;
-              }
-            },
-            error: (err) => console.error('Erro ao marcar notificação como lida', err)
-          })
-        );
-      }
+      // Marca a notificação como lida via API
+      this.subs.add(
+        this.notificacoesApi.markAsRead(this.selectedNotification.id).subscribe({
+          next: () => {
+            // Atualiza localmente
+            const index = this.notifications.findIndex(n => n.id === this.selectedNotification!.id);
+            if (index !== -1) {
+              this.notifications[index].isNew = false;
+            }
+          },
+          error: (err) => console.error('Erro ao marcar notificação como lida', err)
+        })
+      );
     }
     this.showModal = false;
     this.selectedNotification = null;

@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { NotificacoesApiService } from '../../features/notifications/api/notificacoes-api.service';
-import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,6 @@ export class NotificationService {
   public hasNewNotification$: Observable<boolean> = this.hasNewNotificationSubject.asObservable();
 
   private notificacoesApi = inject(NotificacoesApiService);
-  private sessionService = inject(SessionService);
 
   constructor() {
     // Carregar estado inicial das notificações
@@ -36,14 +34,8 @@ export class NotificationService {
    * Verifica no backend se há notificações novas
    */
   async checkForNewNotifications(): Promise<void> {
-    const user = this.sessionService.getUser();
-    if (!user?.id) {
-      this.setHasNewNotification(false);
-      return;
-    }
-
     try {
-      this.notificacoesApi.countUnread(user.id).subscribe({
+      this.notificacoesApi.countUnread().subscribe({
         next: (count) => {
           this.setHasNewNotification(count > 0);
         },
