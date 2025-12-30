@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Subscription } from 'rxjs';
 import { ModelPageComponent } from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 import { TextInputComponent } from "../../../../shared/ui/templates/inputs/text-input/text-input.component";
 import { PrimaryButtonComponent } from "../../../../shared/ui/templates/buttons/pills/primary-button/primary-button.component";
@@ -14,6 +15,7 @@ import { ThemeService } from '../../../../core/services/theme.service';
 import { SessionService } from '../../../../core/services/session.service';
 import { ValidationService } from '../../../../core/services/validation.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { UserApiService } from '../../../../features/user/api/user-api.service';
 
 @Component({
   selector: 'app-profile-edit',
@@ -32,7 +34,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     ProfilePlaceholderComponent
   ]
 })
-export class ProfileEditComponent implements OnInit {
+export class ProfileEditComponent implements OnInit, OnDestroy {
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -41,12 +43,15 @@ export class ProfileEditComponent implements OnInit {
   userPhone: string = '';
   userProfileImage: string | null = null;
 
+  private subs = new Subscription();
+
   constructor(
     private themeService: ThemeService,
     private navCtrl: NavController,
     private sessionService: SessionService,
     private validationService: ValidationService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private userApi: UserApiService
   ) {}
 
   ngOnInit() {
@@ -184,28 +189,32 @@ export class ProfileEditComponent implements OnInit {
     // Remove formatação do telefone para salvar apenas os dígitos
     const cleanPhone = this.userPhone.replace(/\D/g, '');
 
-    // TODO: Implementar salvamento dos dados no backend
-    console.log('Salvando dados:', {
-      nome: this.userName,
-      email: this.userEmail,
-      telefone: cleanPhone,  // Salva sem formatação
-      fotoPerfil: this.userProfileImage
-    });
+    // Chamar API para atualizar perfil
+    this.subs.add(
+      this.userApi.updateProfile({
+        nome: this.userName,
+        email: this.userEmail,
+        telefone: cleanPhone
+      }).subscribe({
+        next: (updatedUser) => {
+          // Atualizar sessão local com dados retornados pelo backend
+          this.sessionService.login(updatedUser);
 
-    // Atualizar sessão local (temporário até integrar com backend)
-    const user = this.sessionService.getUser();
-    if (user) {
-      user.nome = this.userName;
-      user.email = this.userEmail;
-      user.telefone = cleanPhone;  // Salva sem formatação
-      // user.fotoPerfil = this.userProfileImage;
-      this.sessionService.login(user);
-    }
+          // Mostrar mensagem de sucesso
+          this.toastService.success('Perfil atualizado com sucesso!');
 
-    // Mostrar mensagem de sucesso
-    await this.toastService.success('Perfil atualizado com sucesso!');
+          // Voltar para o perfil
+          this.navCtrl.navigateBack('/client/profile');
+        },
+        error: async (err) => {
+          console.error('Erro ao atualizar perfil', err);
+          await this.toastService.error('Erro ao atualizar perfil. Tente novamente.');
+        }
+      })
+    );
+  }
 
-    // Voltar para o perfil
-    this.navCtrl.navigateBack('/client/profile');
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 }
