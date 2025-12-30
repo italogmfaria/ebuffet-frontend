@@ -228,8 +228,14 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     return d.toLocaleDateString('pt-BR');
   }
 
-  private formatTimePtBr(isoDateTime: string) {
-    const d = new Date(isoDateTime);
+  private formatTimePtBr(timeString: string) {
+    // Se for apenas hora (HH:MM:SS ou HH:MM), formatar diretamente
+    if (timeString && !timeString.includes('T') && timeString.match(/^\d{2}:\d{2}/)) {
+      const parts = timeString.split(':');
+      return `${parts[0]}:${parts[1]} horas`;
+    }
+    // Caso contrário, tratar como ISO datetime
+    const d = new Date(timeString);
     return `${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} horas`;
   }
 
