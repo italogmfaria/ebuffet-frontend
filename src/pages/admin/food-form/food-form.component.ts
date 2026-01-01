@@ -17,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../core/services/theme.service';
 import { FoodsApiService } from '../../../features/foods/services/food.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SelectOption } from '../../../shared/ui/templates/inputs/selected-input/selected-input.component';
@@ -71,7 +72,8 @@ export class FoodFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private themeService: ThemeService,
     private foodsApiService: FoodsApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sessionService: SessionService
   ) {
     this.initializeCategoryOptions();
   }
@@ -191,39 +193,53 @@ export class FoodFormComponent implements OnInit, OnDestroy {
   }
 
   private createFood() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
-    // TODO: Implementar upload de imagem e criação no backend
-    console.log('Create food:', {
-      nome: this.foodName,
-      descricao: this.foodDescription,
-      categoria: this.selectedCategory,
-      image: this.selectedFile
-    });
-    this.toastService.success('Comida criada com sucesso!');
-    this.navCtrl.navigateBack('/admin/manage-foods');
+    this.subs.add(
+      this.foodsApiService.create({
+        nome: this.foodName,
+        descricao: this.foodDescription,
+        categoria: this.selectedCategory as EnumCategoria
+      }, user.id).subscribe({
+        next: () => {
+          this.toastService.success('Comida criada com sucesso!');
+          this.navCtrl.navigateBack('/admin/manage-foods');
+        },
+        error: (err: any) => {
+          console.error('Erro ao criar comida', err);
+          this.toastService.error('Não foi possível criar a comida.');
+        }
+      })
+    );
   }
 
   private updateFood(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
-    // TODO: Implementar upload de imagem e atualização no backend
-    console.log('Update food:', id, {
-      nome: this.foodName,
-      descricao: this.foodDescription,
-      categoria: this.selectedCategory,
-      image: this.selectedFile
-    });
-    this.toastService.success('Comida atualizada com sucesso!');
-    this.navCtrl.navigateBack('/admin/manage-foods');
+    this.subs.add(
+      this.foodsApiService.update(id, {
+        nome: this.foodName,
+        descricao: this.foodDescription,
+        categoria: this.selectedCategory as EnumCategoria
+      }, user.id).subscribe({
+        next: () => {
+          this.toastService.success('Comida atualizada com sucesso!');
+          this.navCtrl.navigateBack('/admin/manage-foods');
+        },
+        error: (err: any) => {
+          console.error('Erro ao atualizar comida', err);
+          this.toastService.error('Não foi possível atualizar a comida.');
+        }
+      })
+    );
   }
 
   onDeleteClick() {
@@ -246,14 +262,14 @@ export class FoodFormComponent implements OnInit, OnDestroy {
   }
 
   private deleteFood(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
     this.subs.add(
-      this.foodsApiService.delete(buffetIdSync, id).subscribe({
+      this.foodsApiService.delete(id, user.id, true).subscribe({
         next: () => {
           this.toastService.success('Comida excluída com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-foods');

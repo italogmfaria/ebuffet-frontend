@@ -31,3 +31,9 @@ export interface ComidaListDTO extends ComidaResponse {
 export interface ComidaDetailDTO extends ComidaResponse {
   imageUrl?: string;
 }
+
+export interface ComidaRequest {
+  nome: string;
+  descricao: string;
+  categoria: EnumCategoria;
+}

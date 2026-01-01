@@ -1,6 +1,6 @@
 import {inject, Injectable} from "@angular/core";
 import {EnumCategoria} from "../../../core/enums/categoria.enum";
-import {ComidaDetailDTO, ComidaListDTO, ComidaResponse, EnumStatus} from "../model/foods.model";
+import {ComidaDetailDTO, ComidaListDTO, ComidaRequest, ComidaResponse, EnumStatus} from "../model/foods.model";
 import {map, Observable} from "rxjs";
 import {SpringPage} from "../../../core/models/page.model";
 import {ApiClient} from "../../../core/api/api.client";
@@ -46,7 +46,18 @@ export class FoodsApiService {
       .pipe(map(c => ({...c, imageUrl: undefined})));
   }
 
-  delete(buffetId: number, id: number): Observable<void> {
-    return this.api.delete<void>(`${this.basePath}/${id}`);
+  create(request: ComidaRequest, ownerId: number): Observable<ComidaResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.post<ComidaResponse>(this.basePath, request, params);
+  }
+
+  update(id: number, request: ComidaRequest, ownerId: number): Observable<ComidaResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<ComidaResponse>(`${this.basePath}/${id}`, request, params);
+  }
+
+  delete(id: number, ownerId: number, soft: boolean = true): Observable<void> {
+    const params = { ownerId: String(ownerId), soft: String(soft) };
+    return this.api.delete<void>(`${this.basePath}/${id}`, params);
   }
 }
