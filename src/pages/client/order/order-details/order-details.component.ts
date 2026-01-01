@@ -97,7 +97,7 @@ export class OrderDetailsComponent implements OnInit {
     }
 
     this.reservationFlow.setDetails({
-      nome: this.reservationName,
+      titulo: this.reservationName,
       descricao: this.reservationDescription,
       qtdPessoas: Number(this.peopleCount),
       horarioDesejado: this.desiredTime,
