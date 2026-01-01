@@ -38,6 +38,18 @@ export class EventoService {
     return this.api.get<SpringPage<EventoResponse>>( `${this.basePath}/me`, params);
   }
 
+  listByBuffet(
+    opts?: { page?: number; size?: number; sort?: string }
+  ): Observable<SpringPage<EventoResponse>> {
+    const params: Record<string, any> = {
+      page: opts?.page ?? 0,
+      size: opts?.size ?? 50,
+      sort: opts?.sort ?? 'dataCriacao,DESC',
+    };
+
+    return this.api.get<SpringPage<EventoResponse>>(this.basePath, params);
+  }
+
   getAllMine(clienteId: number): Observable<EventCard[]> {
     return this.listMine(clienteId).pipe(
       map(page => (page.content ?? []).map(e => ({

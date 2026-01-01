@@ -70,6 +70,8 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
   /**
    * Carrega as reservas do usuário através da API
+   * Se o usuário for dono de buffet, carrega as reservas do buffet
+   * Caso contrário, carrega as reservas do cliente
    */
   private loadReserves() {
     const user = this.sessionService.getUser();
@@ -79,8 +81,15 @@ export class ReservesComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
+
+    // Se usuário tem buffetId, é um dono de buffet
+    const isBuffetOwner = !!user.buffetId;
+    const apiCall = isBuffetOwner
+      ? this.reservationsApi.listByBuffet(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' })
+      : this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' });
+
     this.subs.add(
-      this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+      apiCall.subscribe({
         next: (page) => {
           const content = page.content ?? [];
 

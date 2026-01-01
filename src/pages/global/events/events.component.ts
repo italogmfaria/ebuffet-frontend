@@ -14,8 +14,10 @@ import { NavigationService } from "../../../core/services/navigation.service";
 import { TitleService } from "../../../core/services/title.service";
 import { SessionService } from '../../../core/services/session.service';
 import { ReservationsApiService } from "../../../features/reservations/api/reservations-api.service";
+import { EventoService } from "../../../features/events/api/evento.api.service";
 import { Subscription } from "rxjs";
 import { mapReservaStatusToUi, UiStatus } from "../../../features/cliente-profile/model/cliente-profile.model";
+import { mapEventoStatusToUi } from "../../../features/events/model/events.models";
 
 interface Event {
   id: number;
@@ -58,7 +60,8 @@ export class EventsComponent implements OnInit, OnDestroy {
     private navigationService: NavigationService,
     private titleService: TitleService,
     private sessionService: SessionService,
-    private reservationsApi: ReservationsApiService
+    private reservationsApi: ReservationsApiService,
+    private eventoService: EventoService
   ) { }
 
   ngOnInit() {
@@ -67,7 +70,9 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega os eventos do usuário através da API de reservas
+   * Carrega os eventos do usuário através da API
+   * Se o usuário for dono de buffet, carrega os eventos do buffet
+   * Caso contrário, carrega os eventos do cliente através das reservas
    */
   private loadEvents() {
     const user = this.sessionService.getUser();
@@ -77,37 +82,70 @@ export class EventsComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    this.subs.add(
-      this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
-        next: (page) => {
-          const content = page.content ?? [];
 
-          // Filtrar apenas reservas que possuem evento
-          this.events = content
-            .filter(r => !!r.eventoId)
-            .map(r => ({
-              id: r.eventoId as number,
-              reservaId: r.id,
-              title: r.titulo || `Evento da Reserva #${r.id}`,
-              description: this.buildDescription(r),
-              status: mapReservaStatusToUi(r.statusReserva)
+    // Se usuário tem buffetId, é um dono de buffet
+    const isBuffetOwner = !!user.buffetId;
+
+    if (isBuffetOwner) {
+      // Para buffet owner, usar API de eventos direto
+      this.subs.add(
+        this.eventoService.listByBuffet({ page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+          next: (page) => {
+            const content = page.content ?? [];
+
+            this.events = content.map(e => ({
+              id: e.id,
+              reservaId: e.reservaId ?? 0,
+              title: e.nome || `Evento #${e.id}`,
+              description: this.buildEventDescription(e),
+              status: mapEventoStatusToUi(e.statusEvento)
             }));
 
-          this.isLoading = false;
-          this.applyFilters();
-        },
-        error: (err) => {
-          console.error('Erro ao carregar eventos', err);
-          this.isLoading = false;
-          this.events = [];
-          this.applyFilters();
-        }
-      })
-    );
+            this.isLoading = false;
+            this.applyFilters();
+          },
+          error: (err) => {
+            console.error('Erro ao carregar eventos', err);
+            this.isLoading = false;
+            this.events = [];
+            this.applyFilters();
+          }
+        })
+      );
+    } else {
+      // Para cliente, usar API de reservas e filtrar por eventos
+      this.subs.add(
+        this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+          next: (page) => {
+            const content = page.content ?? [];
+
+            // Filtrar apenas reservas que possuem evento
+            this.events = content
+              .filter(r => !!r.eventoId)
+              .map(r => ({
+                id: r.eventoId as number,
+                reservaId: r.id,
+                title: r.titulo || `Evento da Reserva #${r.id}`,
+                description: this.buildDescription(r),
+                status: mapReservaStatusToUi(r.statusReserva)
+              }));
+
+            this.isLoading = false;
+            this.applyFilters();
+          },
+          error: (err) => {
+            console.error('Erro ao carregar eventos', err);
+            this.isLoading = false;
+            this.events = [];
+            this.applyFilters();
+          }
+        })
+      );
+    }
   }
 
   /**
-   * Constrói a descrição do evento com base nos dados da reserva
+   * Constrói a descrição do evento com base nos dados da reserva (para clientes)
    */
   private buildDescription(reserva: any): string {
     const parts: string[] = [];
@@ -127,6 +165,29 @@ export class EventsComponent implements OnInit, OnDestroy {
 
     if (reserva.descricao) {
       parts.push(reserva.descricao);
+    }
+
+    return parts.join(' • ') || 'Sem descrição disponível';
+  }
+
+  /**
+   * Constrói a descrição do evento com base nos dados do evento (para buffet owners)
+   */
+  private buildEventDescription(evento: any): string {
+    const parts: string[] = [];
+
+    if (evento.inicio) {
+      const date = new Date(evento.inicio);
+      parts.push(`Início: ${date.toLocaleString('pt-BR')}`);
+    }
+
+    if (evento.fim) {
+      const date = new Date(evento.fim);
+      parts.push(`Fim: ${date.toLocaleString('pt-BR')}`);
+    }
+
+    if (evento.valor != null && evento.valor !== '') {
+      parts.push(`Valor: R$ ${evento.valor}`);
     }
 
     return parts.join(' • ') || 'Sem descrição disponível';

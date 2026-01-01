@@ -29,6 +29,19 @@ export class ReservationsApiService {
     return this.api.get<SpringPage<ReservaResponse>>('/clientes/reservas/me', params);
   }
 
+  listByBuffet(
+    ownerId: number,
+    opts?: { page?: number; size?: number; sort?: string }
+  ): Observable<SpringPage<ReservaResponse>> {
+    const params: Record<string, any> = {
+      ownerId,
+      page: opts?.page ?? 0,
+      size: opts?.size ?? 20,
+      sort: opts?.sort ?? 'dataCriacao,DESC'
+    };
+    return this.api.get<SpringPage<ReservaResponse>>('/buffets/reservas', params);
+  }
+
   updateItems(
     id: number,
     clienteId: number,
