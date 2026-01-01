@@ -18,7 +18,6 @@ import {
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
-import { ViaCepService, State } from '../../../../core/services/viacep.service';
 
 interface MenuItem {
   id?: number;
@@ -108,36 +107,51 @@ export class ReserveEditComponent implements OnInit {
   itemToRemove: string = '';
 
   stateOptions: SelectOption[] = [];
-  isLoadingCep: boolean = false;
+
+  // Lista de estados do Brasil
+  private readonly BRAZILIAN_STATES: SelectOption[] = [
+    { value: 'AC', label: 'AC - Acre' },
+    { value: 'AL', label: 'AL - Alagoas' },
+    { value: 'AP', label: 'AP - Amapá' },
+    { value: 'AM', label: 'AM - Amazonas' },
+    { value: 'BA', label: 'BA - Bahia' },
+    { value: 'CE', label: 'CE - Ceará' },
+    { value: 'DF', label: 'DF - Distrito Federal' },
+    { value: 'ES', label: 'ES - Espírito Santo' },
+    { value: 'GO', label: 'GO - Goiás' },
+    { value: 'MA', label: 'MA - Maranhão' },
+    { value: 'MT', label: 'MT - Mato Grosso' },
+    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
+    { value: 'MG', label: 'MG - Minas Gerais' },
+    { value: 'PA', label: 'PA - Pará' },
+    { value: 'PB', label: 'PB - Paraíba' },
+    { value: 'PR', label: 'PR - Paraná' },
+    { value: 'PE', label: 'PE - Pernambuco' },
+    { value: 'PI', label: 'PI - Piauí' },
+    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
+    { value: 'RN', label: 'RN - Rio Grande do Norte' },
+    { value: 'RS', label: 'RS - Rio Grande do Sul' },
+    { value: 'RO', label: 'RO - Rondônia' },
+    { value: 'RR', label: 'RR - Roraima' },
+    { value: 'SC', label: 'SC - Santa Catarina' },
+    { value: 'SP', label: 'SP - São Paulo' },
+    { value: 'SE', label: 'SE - Sergipe' },
+    { value: 'TO', label: 'TO - Tocantins' }
+  ];
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private themeService: ThemeService,
-    private viaCepService: ViaCepService
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.reserveId = params['id'] || '';
     });
-    this.loadStates();
-  }
-
-  loadStates() {
-    this.viaCepService.getStates().subscribe({
-      next: (states: State[]) => {
-        this.stateOptions = states.map(state => ({
-          value: state.sigla,
-          label: `${state.sigla} - ${state.nome}`
-        }));
-      },
-      error: (err) => {
-        console.error('Erro ao carregar estados:', err);
-      }
-    });
+    this.stateOptions = this.BRAZILIAN_STATES;
   }
 
   onBackClick() {
@@ -272,27 +286,6 @@ export class ReserveEditComponent implements OnInit {
     } else {
       this.zipCode = `${limited.substring(0, 5)}-${limited.substring(5)}`;
     }
-
-    if (limited.length === 8) {
-      this.searchAddressByCep(this.zipCode);
-    }
-  }
-
-  searchAddressByCep(cep: string) {
-    this.isLoadingCep = true;
-    this.viaCepService.getAddressByCep(cep).subscribe({
-      next: (address) => {
-        this.isLoadingCep = false;
-        if (address) {
-          this.city = address.city;
-          this.state = address.state;
-        }
-      },
-      error: (err) => {
-        this.isLoadingCep = false;
-        console.error('Erro ao buscar CEP:', err);
-      }
-    });
   }
 
   onZipCodeKeyPress(event: KeyboardEvent) {
