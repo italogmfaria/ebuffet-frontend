@@ -18,10 +18,12 @@ import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
 import { ToastService } from '../../../core/services/toast.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SelectOption } from '../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { EnumCategoria, CategoriasLabels } from '../../../core/enums/categoria.enum';
+import { EnumStatus } from '../../../features/services/model/services.model';
 
 @Component({
   selector: 'app-service-form',
@@ -72,7 +74,8 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private themeService: ThemeService,
     private servicesApiService: ServicesApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sessionService: SessionService
   ) {
     this.initializeCategoryOptions();
   }
@@ -188,39 +191,55 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
   }
 
   private createService() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
-    // TODO: Implementar upload de imagem e criação no backend
-    console.log('Create service:', {
-      nome: this.serviceName,
-      descricao: this.serviceDescription,
-      categoria: this.selectedCategory,
-      image: this.selectedFile
-    });
-    this.toastService.success('Serviço criado com sucesso!');
-    this.navCtrl.navigateBack('/admin/manage-services');
+    this.subs.add(
+      this.servicesApiService.create({
+        nome: this.serviceName,
+        descricao: this.serviceDescription,
+        categoria: this.selectedCategory as EnumCategoria,
+        status: EnumStatus.ATIVO
+      }, user.id).subscribe({
+        next: () => {
+          this.toastService.success('Serviço criado com sucesso!');
+          this.navCtrl.navigateBack('/admin/manage-services');
+        },
+        error: (err: any) => {
+          console.error('Erro ao criar serviço', err);
+          this.toastService.error('Não foi possível criar o serviço.');
+        }
+      })
+    );
   }
 
   private updateService(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
-    // TODO: Implementar upload de imagem e atualização no backend
-    console.log('Update service:', id, {
-      nome: this.serviceName,
-      descricao: this.serviceDescription,
-      categoria: this.selectedCategory,
-      image: this.selectedFile
-    });
-    this.toastService.success('Serviço atualizado com sucesso!');
-    this.navCtrl.navigateBack('/admin/manage-services');
+    this.subs.add(
+      this.servicesApiService.update(id, {
+        nome: this.serviceName,
+        descricao: this.serviceDescription,
+        categoria: this.selectedCategory as EnumCategoria,
+        status: EnumStatus.ATIVO
+      }, user.id).subscribe({
+        next: () => {
+          this.toastService.success('Serviço atualizado com sucesso!');
+          this.navCtrl.navigateBack('/admin/manage-services');
+        },
+        error: (err: any) => {
+          console.error('Erro ao atualizar serviço', err);
+          this.toastService.error('Não foi possível atualizar o serviço.');
+        }
+      })
+    );
   }
 
   onDeleteClick() {
@@ -243,14 +262,14 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
   }
 
   private deleteService(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
     this.subs.add(
-      this.servicesApiService.delete(buffetIdSync, id).subscribe({
+      this.servicesApiService.delete(id, user.id, true).subscribe({
         next: () => {
           this.toastService.success('Serviço excluído com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-services');

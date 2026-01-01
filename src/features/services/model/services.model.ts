@@ -47,3 +47,10 @@ export interface ServicoListDTO extends ServicoResponse {
 export interface ServicoDetailDTO extends ServicoResponse {
   imageUrl?: string;
 }
+
+export interface ServicoRequest {
+  nome: string;
+  descricao: string;
+  categoria: EnumCategoria;
+  status: EnumStatus;
+}

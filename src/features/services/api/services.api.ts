@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {map, Observable} from 'rxjs';
-import {EnumStatus, ServicoDetailDTO, ServicoListDTO, ServicoResponse} from '../model/services.model';
+import {EnumStatus, ServicoDetailDTO, ServicoListDTO, ServicoRequest, ServicoResponse} from '../model/services.model';
 import {EnumCategoria} from '../../../core/enums/categoria.enum';
 import {ApiClient} from "../../../core/api/api.client";
 import {SpringPage} from "../../../core/models/page.model";
@@ -55,7 +55,18 @@ export class ServicesApiService {
     return this.getById(buffetId, id);
   }
 
-  delete(buffetId: number, id: number): Observable<void> {
-    return this.api.delete<void>(`${this.basePath}/${id}`);
+  create(request: ServicoRequest, ownerId: number): Observable<ServicoResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.post<ServicoResponse>(this.basePath, request, params);
+  }
+
+  update(id: number, request: ServicoRequest, ownerId: number): Observable<ServicoResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<ServicoResponse>(`${this.basePath}/${id}`, request, params);
+  }
+
+  delete(id: number, ownerId: number, soft: boolean = true): Observable<void> {
+    const params = { ownerId: String(ownerId), soft: String(soft) };
+    return this.api.delete<void>(`${this.basePath}/${id}`, params);
   }
 }

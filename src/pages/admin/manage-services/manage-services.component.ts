@@ -9,9 +9,10 @@ import {
   LoadingSpinnerComponent,
   ConfirmationModalComponent, AddCircleComponent
 } from '../../../shared/ui/templates/exports';
-import { IonInfiniteScroll, IonInfiniteScrollContent, NavController } from '@ionic/angular/standalone';
+import { IonInfiniteScroll, IonInfiniteScrollContent, NavController, ViewWillEnter } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { SessionService } from '../../../core/services/session.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
 import { ServicoListDTO } from '../../../features/services/model/services.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
@@ -38,7 +39,7 @@ import { filter } from "rxjs/operators";
   ],
   host: { class: 'ion-page' }
 })
-export class ManageServicesComponent implements OnInit, OnDestroy {
+export class ManageServicesComponent implements OnInit, OnDestroy, ViewWillEnter {
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
   accentColor$ = this.themeService.accentColor$;
@@ -63,10 +64,15 @@ export class ManageServicesComponent implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private themeService: ThemeService,
     private servicesApiService: ServicesApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
+    this.loadServices();
+  }
+
+  ionViewWillEnter() {
     this.loadServices();
   }
 
@@ -204,14 +210,14 @@ export class ManageServicesComponent implements OnInit, OnDestroy {
   }
 
   private deleteService(service: ServicoListDTO) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
     this.subscriptions.add(
-      this.servicesApiService.delete(buffetIdSync, service.id).subscribe({
+      this.servicesApiService.delete(service.id, user.id, true).subscribe({
         next: () => {
           this.toastService.success('Serviço excluído com sucesso!');
           this.loadServices();
