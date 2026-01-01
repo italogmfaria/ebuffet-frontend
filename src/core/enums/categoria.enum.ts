@@ -4,8 +4,6 @@
  */
 export enum EnumCategoria {
   ALMOCO = 'ALMOCO',
-  CAFE_DA_MANHA = 'CAFE_DA_MANHA',
-  HAPPY_HOUR = 'HAPPY_HOUR',
   JANTAR = 'JANTAR',
   CASAMENTO = 'CASAMENTO',
   ANIVERSARIO = 'ANIVERSARIO',
@@ -24,8 +22,6 @@ export enum EnumCategoria {
  */
 export const CategoriasLabels: Record<EnumCategoria, string> = {
   [EnumCategoria.ALMOCO]: 'Almoço',
-  [EnumCategoria.CAFE_DA_MANHA]: 'Café da Manhã',
-  [EnumCategoria.HAPPY_HOUR]: 'Happy Hour',
   [EnumCategoria.JANTAR]: 'Jantar',
   [EnumCategoria.CASAMENTO]: 'Casamento',
   [EnumCategoria.ANIVERSARIO]: 'Aniversário',
@@ -44,8 +40,6 @@ export const CategoriasLabels: Record<EnumCategoria, string> = {
  */
 export const CategoriaIdMapping: Record<string, EnumCategoria> = {
   'almoco': EnumCategoria.ALMOCO,
-  'cafe': EnumCategoria.CAFE_DA_MANHA,
-  'happy-hour': EnumCategoria.HAPPY_HOUR,
   'jantar': EnumCategoria.JANTAR,
   'casamento': EnumCategoria.CASAMENTO,
   'aniversario': EnumCategoria.ANIVERSARIO,

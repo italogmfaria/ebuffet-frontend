@@ -95,8 +95,6 @@ export class FoodFormComponent implements OnInit, OnDestroy {
   private initializeCategoryOptions() {
     this.categoryOptions = [
       { value: EnumCategoria.ALMOCO, label: CategoriasLabels[EnumCategoria.ALMOCO] },
-      { value: EnumCategoria.CAFE_DA_MANHA, label: CategoriasLabels[EnumCategoria.CAFE_DA_MANHA] },
-      { value: EnumCategoria.HAPPY_HOUR, label: CategoriasLabels[EnumCategoria.HAPPY_HOUR] },
       { value: EnumCategoria.JANTAR, label: CategoriasLabels[EnumCategoria.JANTAR] },
       { value: EnumCategoria.CASAMENTO, label: CategoriasLabels[EnumCategoria.CASAMENTO] },
       { value: EnumCategoria.ANIVERSARIO, label: CategoriasLabels[EnumCategoria.ANIVERSARIO] },
