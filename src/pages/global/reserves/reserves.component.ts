@@ -86,7 +86,7 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
           this.reserves = content.map(r => ({
             id: r.id,
-            title: `Reserva #${r.id}`,
+            title: r.titulo || `Reserva #${r.id}`,
             description: this.buildDescription(r),
             status: mapReservaStatusToUi(r.statusReserva),
             dataDesejada: r.dataDesejada,
@@ -126,8 +126,8 @@ export class ReservesComponent implements OnInit, OnDestroy {
       parts.push(`Pessoas: ${reserva.qtdPessoas}`);
     }
 
-    if (reserva.observacoes) {
-      parts.push(reserva.observacoes);
+    if (reserva.descricao) {
+      parts.push(reserva.descricao);
     }
 
     return parts.join(' • ') || 'Sem descrição disponível';

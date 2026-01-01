@@ -180,9 +180,9 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           this.time = this.formatTimePtBr(r.horarioDesejado);
           this.peopleCount = `${r.qtdPessoas} pessoa${r.qtdPessoas === 1 ? '' : 's'}`;
 
-          this.reserveTitle = this.reserveTitle || `Reserva #${r.id}`;
+          this.reserveTitle = r.titulo || `Reserva #${r.id}`;
 
-          this.description = r.observacoes || '';
+          this.description = r.descricao || '';
 
           this.address = r.endereco
             ? this.formatAddress(r.endereco)

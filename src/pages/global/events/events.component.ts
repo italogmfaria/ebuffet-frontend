@@ -88,7 +88,7 @@ export class EventsComponent implements OnInit, OnDestroy {
             .map(r => ({
               id: r.eventoId as number,
               reservaId: r.id,
-              title: `Evento da Reserva #${r.id}`,
+              title: r.titulo || `Evento da Reserva #${r.id}`,
               description: this.buildDescription(r),
               status: mapReservaStatusToUi(r.statusReserva)
             }));
@@ -125,8 +125,8 @@ export class EventsComponent implements OnInit, OnDestroy {
       parts.push(`Pessoas: ${reserva.qtdPessoas}`);
     }
 
-    if (reserva.observacoes) {
-      parts.push(reserva.observacoes);
+    if (reserva.descricao) {
+      parts.push(reserva.descricao);
     }
 
     return parts.join(' • ') || 'Sem descrição disponível';

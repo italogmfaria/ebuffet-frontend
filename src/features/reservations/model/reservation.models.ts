@@ -36,7 +36,8 @@ export interface ReservaResponse {
   horarioDesejado: string;
   qtdPessoas: number;
 
-  observacoes?: string | null;
+  titulo?: string | null;
+  descricao?: string | null;
   endereco?: EnderecoResponse | null;
   comidas?: ComidaResumoResponse[];
   servicos?: ServicoResumoResponse[];
@@ -44,7 +45,7 @@ export interface ReservaResponse {
 
 
 export interface ReservationDetails {
-  nome: string;
+  titulo: string;
   descricao: string;
   qtdPessoas: number;
   horarioDesejado: string;
@@ -70,5 +71,6 @@ export interface ReservaRequest {
 
   comidaIds?: number[];
   servicoIds?: number[];
-  observacoes?: string | null;
+  titulo?: string | null;
+  descricao?: string | null;
 }

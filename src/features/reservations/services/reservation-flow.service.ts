@@ -55,11 +55,6 @@ export class ReservationFlowService {
     const comidaIds = Array.from(new Set(foods.map(f => Number(f.id))));
     const servicoIds = Array.from(new Set(services.map(s => Number(s.id))));
 
-    const observacoesParts: string[] = [];
-    if (details.nome) observacoesParts.push(`Nome: ${details.nome}`);
-    if (details.descricao) observacoesParts.push(`Descrição: ${details.descricao}`);
-    const observacoes = observacoesParts.length ? observacoesParts.join(' | ') : undefined;
-
     return {
       buffetId,
       qtdPessoas: details.qtdPessoas,
@@ -71,7 +66,8 @@ export class ReservationFlowService {
       },
       comidaIds: comidaIds.length ? comidaIds : undefined,
       servicoIds: servicoIds.length ? servicoIds : undefined,
-      observacoes
+      titulo: details.titulo || undefined,
+      descricao: details.descricao || undefined
     };
   }
 }
