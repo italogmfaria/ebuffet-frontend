@@ -104,7 +104,7 @@ export class ProfileComponent implements OnInit {
 
           this.reserves = content.slice(0, 3).map(r => ({
             id: r.id,
-            title: `Reserva #${r.id}`,
+            title: r.titulo || `Reserva #${r.id}`,
             status: mapReservaStatusToUi(r.statusReserva)
           }));
 
@@ -114,7 +114,7 @@ export class ProfileComponent implements OnInit {
             .map(r => ({
               id: r.eventoId as number,
               reservaId: r.id,
-              title: `Evento da Reserva #${r.id}`,
+              title: r.titulo || `Evento da Reserva #${r.id}`,
               status: mapReservaStatusToUi(r.statusReserva)
             }));
 
