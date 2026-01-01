@@ -9,9 +9,10 @@ import {
   LoadingSpinnerComponent,
   ConfirmationModalComponent, AddCircleComponent
 } from '../../../shared/ui/templates/exports';
-import { IonInfiniteScroll, IonInfiniteScrollContent, NavController } from '@ionic/angular/standalone';
+import { IonInfiniteScroll, IonInfiniteScrollContent, NavController, ViewWillEnter } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { SessionService } from '../../../core/services/session.service';
 import { ComidaListDTO } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
 import { Subscription } from "rxjs";
@@ -38,7 +39,7 @@ import { FoodsApiService } from "../../../features/foods/services/food.service";
   ],
   host: { class: 'ion-page' }
 })
-export class ManageFoodsComponent implements OnInit, OnDestroy {
+export class ManageFoodsComponent implements OnInit, OnDestroy, ViewWillEnter {
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
   accentColor$ = this.themeService.accentColor$;
@@ -63,10 +64,15 @@ export class ManageFoodsComponent implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private themeService: ThemeService,
     private foodsApiService: FoodsApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
+    this.loadFoods();
+  }
+
+  ionViewWillEnter() {
     this.loadFoods();
   }
 
@@ -204,14 +210,14 @@ export class ManageFoodsComponent implements OnInit, OnDestroy {
   }
 
   private deleteFood(food: ComidaListDTO) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (!buffetIdSync) {
-      this.toastService.error('Erro ao identificar buffet');
+    const user = this.sessionService.getUser();
+    if (!user?.id) {
+      this.toastService.error('Erro ao identificar usuário');
       return;
     }
 
     this.subscriptions.add(
-      this.foodsApiService.delete(buffetIdSync, food.id).subscribe({
+      this.foodsApiService.delete(food.id, user.id, true).subscribe({
         next: () => {
           this.toastService.success('Comida excluída com sucesso!');
           this.loadFoods();

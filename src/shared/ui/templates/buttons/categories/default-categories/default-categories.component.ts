@@ -41,8 +41,6 @@ export class DefaultCategoriesComponent implements OnInit, OnChanges, AfterViewI
     [EnumCategoria.JANTAR]: 'jantar',
     [EnumCategoria.ALMOCO]: 'almoco',
     [EnumCategoria.NATAL]: 'natal',
-    [EnumCategoria.CAFE_DA_MANHA]: 'cafe',
-    [EnumCategoria.HAPPY_HOUR]: 'happy-hour',
     [EnumCategoria.OUTROS]: 'outros'
   };
 
