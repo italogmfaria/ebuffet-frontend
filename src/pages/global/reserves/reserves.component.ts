@@ -108,29 +108,10 @@ export class ReservesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Constrói a descrição da reserva com base nos dados
+   * Retorna a descrição da reserva
    */
   private buildDescription(reserva: any): string {
-    const parts: string[] = [];
-
-    if (reserva.dataDesejada) {
-      const date = new Date(reserva.dataDesejada);
-      parts.push(`Data: ${date.toLocaleDateString('pt-BR')}`);
-    }
-
-    if (reserva.horarioDesejado) {
-      parts.push(`Horário: ${reserva.horarioDesejado}`);
-    }
-
-    if (reserva.qtdPessoas) {
-      parts.push(`Pessoas: ${reserva.qtdPessoas}`);
-    }
-
-    if (reserva.descricao) {
-      parts.push(reserva.descricao);
-    }
-
-    return parts.join(' • ') || 'Sem descrição disponível';
+    return reserva.descricao || '';
   }
 
   onSearch(query: string) {
