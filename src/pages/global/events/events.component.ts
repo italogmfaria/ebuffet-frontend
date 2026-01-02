@@ -71,7 +71,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   /**
    * Carrega os eventos do usuário através da API
-   * Se o usuário for dono de buffet, carrega os eventos do buffet
+   * Se o usuário tiver role de dono de buffet, carrega os eventos do buffet
    * Caso contrário, carrega os eventos do cliente através das reservas
    */
   private loadEvents() {
@@ -83,8 +83,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
 
-    // Se usuário tem buffetId, é um dono de buffet
-    const isBuffetOwner = !!user.buffetId;
+    // Verifica se o usuário tem role de dono de buffet
+    const isBuffetOwner = user.roles?.includes('ROLE_BUFFET_OWNER') || user.roles?.includes('BUFFET_OWNER');
 
     if (isBuffetOwner) {
       // Para buffet owner, usar API de eventos direto
