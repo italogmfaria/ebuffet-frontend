@@ -41,6 +41,11 @@ export interface ReservaResponse {
   endereco?: EnderecoResponse | null;
   comidas?: ComidaResumoResponse[];
   servicos?: ServicoResumoResponse[];
+
+  // Informações do cliente (retornadas para buffet owners)
+  nomeCliente?: string | null;
+  emailCliente?: string | null;
+  telefoneCliente?: string | null;
 }
 
 
