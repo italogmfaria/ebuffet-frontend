@@ -196,7 +196,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
             : '';
 
           // Carrega informações do cliente (disponível para buffet owners)
-          if (this.isAdmin && !this.clientName) {
+          if (this.isAdmin) {
             this.clientName = r.nomeCliente || `Cliente ID: ${r.clienteId}`;
             this.clientEmail = r.emailCliente || 'Email não disponível';
             this.clientPhone = r.telefoneCliente || 'Telefone não disponível';
