@@ -224,8 +224,12 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   private formatDatePtBr(isoDateTime: string) {
-    const d = new Date(isoDateTime);
-    return d.toLocaleDateString('pt-BR');
+    if (!isoDateTime) return '';
+    // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
+    const dateOnly = isoDateTime.split('T')[0];
+    const [y, m, d] = dateOnly.split('-');
+    if (!y || !m || !d) return isoDateTime;
+    return `${d}/${m}/${y}`;
   }
 
   private formatTimePtBr(timeString: string) {
