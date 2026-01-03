@@ -51,6 +51,7 @@ import {SessionService} from "../../../../core/services/session.service";
 })
 export class ReserveDetailsComponent implements OnInit, OnDestroy {
   reserveId: number = 0;
+  clienteId: number = 0; // ID do cliente da reserva
 
   reserveTitle: string = 'Reserva';
   reserveStatus: UiStatus = 'pending';
@@ -94,6 +95,7 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.route.queryParams.subscribe(params => {
         this.reserveId = Number(params['id'] || 0);
+        this.clienteId = Number(params['clienteId'] || 0);
         this.reserveTitle = params['title'] || 'Reserva';
 
         if (this.reserveId) {
@@ -111,8 +113,13 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
+    // Se for buffet owner, usa clienteId da reserva
+    // Se for cliente, usa o próprio user.id
+    const isBuffetOwner = user.roles === 'BUFFET';
+    const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
+
     this.subs.add(
-      this.reservationsApi.getById(this.reserveId, user.id).subscribe({
+      this.reservationsApi.getById(this.reserveId, clientIdToUse).subscribe({
         next: (r) => {
           this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
 
@@ -256,8 +263,13 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
+    // Se for buffet owner, usa clienteId da reserva
+    // Se for cliente, usa o próprio user.id
+    const isBuffetOwner = user.roles === 'BUFFET';
+    const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
+
     this.subs.add(
-      this.reservationsApi.cancel(this.reserveId, user.id).subscribe({
+      this.reservationsApi.cancel(this.reserveId, clientIdToUse).subscribe({
         next: (r) => {
           this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
           this.loadReserve();

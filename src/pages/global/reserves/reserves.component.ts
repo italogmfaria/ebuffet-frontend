@@ -25,6 +25,7 @@ interface Reserve {
   dataDesejada: string;
   horarioDesejado: string;
   qtdPessoas: number;
+  clienteId: number;
 }
 
 @Component({
@@ -100,7 +101,8 @@ export class ReservesComponent implements OnInit, OnDestroy {
             status: mapReservaStatusToUi(r.statusReserva),
             dataDesejada: r.dataDesejada,
             horarioDesejado: r.horarioDesejado,
-            qtdPessoas: r.qtdPessoas
+            qtdPessoas: r.qtdPessoas,
+            clienteId: r.clienteId
           }));
 
           this.isLoading = false;
@@ -155,7 +157,12 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
   onReserveClick(reserve: Reserve) {
     this.navCtrl.navigateForward('/reserves/reserve-details', {
-      queryParams: { id: reserve.id, title: reserve.title, status: reserve.status }
+      queryParams: {
+        id: reserve.id,
+        title: reserve.title,
+        status: reserve.status,
+        clienteId: reserve.clienteId
+      }
     });
   }
 
