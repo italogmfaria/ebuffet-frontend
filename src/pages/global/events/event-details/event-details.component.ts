@@ -286,8 +286,21 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   onCancelModalConfirm() {
-    // TODO: ligar com endpoint de cancelar evento (quando existir)
-    this.showCancelModal = false;
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.eventoApi.cancelar(this.eventId, user.id).subscribe({
+        next: (ev) => {
+          this.showCancelModal = false;
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+        },
+        error: (err) => {
+          console.error('Erro ao cancelar/descancelar evento', err);
+          this.showCancelModal = false;
+        }
+      })
+    );
   }
 
   onCancelModalCancel() {
@@ -303,9 +316,21 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   onCompleteModalConfirm() {
-    // TODO: Implementar conclusão do evento no backend
-    this.showCompleteModal = false;
-    console.log('Evento concluído');
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.eventoApi.concluir(this.eventId, user.id).subscribe({
+        next: (ev) => {
+          this.showCompleteModal = false;
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+        },
+        error: (err) => {
+          console.error('Erro ao concluir evento', err);
+          this.showCompleteModal = false;
+        }
+      })
+    );
   }
 
   onCompleteModalCancel() {
@@ -321,10 +346,25 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBudgetModalConfirm(value: string) {
-    // TODO: Implementar atualização do valor orçado no backend
-    this.showBudgetModal = false;
-    this.budgetValue = `R$ ${value}`;
-    console.log('Valor orçado atualizado:', value);
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    // Converte string para número, removendo formatação
+    const numericValue = parseFloat(value.replace(/[^\d,.-]/g, '').replace(',', '.'));
+
+    this.subs.add(
+      this.eventoApi.updateValor(this.eventId, numericValue, user.id).subscribe({
+        next: (ev) => {
+          this.showBudgetModal = false;
+          this.budgetValue = ev.valor != null && ev.valor !== '' ? `R$ ${ev.valor}` : '';
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar valor do evento', err);
+          this.showBudgetModal = false;
+        }
+      })
+    );
   }
 
   onBudgetModalCancel() {

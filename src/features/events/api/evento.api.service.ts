@@ -76,4 +76,20 @@ export class EventoService {
   getById(id: number): Observable<EventoResponse> {
     return this.api.get<EventoResponse>(`${this.basePath}/${id}`);
   }
+
+  updateValor(id: number, valor: number, ownerId: number): Observable<EventoResponse> {
+    const body = { valor };
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<EventoResponse>(`${this.basePath}/${id}/valor`, body, params);
+  }
+
+  concluir(id: number, ownerId: number): Observable<EventoResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<EventoResponse>(`${this.basePath}/${id}/concluir`, {}, params);
+  }
+
+  cancelar(id: number, ownerId: number): Observable<EventoResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<EventoResponse>(`${this.basePath}/${id}/cancelar`, {}, params);
+  }
 }
