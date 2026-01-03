@@ -135,18 +135,11 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
             ? this.formatAddress(r.endereco)
             : '';
 
-          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
-          // Carrega nome do cliente (para admin)
-          // if (r.cliente) {
-          //   this.clientName = r.cliente.nome || r.cliente.email || 'Cliente não identificado';
-          //   this.clientEmail = r.cliente.email || '';
-          //   this.clientPhone = r.cliente.telefone || '';
-          // }
-          // Por enquanto, usar clienteId como fallback
+          // Carrega informações do cliente (disponível para buffet owners)
           if (this.isAdmin) {
-            this.clientName = `Cliente ID: ${r.clienteId}`;
-            this.clientEmail = 'Email não disponível';
-            this.clientPhone = 'Telefone não disponível';
+            this.clientName = r.nomeCliente || `Cliente ID: ${r.clienteId}`;
+            this.clientEmail = r.emailCliente || 'Email não disponível';
+            this.clientPhone = r.telefoneCliente || 'Telefone não disponível';
           }
 
           this.menuItems = (r.comidas ?? []).map(c => ({
