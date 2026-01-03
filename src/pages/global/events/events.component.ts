@@ -25,6 +25,7 @@ interface Event {
   description: string;
   status: UiStatus;
   reservaId: number;
+  clienteId: number;
 }
 
 @Component({
@@ -96,6 +97,7 @@ export class EventsComponent implements OnInit, OnDestroy {
             this.events = content.map(e => ({
               id: e.id,
               reservaId: e.reservaId ?? 0,
+              clienteId: e.clienteId,
               title: e.nome || `Evento #${e.id}`,
               description: this.buildEventDescription(e),
               status: mapEventoStatusToUi(e.statusEvento)
@@ -125,6 +127,7 @@ export class EventsComponent implements OnInit, OnDestroy {
               .map(r => ({
                 id: r.eventoId as number,
                 reservaId: r.id,
+                clienteId: r.clienteId,
                 title: r.titulo || `Evento da Reserva #${r.id}`,
                 description: this.buildDescription(r),
                 status: mapReservaStatusToUi(r.statusReserva)
@@ -223,7 +226,11 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   onEventClick(event: Event) {
     this.navCtrl.navigateForward('/events/event-details', {
-      queryParams: { id: event.id, reservaId: event.reservaId }
+      queryParams: {
+        id: event.id,
+        reservaId: event.reservaId,
+        clienteId: event.clienteId
+      }
     });
   }
 

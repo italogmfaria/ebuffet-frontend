@@ -66,6 +66,7 @@ interface ServiceItem {
 export class EventDetailsComponent implements OnInit, OnDestroy {
   eventId = 0;
   reservaId = 0;
+  clienteId = 0; // ID do cliente do evento
 
   eventTitle = 'Nome do Evento';
   eventStatus: 'pending' | 'approved' | 'canceled' | 'completed' = 'pending';
@@ -117,6 +118,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(params => {
         this.eventId = Number(params['id'] ?? 0);
         this.reservaId = Number(params['reservaId'] ?? 0);
+        this.clienteId = Number(params['clienteId'] ?? 0);
 
         if (this.eventId) this.loadEvento();
         if (this.reservaId) this.loadReserve();
@@ -171,8 +173,13 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
+    // Se for buffet owner, usa clienteId da reserva
+    // Se for cliente, usa o próprio user.id
+    const isBuffetOwner = user.roles === 'BUFFET';
+    const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
+
     this.subs.add(
-      this.reservasApi.getById(this.reservaId, user.id).subscribe({
+      this.reservasApi.getById(this.reservaId, clientIdToUse).subscribe({
         next: (r) => {
           this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
 
@@ -188,18 +195,11 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
             ? this.formatAddress(r.endereco)
             : '';
 
-          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
-          // Carrega nome do cliente (para admin)
-          // if (r.cliente) {
-          //   this.clientName = r.cliente.nome || r.cliente.email || 'Cliente não identificado';
-          //   this.clientEmail = r.cliente.email || '';
-          //   this.clientPhone = r.cliente.telefone || '';
-          // }
-          // Por enquanto, usar clienteId como fallback
+          // Carrega informações do cliente (disponível para buffet owners)
           if (this.isAdmin && !this.clientName) {
-            this.clientName = `Cliente ID: ${r.clienteId}`;
-            this.clientEmail = 'Email não disponível';
-            this.clientPhone = 'Telefone não disponível';
+            this.clientName = r.nomeCliente || `Cliente ID: ${r.clienteId}`;
+            this.clientEmail = r.emailCliente || 'Email não disponível';
+            this.clientPhone = r.telefoneCliente || 'Telefone não disponível';
           }
 
           this.menuItems = (r.comidas ?? []).map(c => ({
