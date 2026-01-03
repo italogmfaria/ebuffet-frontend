@@ -70,7 +70,7 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
   /**
    * Carrega as reservas do usuário através da API
-   * Se o usuário tiver role de dono de buffet, carrega as reservas do buffet
+   * Se o usuário tiver role BUFFET, carrega as reservas do buffet
    * Caso contrário, carrega as reservas do cliente
    */
   private loadReserves() {
@@ -82,8 +82,8 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
 
-    // Verifica se o usuário tem role de dono de buffet
-    const isBuffetOwner = user.roles?.includes('ROLE_BUFFET_OWNER') || user.roles?.includes('BUFFET_OWNER');
+    // Verifica se o usuário tem role BUFFET
+    const isBuffetOwner = user.roles === 'BUFFET';
     const apiCall = isBuffetOwner
       ? this.reservationsApi.listByBuffet(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' })
       : this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' });
