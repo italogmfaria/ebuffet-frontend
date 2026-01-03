@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavController } from '@ionic/angular/standalone';
 import { ModelPageComponent, NotificationCardComponent, NotificationModalComponent } from "../../../shared/ui/templates/exports";
 import { NotificacoesApiService } from '../../../features/notifications/api/notificacoes-api.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Subscription } from 'rxjs';
 
 interface Notification {
@@ -36,7 +37,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private navCtrl: NavController,
-    private notificacoesApi: NotificacoesApiService
+    private notificacoesApi: NotificacoesApiService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
@@ -74,7 +76,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/home');
+    const user = this.sessionService.getUser();
+    const isBuffetOwner = user?.roles === 'BUFFET';
+    const homePath = isBuffetOwner ? '/admin/dashboard' : '/client/home';
+    this.navCtrl.navigateBack(homePath);
   }
 
   onNotificationClick(notification: Notification) {
