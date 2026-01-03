@@ -54,4 +54,9 @@ export class ReservationsApiService {
     const body = motivo ? { motivo } : {};
     return this.api.put<ReservaResponse>(`/clientes/reservas/${id}/cancelar`, body, { clienteId });
   }
+
+  approve(id: number, ownerId: number, valor?: number): Observable<ReservaResponse> {
+    const body = valor ? { valor } : {};
+    return this.api.put<ReservaResponse>(`/buffets/reservas/aprovar/${id}`, body, { ownerId });
+  }
 }

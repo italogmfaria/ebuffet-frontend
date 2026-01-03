@@ -281,10 +281,23 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
   }
 
   onApproveModalConfirm(budgetValue: string) {
-    // TODO: Implementar aprovação de reserva e criação de evento no backend
     this.showApproveModal = false;
-    console.log('Reserva aprovada com valor orçado:', budgetValue);
-    // Após aprovação, a reserva deve ter status 'approved' e um evento deve ser criado
+
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    // Converte o valor do orçamento para número
+    const valor = budgetValue ? parseFloat(budgetValue.replace(',', '.')) : undefined;
+
+    this.subs.add(
+      this.reservationsApi.approve(this.reserveId, user.id, valor).subscribe({
+        next: (r) => {
+          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+          this.loadReserve();
+        },
+        error: (err) => console.error('Erro ao aprovar reserva', err)
+      })
+    );
   }
 
   onApproveModalCancel() {
