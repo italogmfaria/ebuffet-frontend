@@ -30,8 +30,8 @@ export class BuffetCalendarComponent implements OnInit {
 
   // Função para customizar a aparência de cada dia com evento
   highlightedDates = (isoString: string) => {
-    const date = new Date(isoString);
-    const dateOnly = date.toISOString().split('T')[0];
+    // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
+    const dateOnly = isoString.split('T')[0];
 
     if (this.eventDates.includes(dateOnly)) {
       let color = '#8b5cf6'; // roxo padrão
