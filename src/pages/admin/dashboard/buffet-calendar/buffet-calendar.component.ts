@@ -13,7 +13,7 @@ import { DetailBagdeComponent } from '../../../../shared/ui/templates/exports';
   imports: [CommonModule, FormsModule, IonDatetime, DetailBagdeComponent],
 })
 export class BuffetCalendarComponent implements OnInit {
-  @Input() eventDays: number[] = [9, 14, 18, 31];
+  @Input() eventDates: string[] = [];
 
   selectedDate: string = '';
   primaryColor$ = this.themeService.primaryColor$;
@@ -22,24 +22,10 @@ export class BuffetCalendarComponent implements OnInit {
   minDate: string = '2020-01-01';
   maxDate: string = '2030-12-31';
 
-  // Datas com eventos (será gerado dinamicamente)
-  eventDates: string[] = [];
-
   constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
-    this.generateEventDates();
-  }
-
-  generateEventDates() {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    this.eventDates = this.eventDays.map(day => {
-      const date = new Date(year, month, day);
-      return date.toISOString().split('T')[0];
-    });
+    // Event dates are now received as Input from parent component
   }
 
   // Função para customizar a aparência de cada dia com evento
