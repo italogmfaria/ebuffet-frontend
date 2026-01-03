@@ -177,23 +177,8 @@ export class EventsComponent implements OnInit, OnDestroy {
    * Constrói a descrição do evento com base nos dados do evento (para buffet owners)
    */
   private buildEventDescription(evento: any): string {
-    const parts: string[] = [];
-
-    if (evento.inicio) {
-      const date = new Date(evento.inicio);
-      parts.push(`Início: ${date.toLocaleString('pt-BR')}`);
-    }
-
-    if (evento.fim) {
-      const date = new Date(evento.fim);
-      parts.push(`Fim: ${date.toLocaleString('pt-BR')}`);
-    }
-
-    if (evento.valor != null && evento.valor !== '') {
-      parts.push(`Valor: R$ ${evento.valor}`);
-    }
-
-    return parts.join(' • ') || 'Sem descrição disponível';
+    // Para buffet owners, mostrar apenas a descrição simples
+    return evento.descricao || 'Evento confirmado';
   }
 
   onSearch(query: string) {

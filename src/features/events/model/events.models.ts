@@ -7,6 +7,7 @@ export type UiStatus = 'pending' | 'approved' | 'completed' | 'canceled';
 export interface EventoResponse {
   id: number;
   nome: string;
+  descricao?: string;
   statusEvento: string;
   status: string;
   buffetId: number;
