@@ -17,6 +17,7 @@ export interface ComidaResponse {
   id: number;
   nome: string;
   descricao: string;
+  imagemUrl?: string;
   categoria: EnumCategoria;
   buffetId: number;
   status: EnumStatus;

@@ -203,7 +203,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
         descricao: this.serviceDescription,
         categoria: this.selectedCategory as EnumCategoria,
         status: EnumStatus.ATIVO
-      }, user.id).subscribe({
+      }, user.id, this.selectedFile || undefined).subscribe({
         next: () => {
           this.toastService.success('Serviço criado com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-services');
@@ -229,7 +229,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
         descricao: this.serviceDescription,
         categoria: this.selectedCategory as EnumCategoria,
         status: EnumStatus.ATIVO
-      }, user.id).subscribe({
+      }, user.id, this.selectedFile || undefined).subscribe({
         next: () => {
           this.toastService.success('Serviço atualizado com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-services');

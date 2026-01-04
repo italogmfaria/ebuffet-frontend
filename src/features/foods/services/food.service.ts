@@ -43,17 +43,39 @@ export class FoodsApiService {
   getById(buffetId: number, id: number): Observable<ComidaDetailDTO> {
     return this.api
       .get<ComidaResponse>(`${this.basePath}/${id}`)
-      .pipe(map(c => ({...c, imageUrl: undefined})));
+      .pipe(map(c => ({...c, imageUrl: c.imagemUrl})));
   }
 
-  create(request: ComidaRequest, ownerId: number): Observable<ComidaResponse> {
+  create(request: ComidaRequest, ownerId: number, imagem?: File): Observable<ComidaResponse> {
     const params = { ownerId: String(ownerId) };
-    return this.api.post<ComidaResponse>(this.basePath, request, params);
+
+    const formData = new FormData();
+    // Add JSON data as a blob
+    const comidaBlob = new Blob([JSON.stringify(request)], { type: 'application/json' });
+    formData.append('comida', comidaBlob);
+
+    // Add image if provided
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    return this.api.post<ComidaResponse>(this.basePath, formData, params);
   }
 
-  update(id: number, request: ComidaRequest, ownerId: number): Observable<ComidaResponse> {
+  update(id: number, request: ComidaRequest, ownerId: number, imagem?: File): Observable<ComidaResponse> {
     const params = { ownerId: String(ownerId) };
-    return this.api.put<ComidaResponse>(`${this.basePath}/${id}`, request, params);
+
+    const formData = new FormData();
+    // Add JSON data as a blob
+    const comidaBlob = new Blob([JSON.stringify(request)], { type: 'application/json' });
+    formData.append('comida', comidaBlob);
+
+    // Add image if provided
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    return this.api.put<ComidaResponse>(`${this.basePath}/${id}`, formData, params);
   }
 
   delete(id: number, ownerId: number, soft: boolean = true): Observable<void> {

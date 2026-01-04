@@ -48,21 +48,43 @@ export class ServicesApiService {
   getById(buffetId: number, id: number): Observable<ServicoDetailDTO> {
     return this.api
       .get<ServicoResponse>(`${this.basePath}/${id}`)
-      .pipe(map(s => ({ ...s, imageUrl: undefined })));
+      .pipe(map(s => ({ ...s, imageUrl: s.imagemUrl })));
   }
 
   getServiceById(buffetId: number, id: number) {
     return this.getById(buffetId, id);
   }
 
-  create(request: ServicoRequest, ownerId: number): Observable<ServicoResponse> {
+  create(request: ServicoRequest, ownerId: number, imagem?: File): Observable<ServicoResponse> {
     const params = { ownerId: String(ownerId) };
-    return this.api.post<ServicoResponse>(this.basePath, request, params);
+
+    const formData = new FormData();
+    // Add JSON data as a blob
+    const servicoBlob = new Blob([JSON.stringify(request)], { type: 'application/json' });
+    formData.append('servico', servicoBlob);
+
+    // Add image if provided
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    return this.api.post<ServicoResponse>(this.basePath, formData, params);
   }
 
-  update(id: number, request: ServicoRequest, ownerId: number): Observable<ServicoResponse> {
+  update(id: number, request: ServicoRequest, ownerId: number, imagem?: File): Observable<ServicoResponse> {
     const params = { ownerId: String(ownerId) };
-    return this.api.put<ServicoResponse>(`${this.basePath}/${id}`, request, params);
+
+    const formData = new FormData();
+    // Add JSON data as a blob
+    const servicoBlob = new Blob([JSON.stringify(request)], { type: 'application/json' });
+    formData.append('servico', servicoBlob);
+
+    // Add image if provided
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    return this.api.put<ServicoResponse>(`${this.basePath}/${id}`, formData, params);
   }
 
   delete(id: number, ownerId: number, soft: boolean = true): Observable<void> {

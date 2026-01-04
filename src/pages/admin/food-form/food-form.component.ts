@@ -202,7 +202,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
         nome: this.foodName,
         descricao: this.foodDescription,
         categoria: this.selectedCategory as EnumCategoria
-      }, user.id).subscribe({
+      }, user.id, this.selectedFile || undefined).subscribe({
         next: () => {
           this.toastService.success('Comida criada com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-foods');
@@ -227,7 +227,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
         nome: this.foodName,
         descricao: this.foodDescription,
         categoria: this.selectedCategory as EnumCategoria
-      }, user.id).subscribe({
+      }, user.id, this.selectedFile || undefined).subscribe({
         next: () => {
           this.toastService.success('Comida atualizada com sucesso!');
           this.navCtrl.navigateBack('/admin/manage-foods');
