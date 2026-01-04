@@ -20,6 +20,13 @@
             </app-image-circle>
           </div>
         </div>
+        <!-- Hidden file input for web compatibility -->
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          style="display: none;"
+          (change)="onFileSelected($event)">
       </div>
 
       <!-- Form Section -->

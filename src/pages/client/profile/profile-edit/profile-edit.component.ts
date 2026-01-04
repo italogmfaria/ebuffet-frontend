@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Subscription } from 'rxjs';
 import { ModelPageComponent } from "../../../../shared/ui/templates/pages/model-page/model-page.component";
 import { TextInputComponent } from "../../../../shared/ui/templates/inputs/text-input/text-input.component";
@@ -35,6 +34,8 @@ import { UserApiService } from '../../../../features/user/api/user-api.service';
   ]
 })
 export class ProfileEditComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -97,43 +98,23 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
     this.navCtrl.navigateBack('/client/profile');
   }
 
-  async onImageClick() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt,
-        promptLabelHeader: 'Selecione uma foto',
-        promptLabelPhoto: 'Galeria',
-        promptLabelPicture: 'Câmera',
-        promptLabelCancel: 'Cancelar'
-      });
-
-      if (image.dataUrl) {
-        this.userProfileImage = image.dataUrl;
-        // Converter base64 para File
-        this.selectedPhotoFile = this.dataUrlToFile(image.dataUrl, 'profile-photo.jpg');
-        console.log('Imagem selecionada');
-      }
-    } catch (error) {
-      console.error('Erro ao selecionar imagem:', error);
-    }
+  onImageClick() {
+    this.fileInput.nativeElement.click();
   }
 
-  /**
-   * Converte dataUrl (base64) para File
-   */
-  private dataUrlToFile(dataUrl: string, filename: string): File {
-    const arr = dataUrl.split(',');
-    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.selectedPhotoFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.userProfileImage = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
     }
-    return new File([u8arr], filename, { type: mime });
   }
 
   onCancel() {
