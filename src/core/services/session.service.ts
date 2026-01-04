@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { OrderService } from '../../features/orders/services/order.service';
 
 interface SessionData {
   loggedIn: boolean;
@@ -15,6 +16,7 @@ export class SessionService {
   private session: SessionData = { loggedIn: false };
   private _isAuthenticated$ = new BehaviorSubject<boolean>(false);
   private _initialized$ = new BehaviorSubject<boolean>(false);
+  private orderService = inject(OrderService);
 
   constructor() {}
 
@@ -36,6 +38,9 @@ export class SessionService {
   }
 
   public login(user?: any): void {
+    // Clear cart when user logs in to prevent cart items from previous users
+    this.orderService.clearOrder();
+
     this.session = {
       loggedIn: true,
       user,
@@ -52,6 +57,9 @@ export class SessionService {
   }
 
   public logout(): void {
+    // Clear cart when user logs out
+    this.orderService.clearOrder();
+
     this.session = { loggedIn: false };
     try {
       localStorage.removeItem(this.storageKey);

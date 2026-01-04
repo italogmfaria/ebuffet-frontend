@@ -199,7 +199,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           if (this.isAdmin) {
             this.clientName = r.nomeCliente || `Cliente ID: ${r.clienteId}`;
             this.clientEmail = r.emailCliente || 'Email não disponível';
-            this.clientPhone = r.telefoneCliente || 'Telefone não disponível';
+            this.clientPhone = r.telefoneCliente ? this.formatPhonePtBr(r.telefoneCliente) : 'Telefone não disponível';
           }
 
           this.menuItems = (r.comidas ?? []).map(c => ({
@@ -450,5 +450,18 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     ].filter(Boolean);
 
     return parts.join(' - ');
+  }
+
+  private formatPhonePtBr(phone: string): string {
+    if (!phone) return '';
+    // Remove todos os caracteres não numéricos
+    const numbers = phone.replace(/\D/g, '');
+    // Formato brasileiro: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    if (numbers.length === 11) {
+      return `(${numbers.substring(0, 2)}) ${numbers.substring(2, 7)}-${numbers.substring(7)}`;
+    } else if (numbers.length === 10) {
+      return `(${numbers.substring(0, 2)}) ${numbers.substring(2, 6)}-${numbers.substring(6)}`;
+    }
+    return phone; // Retorna sem formatação se não for válido
   }
 }
