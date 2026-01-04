@@ -42,6 +42,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
   userEmail: string = '';
   userPhone: string = '';
   userProfileImage: string | null = null;
+  selectedPhotoFile: File | null = null;
 
   private subs = new Subscription();
 
@@ -62,8 +63,8 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
       // Formatar telefone ao carregar
       const rawPhone = user.telefone || '';
       this.userPhone = this.formatPhoneStatic(rawPhone);
-      // TODO: Integrar com backend - user.fotoPerfil
-      this.userProfileImage = null;
+      // Carregar foto do perfil se existir
+      this.userProfileImage = user.fotoUrl || null;
     }
   }
 
@@ -111,11 +112,28 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
       if (image.dataUrl) {
         this.userProfileImage = image.dataUrl;
+        // Converter base64 para File
+        this.selectedPhotoFile = this.dataUrlToFile(image.dataUrl, 'profile-photo.jpg');
         console.log('Imagem selecionada');
       }
     } catch (error) {
       console.error('Erro ao selecionar imagem:', error);
     }
+  }
+
+  /**
+   * Converte dataUrl (base64) para File
+   */
+  private dataUrlToFile(dataUrl: string, filename: string): File {
+    const arr = dataUrl.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   }
 
   onCancel() {
@@ -195,7 +213,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         nome: this.userName,
         email: this.userEmail,
         telefone: cleanPhone
-      }).subscribe({
+      }, this.selectedPhotoFile || undefined).subscribe({
         next: (updatedUser) => {
           // Atualizar sessão local com dados retornados pelo backend
           this.sessionService.login(updatedUser);

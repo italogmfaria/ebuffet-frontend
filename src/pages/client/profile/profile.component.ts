@@ -92,7 +92,7 @@ export class ProfileComponent implements OnInit {
       this.userName = user.nome || 'Nome';
       this.userEmail = user.email || 'email@gmail.com';
       this.userPhone = this.formatPhone(user.telefone || '');
-      this.userProfileImage = null;
+      this.userProfileImage = user.fotoUrl || null;
     }
   }
 

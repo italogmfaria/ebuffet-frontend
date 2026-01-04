@@ -11,4 +11,5 @@ export interface UserResponse {
   telefone?: string | null;
   roles: string;
   buffetId: number | null;
+  fotoUrl?: string | null;
 }
