@@ -206,7 +206,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
             id: c.id,
             title: c.nome,
             description: c.descricao,
-            imageUrl: '',
+            imageUrl: c.imagemUrl || '',
             quantity: 1
           }));
 
@@ -214,7 +214,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
             id: s.id,
             title: s.nome,
             description: s.descricao,
-            imageUrl: '',
+            imageUrl: s.imagemUrl || '',
             quantity: 1
           }));
         },

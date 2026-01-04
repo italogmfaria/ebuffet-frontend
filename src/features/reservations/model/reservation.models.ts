@@ -12,12 +12,14 @@ export interface ComidaResumoResponse {
   id: number;
   nome: string;
   descricao: string;
+  imagemUrl?: string;
 }
 
 export interface ServicoResumoResponse {
   id: number;
   nome: string;
   descricao: string;
+  imagemUrl?: string;
 }
 
 export type EnumStatusReserva = 'PENDENTE' | 'APROVADA' | 'CANCELADA' | 'CONCLUIDA' | string;
