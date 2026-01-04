@@ -115,23 +115,20 @@ export class EventsComponent implements OnInit, OnDestroy {
         })
       );
     } else {
-      // Para cliente, usar API de reservas e filtrar por eventos
+      // Para cliente, usar API de eventos /eventos/me
       this.subs.add(
-        this.reservationsApi.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
+        this.eventoService.listMine(user.id, { page: 0, size: 50, sort: 'dataCriacao,DESC' }).subscribe({
           next: (page) => {
             const content = page.content ?? [];
 
-            // Filtrar apenas reservas que possuem evento
-            this.events = content
-              .filter(r => !!r.eventoId)
-              .map(r => ({
-                id: r.eventoId as number,
-                reservaId: r.id,
-                clienteId: r.clienteId,
-                title: r.titulo || `Evento da Reserva #${r.id}`,
-                description: this.buildDescription(r),
-                status: mapReservaStatusToUi(r.statusReserva)
-              }));
+            this.events = content.map(e => ({
+              id: e.id,
+              reservaId: e.reservaId ?? 0,
+              clienteId: e.clienteId,
+              title: e.nome || `Evento #${e.id}`,
+              description: e.descricao || 'Evento confirmado',
+              status: mapEventoStatusToUi(e.statusEvento)
+            }));
 
             this.isLoading = false;
             this.applyFilters();
