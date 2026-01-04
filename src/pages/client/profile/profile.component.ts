@@ -15,12 +15,14 @@ import {ThemeService} from '../../../core/services/theme.service';
 import {SessionService} from '../../../core/services/session.service';
 import {OrderService} from '../../../features/orders/services/order.service';
 import {ReservationsApiService} from "../../../features/reservations/api/reservations-api.service";
+import {EventoService} from "../../../features/events/api/evento.api.service";
 import {Subscription} from "rxjs";
 import {
   EventItem,
   mapReservaStatusToUi,
   ReserveItem
 } from "../../../features/cliente-profile/model/cliente-profile.model";
+import {mapEventoStatusToUi} from "../../../features/events/model/events.models";
 
 @Component({
   selector: 'app-profile',
@@ -64,6 +66,7 @@ export class ProfileComponent implements OnInit {
     private sessionService: SessionService,
     private orderService: OrderService,
     private reservationsApi: ReservationsApiService,
+    private eventoService: EventoService
   ) {
   }
 
@@ -97,6 +100,7 @@ export class ProfileComponent implements OnInit {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
+    // Carrega reservas
     this.subs.add(
       this.reservationsApi.listMine(user.id, {page: 0, size: 50}).subscribe({
         next: (page) => {
@@ -107,20 +111,25 @@ export class ProfileComponent implements OnInit {
             title: r.titulo || `Reserva #${r.id}`,
             status: mapReservaStatusToUi(r.statusReserva)
           }));
-
-          const events = content
-            .filter(r => !!r.eventoId)
-            .slice(0, 4)
-            .map(r => ({
-              id: r.eventoId as number,
-              reservaId: r.id,
-              title: r.titulo || `Evento da Reserva #${r.id}`,
-              status: mapReservaStatusToUi(r.statusReserva)
-            }));
-
-          this.events = events;
         },
         error: (err) => console.error('Erro ao carregar reservas', err)
+      })
+    );
+
+    // Carrega eventos usando o endpoint correto /eventos/me
+    this.subs.add(
+      this.eventoService.listMine(user.id, {page: 0, size: 50}).subscribe({
+        next: (page) => {
+          const content = page.content ?? [];
+
+          this.events = content.slice(0, 4).map(e => ({
+            id: e.id,
+            reservaId: e.reservaId ?? 0,
+            title: e.nome || `Evento #${e.id}`,
+            status: mapEventoStatusToUi(e.statusEvento)
+          }));
+        },
+        error: (err) => console.error('Erro ao carregar eventos', err)
       })
     );
   }
