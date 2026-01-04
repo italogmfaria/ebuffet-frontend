@@ -36,7 +36,7 @@ export class FoodsApiService {
 
   getAll(buffetId: number): Observable<ComidaListDTO[]> {
     return this.listByBuffet(buffetId).pipe(
-      map(page => page.content.map((c: ComidaResponse) => ({...c, imageUrl: undefined})))
+      map(page => page.content.map((c: ComidaResponse) => ({...c, imageUrl: c.imagemUrl})))
     );
   }
 
