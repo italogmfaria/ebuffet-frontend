@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {ApiClient} from "../../../core/api/api.client";
 import {map, Observable} from "rxjs";
-import {DatasIndisponiveisResponse, EventCard, EventoResponse, mapEventoStatusToUi} from "../model/events.models";
+import {DatasIndisponiveisResponse, EventCard, EventoResponse, EventoUpdateRequest, mapEventoStatusToUi} from "../model/events.models";
 import {SpringPage} from "../../../core/models/page.model";
 
 @Injectable({
@@ -75,6 +75,11 @@ export class EventoService {
 
   getById(id: number): Observable<EventoResponse> {
     return this.api.get<EventoResponse>(`${this.basePath}/${id}`);
+  }
+
+  update(id: number, body: EventoUpdateRequest, ownerId: number): Observable<EventoResponse> {
+    const params = { ownerId: String(ownerId) };
+    return this.api.put<EventoResponse>(`${this.basePath}/${id}`, body, params);
   }
 
   updateValor(id: number, valor: number, ownerId: number): Observable<EventoResponse> {

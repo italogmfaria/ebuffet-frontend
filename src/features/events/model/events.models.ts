@@ -4,6 +4,9 @@ export interface DatasIndisponiveisResponse {
 
 export type UiStatus = 'pending' | 'approved' | 'completed' | 'canceled';
 
+export type EnumStatusEvento = 'PENDENTE' | 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO';
+export type EnumStatus = 'ATIVO' | 'INATIVO';
+
 export interface EventoResponse {
   id: number;
   nome: string;
@@ -24,6 +27,16 @@ export interface EventCard {
   description: string;
   status: UiStatus;
   reservaId: number;
+}
+
+export interface EventoUpdateRequest {
+  nome: string;
+  statusEvento: EnumStatusEvento;
+  status: EnumStatus;
+  inicio: string; // ISO datetime string
+  fim: string; // ISO datetime string
+  valor: number;
+  descricao?: string;
 }
 
 export function mapEventoStatusToUi(

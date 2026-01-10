@@ -81,3 +81,12 @@ export interface ReservaRequest {
   titulo?: string | null;
   descricao?: string | null;
 }
+
+export interface ReservaUpdateRequest {
+  qtdPessoas: number;
+  dataDesejada: string;
+  horarioDesejado: string;
+  endereco: EnderecoRequest;
+  titulo?: string | null;
+  descricao?: string | null;
+}

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {ApiClient} from "../../../core/api/api.client";
-import {ReservaRequest, ReservaResponse} from "../model/reservation.models";
+import {ReservaRequest, ReservaResponse, ReservaUpdateRequest} from "../model/reservation.models";
 import {SpringPage} from "../../../core/models/page.model";
 
 @Injectable({ providedIn: 'root' })
@@ -14,6 +14,10 @@ export class ReservationsApiService {
 
   getById(id: number, clienteId: number): Observable<ReservaResponse> {
     return this.api.get<ReservaResponse>(`/clientes/reservas/${id}`, { clienteId });
+  }
+
+  update(id: number, clienteId: number, body: ReservaUpdateRequest): Observable<ReservaResponse> {
+    return this.api.put<ReservaResponse>(`/clientes/reservas/${id}`, body, { clienteId });
   }
 
   listMine(
