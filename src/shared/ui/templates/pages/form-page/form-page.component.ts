@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -6,6 +6,7 @@ import { arrowBack } from 'ionicons/icons';
 import { NotificationCircleComponent } from '../../buttons/circles/notification-circle/notification-circle.component';
 import {ThemeService} from "../../../../../core/services/theme.service";
 import {NotificationService} from "../../../../../core/services/notification.service";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form-page',
@@ -14,7 +15,7 @@ import {NotificationService} from "../../../../../core/services/notification.ser
   standalone: true,
   imports: [CommonModule, IonContent, IonIcon, NotificationCircleComponent]
 })
-export class FormPageComponent implements OnInit {
+export class FormPageComponent implements OnInit, OnDestroy {
   @Input() title: string = '';
   @Input() backRoute: string = '';
   @Input() hasNavbar: boolean = false;
@@ -28,6 +29,8 @@ export class FormPageComponent implements OnInit {
   banner$ = this.themeService.banner$;
   hasNewNotification = false;
 
+  private notificationSubscription?: Subscription;
+
   constructor(
     private navCtrl: NavController,
     private themeService: ThemeService,
@@ -37,10 +40,18 @@ export class FormPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Verifica imediatamente se há novas notificações
+    this.notificationService.checkForNewNotifications();
+
     // Observa mudanças no estado de notificações
-    this.notificationService.hasNewNotification$.subscribe(hasNew => {
+    this.notificationSubscription = this.notificationService.hasNewNotification$.subscribe(hasNew => {
       this.hasNewNotification = hasNew;
     });
+  }
+
+  ngOnDestroy() {
+    // Desinscreve para evitar memory leaks
+    this.notificationSubscription?.unsubscribe();
   }
 
   goBack() {
