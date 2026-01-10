@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -6,34 +6,20 @@ import { NavController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import {
   ModelPageComponent,
-  OrderItemCardComponent,
   PrimaryButtonComponent,
   TextInputComponent,
   TextareaInputComponent,
   CalendarInputComponent,
   CalendarModalComponent,
   SelectedInputComponent,
-  SelectModalComponent,
-  ConfirmationModalComponent
+  SelectModalComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
-
-interface MenuItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
-
-interface ServiceItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
+import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
+import { SessionService } from '../../../../core/services/session.service';
+import { Subscription } from 'rxjs';
+import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
 
 @Component({
   selector: 'app-reserve-edit',
@@ -45,20 +31,18 @@ interface ServiceItem {
     FormsModule,
     IonicModule,
     ModelPageComponent,
-    OrderItemCardComponent,
     PrimaryButtonComponent,
     TextInputComponent,
     TextareaInputComponent,
     CalendarInputComponent,
     CalendarModalComponent,
     SelectedInputComponent,
-    SelectModalComponent,
-    ConfirmationModalComponent
+    SelectModalComponent
   ],
   host: { class: 'ion-page' }
 })
-export class ReserveEditComponent implements OnInit {
-  reserveId: string = '';
+export class ReserveEditComponent implements OnInit, OnDestroy {
+  reserveId: number = 0;
   reserveTitle: string = 'Editar Reserva';
 
   // Dados da reserva
@@ -77,36 +61,16 @@ export class ReserveEditComponent implements OnInit {
   state: string = '';
   zipCode: string = '';
 
-  // Comidas e Serviços
-  menuItems: MenuItem[] = [
-    {
-      id: 1,
-      title: 'Bolo de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
-
-  services: ServiceItem[] = [
-    {
-      id: 1,
-      title: 'Decoração de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
-
   // Modais
   showCalendarModal: boolean = false;
   showStateModal: boolean = false;
-  showRemoveFoodModal: boolean = false;
-  showRemoveServiceModal: boolean = false;
-
-  itemToRemove: string = '';
 
   stateOptions: SelectOption[] = [];
+
+  isLoading: boolean = false;
+  isSaving: boolean = false;
+
+  private subs = new Subscription();
 
   // Lista de estados do Brasil
   private readonly BRAZILIAN_STATES: SelectOption[] = [
@@ -144,112 +108,83 @@ export class ReserveEditComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private reservationsApi: ReservationsApiService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.reserveId = params['id'] || '';
-    });
     this.stateOptions = this.BRAZILIAN_STATES;
+
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        this.reserveId = Number(params['id'] || 0);
+        if (this.reserveId) {
+          this.loadReserve();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private loadReserve() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.isLoading = true;
+
+    this.subs.add(
+      this.reservationsApi.getById(this.reserveId, user.id).subscribe({
+        next: (r) => {
+          this.reserveName = r.titulo || '';
+          this.reserveDescription = r.descricao || '';
+          this.peopleCount = String(r.qtdPessoas);
+          this.reserveDate = this.formatDatePtBr(r.dataDesejada);
+          this.reserveTime = this.formatTimePtBr(r.horarioDesejado);
+
+          if (r.endereco) {
+            this.street = r.endereco.rua;
+            this.number = r.endereco.numero;
+            this.complement = r.endereco.complemento || '';
+            this.neighborhood = r.endereco.bairro;
+            this.city = r.endereco.cidade;
+            this.state = r.endereco.estado;
+            this.zipCode = r.endereco.cep;
+          }
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar reserva', err);
+          this.isLoading = false;
+        }
+      })
+    );
+  }
+
+  private formatDatePtBr(iso: string): string {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    if (!y || !m || !d) return iso;
+    return `${d}/${m}/${y}`;
+  }
+
+  private formatTimePtBr(t: string): string {
+    if (!t) return '';
+    return t.length >= 5 ? t.substring(0, 5) : t;
+  }
+
+  private formatDateToIso(datePtBr: string): string {
+    // Converte DD/MM/YYYY para YYYY-MM-DD
+    const [d, m, y] = datePtBr.split('/');
+    return `${y}-${m}-${d}`;
   }
 
   onBackClick() {
     this.navCtrl.back();
-  }
-
-  // Comidas
-  onAddFoods() {
-    this.navCtrl.navigateForward('/client/foods', {
-      queryParams: { fromEdit: 'reserve', editId: this.reserveId }
-    });
-  }
-
-  onFoodItemClick(item: MenuItem) {
-    if (item.id) {
-      this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromEdit: 'reserve',
-          editId: this.reserveId
-        }
-      });
-    }
-  }
-
-  onRemoveFood(title: string) {
-    this.itemToRemove = title;
-    this.showRemoveFoodModal = true;
-  }
-
-  onRemoveFoodModalClose() {
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveFoodModalConfirm() {
-    this.menuItems = this.menuItems.filter(item => item.title !== this.itemToRemove);
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveFoodModalCancel() {
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onFoodQuantityChange(title: string, newQuantity: number) {
-    const item = this.menuItems.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
-  // Serviços
-  onAddServices() {
-    this.navCtrl.navigateForward('/client/services', {
-      queryParams: { fromEdit: 'reserve', editId: this.reserveId }
-    });
-  }
-
-  onServiceItemClick(item: ServiceItem) {
-    if (item.id) {
-      this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromEdit: 'reserve',
-          editId: this.reserveId
-        }
-      });
-    }
-  }
-
-  onRemoveService(title: string) {
-    this.itemToRemove = title;
-    this.showRemoveServiceModal = true;
-  }
-
-  onRemoveServiceModalClose() {
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveServiceModalConfirm() {
-    this.services = this.services.filter(item => item.title !== this.itemToRemove);
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveServiceModalCancel() {
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onServiceQuantityChange(title: string, newQuantity: number) {
-    const item = this.services.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
   }
 
   // Calendário
@@ -323,31 +258,44 @@ export class ReserveEditComponent implements OnInit {
 
   // Salvar
   onSave() {
-    if (!this.isFormValid) return;
+    if (!this.isFormValid || this.isSaving) return;
 
-    console.log('Salvando reserva:', {
-      name: this.reserveName,
-      description: this.reserveDescription,
-      peopleCount: this.peopleCount,
-      time: this.reserveTime,
-      date: this.reserveDate,
-      address: {
-        street: this.street,
-        number: this.number,
-        complement: this.complement,
-        neighborhood: this.neighborhood,
-        city: this.city,
-        state: this.state,
-        zipCode: this.zipCode
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.isSaving = true;
+
+    const body: ReservaUpdateRequest = {
+      qtdPessoas: Number(this.peopleCount),
+      dataDesejada: this.formatDateToIso(this.reserveDate),
+      horarioDesejado: this.reserveTime,
+      endereco: {
+        rua: this.street,
+        numero: this.number,
+        bairro: this.neighborhood,
+        cidade: this.city,
+        estado: this.state,
+        cep: this.zipCode.replace(/\D/g, ''),
+        complemento: this.complement || null
       },
-      foods: this.menuItems,
-      services: this.services
-    });
+      titulo: this.reserveName,
+      descricao: this.reserveDescription
+    };
 
-    // TODO: Implementar chamada ao backend
-    this.navCtrl.navigateBack('/reserves/reserve-details', {
-      queryParams: { id: this.reserveId }
-    });
+    this.subs.add(
+      this.reservationsApi.update(this.reserveId, user.id, body).subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.navCtrl.navigateBack('/reserves/reserve-details', {
+            queryParams: { id: this.reserveId }
+          });
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar reserva', err);
+          this.isSaving = false;
+          // TODO: Mostrar mensagem de erro ao usuário
+        }
+      })
+    );
   }
 }
-

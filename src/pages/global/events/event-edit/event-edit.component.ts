@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -6,34 +6,15 @@ import { NavController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import {
   ModelPageComponent,
-  OrderItemCardComponent,
   PrimaryButtonComponent,
   TextInputComponent,
-  TextareaInputComponent,
-  CalendarInputComponent,
-  CalendarModalComponent,
-  SelectedInputComponent,
-  SelectModalComponent,
-  ConfirmationModalComponent
+  TextareaInputComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
-import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
-
-interface MenuItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
-
-interface ServiceItem {
-  id?: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  quantity: number;
-}
+import { EventoService } from '../../../../features/events/api/evento.api.service';
+import { SessionService } from '../../../../core/services/session.service';
+import { Subscription } from 'rxjs';
+import { EventoUpdateRequest, EnumStatusEvento, EnumStatus } from '../../../../features/events/model/events.models';
 
 @Component({
   selector: 'app-event-edit',
@@ -45,309 +26,149 @@ interface ServiceItem {
     FormsModule,
     IonicModule,
     ModelPageComponent,
-    OrderItemCardComponent,
     PrimaryButtonComponent,
     TextInputComponent,
-    TextareaInputComponent,
-    CalendarInputComponent,
-    CalendarModalComponent,
-    SelectedInputComponent,
-    SelectModalComponent,
-    ConfirmationModalComponent
+    TextareaInputComponent
   ],
   host: { class: 'ion-page' }
 })
-export class EventEditComponent implements OnInit {
-  eventId: string = '';
+export class EventEditComponent implements OnInit, OnDestroy {
+  eventId: number = 0;
   eventTitle: string = 'Editar Evento';
 
   // Dados do evento
   eventName: string = '';
   eventDescription: string = '';
-  peopleCount: string = '';
-  eventTime: string = '';
-  eventDate: string = '';
+  eventStartDate: string = ''; // YYYY-MM-DD
+  eventStartTime: string = ''; // HH:MM
+  eventEndDate: string = ''; // YYYY-MM-DD
+  eventEndTime: string = ''; // HH:MM
+  eventValue: string = '';
+  eventStatus: EnumStatusEvento = 'PENDENTE';
+  status: EnumStatus = 'ATIVO';
 
-  // Endereço
-  street: string = '';
-  number: string = '';
-  complement: string = '';
-  neighborhood: string = '';
-  city: string = '';
-  state: string = '';
-  zipCode: string = '';
+  isLoading: boolean = false;
+  isSaving: boolean = false;
 
-  // Comidas e Serviços
-  menuItems: MenuItem[] = [
-    {
-      id: 1,
-      title: 'Bolo de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
-
-  services: ServiceItem[] = [
-    {
-      id: 1,
-      title: 'Decoração de Casamento',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis purus lorem, aliquet eu iaculis sed, sollicitudin quis velit.',
-      imageUrl: '',
-      quantity: 1
-    }
-  ];
-
-  // Modais
-  showCalendarModal: boolean = false;
-  showStateModal: boolean = false;
-  showRemoveFoodModal: boolean = false;
-  showRemoveServiceModal: boolean = false;
-
-  itemToRemove: string = '';
-
-  stateOptions: SelectOption[] = [];
-
-  // Lista de estados do Brasil
-  private readonly BRAZILIAN_STATES: SelectOption[] = [
-    { value: 'AC', label: 'AC - Acre' },
-    { value: 'AL', label: 'AL - Alagoas' },
-    { value: 'AP', label: 'AP - Amapá' },
-    { value: 'AM', label: 'AM - Amazonas' },
-    { value: 'BA', label: 'BA - Bahia' },
-    { value: 'CE', label: 'CE - Ceará' },
-    { value: 'DF', label: 'DF - Distrito Federal' },
-    { value: 'ES', label: 'ES - Espírito Santo' },
-    { value: 'GO', label: 'GO - Goiás' },
-    { value: 'MA', label: 'MA - Maranhão' },
-    { value: 'MT', label: 'MT - Mato Grosso' },
-    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
-    { value: 'MG', label: 'MG - Minas Gerais' },
-    { value: 'PA', label: 'PA - Pará' },
-    { value: 'PB', label: 'PB - Paraíba' },
-    { value: 'PR', label: 'PR - Paraná' },
-    { value: 'PE', label: 'PE - Pernambuco' },
-    { value: 'PI', label: 'PI - Piauí' },
-    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
-    { value: 'RN', label: 'RN - Rio Grande do Norte' },
-    { value: 'RS', label: 'RS - Rio Grande do Sul' },
-    { value: 'RO', label: 'RO - Rondônia' },
-    { value: 'RR', label: 'RR - Roraima' },
-    { value: 'SC', label: 'SC - Santa Catarina' },
-    { value: 'SP', label: 'SP - São Paulo' },
-    { value: 'SE', label: 'SE - Sergipe' },
-    { value: 'TO', label: 'TO - Tocantins' }
-  ];
+  private subs = new Subscription();
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private eventoService: EventoService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.eventId = params['id'] || '';
-    });
-    this.stateOptions = this.BRAZILIAN_STATES;
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        this.eventId = Number(params['id'] || 0);
+        if (this.eventId) {
+          this.loadEvent();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private loadEvent() {
+    this.isLoading = true;
+
+    this.subs.add(
+      this.eventoService.getById(this.eventId).subscribe({
+        next: (event) => {
+          this.eventName = event.nome;
+          this.eventDescription = event.descricao || '';
+          this.eventStatus = event.statusEvento as EnumStatusEvento;
+          this.status = event.status as EnumStatus;
+
+          // Parse início (ISO datetime string)
+          if (event.inicio) {
+            const [date, time] = event.inicio.split('T');
+            this.eventStartDate = date;
+            this.eventStartTime = time ? time.substring(0, 5) : '';
+          }
+
+          // Parse fim (ISO datetime string)
+          if (event.fim) {
+            const [date, time] = event.fim.split('T');
+            this.eventEndDate = date;
+            this.eventEndTime = time ? time.substring(0, 5) : '';
+          }
+
+          // Parse valor
+          if (event.valor != null && event.valor !== '') {
+            this.eventValue = String(event.valor);
+          }
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar evento', err);
+          this.isLoading = false;
+        }
+      })
+    );
   }
 
   onBackClick() {
     this.navCtrl.back();
   }
 
-  // Comidas
-  onAddFoods() {
-    this.navCtrl.navigateForward('/client/foods', {
-      queryParams: { fromEdit: 'event', editId: this.eventId }
-    });
-  }
-
-  onFoodItemClick(item: MenuItem) {
-    if (item.id) {
-      this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromEdit: 'event',
-          editId: this.eventId
-        }
-      });
-    }
-  }
-
-  onRemoveFood(title: string) {
-    this.itemToRemove = title;
-    this.showRemoveFoodModal = true;
-  }
-
-  onRemoveFoodModalClose() {
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveFoodModalConfirm() {
-    this.menuItems = this.menuItems.filter(item => item.title !== this.itemToRemove);
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveFoodModalCancel() {
-    this.showRemoveFoodModal = false;
-    this.itemToRemove = '';
-  }
-
-  onFoodQuantityChange(title: string, newQuantity: number) {
-    const item = this.menuItems.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
-  // Serviços
-  onAddServices() {
-    this.navCtrl.navigateForward('/client/services', {
-      queryParams: { fromEdit: 'event', editId: this.eventId }
-    });
-  }
-
-  onServiceItemClick(item: ServiceItem) {
-    if (item.id) {
-      this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: {
-          name: item.title,
-          fromEdit: 'event',
-          editId: this.eventId
-        }
-      });
-    }
-  }
-
-  onRemoveService(title: string) {
-    this.itemToRemove = title;
-    this.showRemoveServiceModal = true;
-  }
-
-  onRemoveServiceModalClose() {
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveServiceModalConfirm() {
-    this.services = this.services.filter(item => item.title !== this.itemToRemove);
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onRemoveServiceModalCancel() {
-    this.showRemoveServiceModal = false;
-    this.itemToRemove = '';
-  }
-
-  onServiceQuantityChange(title: string, newQuantity: number) {
-    const item = this.services.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
-  // Calendário
-  onCalendarInputClick() {
-    this.showCalendarModal = true;
-  }
-
-  onCalendarModalClose() {
-    this.showCalendarModal = false;
-  }
-
-  onDateSelected(date: string) {
-    this.eventDate = date;
-    this.showCalendarModal = false;
-  }
-
-  // Estado
-  onStateInputClick() {
-    this.showStateModal = true;
-  }
-
-  onStateSelected(stateValue: string) {
-    this.state = stateValue;
-    this.showStateModal = false;
-  }
-
-  // CEP
-  onZipCodeChange(value: string) {
-    const numbersOnly = value.replace(/\D/g, '');
-    const limited = numbersOnly.substring(0, 8);
-
-    if (limited.length <= 5) {
-      this.zipCode = limited;
-    } else {
-      this.zipCode = `${limited.substring(0, 5)}-${limited.substring(5)}`;
-    }
-  }
-
-  onZipCodeKeyPress(event: KeyboardEvent) {
-    const charCode = event.which ? event.which : event.keyCode;
-    if (charCode < 48 || charCode > 57) {
-      event.preventDefault();
-      return false;
-    }
-
-    const currentNumbers = this.zipCode.replace(/\D/g, '');
-    if (currentNumbers.length >= 8) {
-      event.preventDefault();
-      return false;
-    }
-
-    return true;
-  }
-
   // Validação
   get isFormValid(): boolean {
     return !!(
       this.eventName.trim() &&
-      this.eventDescription.trim() &&
-      this.peopleCount.trim() &&
-      this.eventTime.trim() &&
-      this.eventDate.trim() &&
-      this.street.trim() &&
-      this.number.trim() &&
-      this.neighborhood.trim() &&
-      this.city.trim() &&
-      this.state.trim() &&
-      this.zipCode.replace(/\D/g, '').length === 8
+      this.eventStartDate.trim() &&
+      this.eventStartTime.trim() &&
+      this.eventEndDate.trim() &&
+      this.eventEndTime.trim()
     );
   }
 
   // Salvar
   onSave() {
-    if (!this.isFormValid) return;
+    if (!this.isFormValid || this.isSaving) return;
 
-    console.log('Salvando evento:', {
-      name: this.eventName,
-      description: this.eventDescription,
-      peopleCount: this.peopleCount,
-      time: this.eventTime,
-      date: this.eventDate,
-      address: {
-        street: this.street,
-        number: this.number,
-        complement: this.complement,
-        neighborhood: this.neighborhood,
-        city: this.city,
-        state: this.state,
-        zipCode: this.zipCode
-      },
-      foods: this.menuItems,
-      services: this.services
-    });
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
 
-    // TODO: Implementar chamada ao backend
-    this.navCtrl.navigateBack('/events/event-details', {
-      queryParams: { id: this.eventId }
-    });
+    this.isSaving = true;
+
+    // Combina data e hora em ISO datetime string
+    const inicio = `${this.eventStartDate}T${this.eventStartTime}:00`;
+    const fim = `${this.eventEndDate}T${this.eventEndTime}:00`;
+
+    const body: EventoUpdateRequest = {
+      nome: this.eventName,
+      statusEvento: this.eventStatus,
+      status: this.status,
+      inicio,
+      fim,
+      valor: this.eventValue ? parseFloat(this.eventValue) : 0,
+      descricao: this.eventDescription || undefined
+    };
+
+    this.subs.add(
+      this.eventoService.update(this.eventId, body, user.id).subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.navCtrl.navigateBack('/events/event-details', {
+            queryParams: { id: this.eventId }
+          });
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar evento', err);
+          this.isSaving = false;
+          // TODO: Mostrar mensagem de erro ao usuário
+        }
+      })
+    );
   }
 }
-
