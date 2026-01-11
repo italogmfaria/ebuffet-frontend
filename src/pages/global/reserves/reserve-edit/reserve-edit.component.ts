@@ -20,7 +20,7 @@ import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
 import { SessionService } from '../../../../core/services/session.service';
-import { Subscription } from 'rxjs';
+import { Subscription, switchMap } from 'rxjs';
 import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
 
 interface MenuItem {
@@ -421,8 +421,20 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
       descricao: this.reserveDescription
     };
 
+    // Atualizar dados básicos e depois comidas/serviços
     this.subs.add(
-      this.reservationsApi.update(this.reserveId, user.id, body).subscribe({
+      this.reservationsApi.update(this.reserveId, user.id, body).pipe(
+        switchMap(() => {
+          // Atualizar comidas e serviços
+          const comidaIds = this.menuItems.map(item => item.id).filter(id => id !== undefined) as number[];
+          const servicoIds = this.services.map(item => item.id).filter(id => id !== undefined) as number[];
+
+          return this.reservationsApi.updateItems(this.reserveId, user.id, {
+            comidaIds,
+            servicoIds
+          });
+        })
+      ).subscribe({
         next: () => {
           this.isSaving = false;
           this.navCtrl.navigateBack('/reserves/reserve-details', {
