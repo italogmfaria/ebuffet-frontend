@@ -1,54 +1,6 @@
 <app-model-page [title]="reserveTitle" class="ion-page" (backClick)="onBackClick()">
   <div class="reserve-edit-page">
     <ion-grid>
-      <!-- Seção de Cardápio -->
-      <div class="section">
-        <h3 class="section-title">Comidas:</h3>
-        <div class="items-list">
-          <app-order-item-card
-            *ngFor="let item of menuItems"
-            [title]="item.title"
-            [description]="item.description"
-            [imageUrl]="item.imageUrl || ''"
-            [quantity]="item.quantity"
-            (cardClick)="onFoodItemClick(item)"
-            (removeClick)="onRemoveFood(item.title)"
-            (quantityChange)="onFoodQuantityChange(item.title, $event)">
-          </app-order-item-card>
-        </div>
-
-        <div class="button-container">
-          <app-primary-button
-            [text]="'Adicionar comidas'"
-            (buttonClick)="onAddFoods()">
-          </app-primary-button>
-        </div>
-      </div>
-
-      <!-- Seção de Serviços -->
-      <div class="section">
-        <h3 class="section-title">Serviços:</h3>
-        <div class="items-list">
-          <app-order-item-card
-            *ngFor="let service of services"
-            [title]="service.title"
-            [description]="service.description"
-            [imageUrl]="service.imageUrl || ''"
-            [quantity]="service.quantity"
-            (cardClick)="onServiceItemClick(service)"
-            (removeClick)="onRemoveService(service.title)"
-            (quantityChange)="onServiceQuantityChange(service.title, $event)">
-          </app-order-item-card>
-        </div>
-
-        <div class="button-container">
-          <app-primary-button
-            [text]="'Adicionar serviços'"
-            (buttonClick)="onAddServices()">
-          </app-primary-button>
-        </div>
-      </div>
-
       <!-- Seção de Informações da Reserva -->
       <div class="section">
         <app-text-input
@@ -149,8 +101,8 @@
       <!-- Botão Salvar -->
       <div class="save-button-container">
         <app-primary-button
-          [text]="'Salvar'"
-          [disabled]="!isFormValid"
+          [text]="isSaving ? 'Salvando...' : 'Salvar'"
+          [disabled]="!isFormValid || isSaving"
           (buttonClick)="onSave()">
         </app-primary-button>
       </div>
@@ -174,31 +126,3 @@
   (close)="showStateModal = false"
   (optionSelected)="onStateSelected($event)">
 </app-select-modal>
-
-<!-- Modal de Confirmação para Remover Comida -->
-<app-confirmation-modal
-  *ngIf="showRemoveFoodModal"
-  [title]="'Remover comida?'"
-  [subtitle]="'Tem certeza que deseja<br>remover esta comida da reserva?'"
-  [icon]="'trash'"
-  [iconColor]="'#fff'"
-  [outlineButtonText]="'Cancelar'"
-  [primaryButtonText]="'Remover'"
-  (close)="onRemoveFoodModalClose()"
-  (confirm)="onRemoveFoodModalConfirm()"
-  (cancel)="onRemoveFoodModalCancel()">
-</app-confirmation-modal>
-
-<!-- Modal de Confirmação para Remover Serviço -->
-<app-confirmation-modal
-  *ngIf="showRemoveServiceModal"
-  [title]="'Remover serviço?'"
-  [subtitle]="'Tem certeza que deseja<br>remover este serviço da reserva?'"
-  [icon]="'trash'"
-  [iconColor]="'#fff'"
-  [outlineButtonText]="'Cancelar'"
-  [primaryButtonText]="'Remover'"
-  (close)="onRemoveServiceModalClose()"
-  (confirm)="onRemoveServiceModalConfirm()"
-  (cancel)="onRemoveServiceModalCancel()">
-</app-confirmation-modal>
