@@ -6,13 +6,15 @@ import { NavController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import {
   ModelPageComponent,
+  OrderItemCardComponent,
   PrimaryButtonComponent,
   TextInputComponent,
   TextareaInputComponent,
   CalendarInputComponent,
   CalendarModalComponent,
   SelectedInputComponent,
-  SelectModalComponent
+  SelectModalComponent,
+  ConfirmationModalComponent
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
@@ -20,6 +22,22 @@ import { ReservationsApiService } from '../../../../features/reservations/api/re
 import { SessionService } from '../../../../core/services/session.service';
 import { Subscription } from 'rxjs';
 import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
+
+interface MenuItem {
+  id?: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  quantity: number;
+}
+
+interface ServiceItem {
+  id?: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  quantity: number;
+}
 
 @Component({
   selector: 'app-reserve-edit',
@@ -31,13 +49,15 @@ import { ReservaUpdateRequest } from '../../../../features/reservations/model/re
     FormsModule,
     IonicModule,
     ModelPageComponent,
+    OrderItemCardComponent,
     PrimaryButtonComponent,
     TextInputComponent,
     TextareaInputComponent,
     CalendarInputComponent,
     CalendarModalComponent,
     SelectedInputComponent,
-    SelectModalComponent
+    SelectModalComponent,
+    ConfirmationModalComponent
   ],
   host: { class: 'ion-page' }
 })
@@ -61,9 +81,17 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   state: string = '';
   zipCode: string = '';
 
+  // Comidas e Serviços (mocado - não editado pela API de update)
+  menuItems: MenuItem[] = [];
+  services: ServiceItem[] = [];
+
   // Modais
   showCalendarModal: boolean = false;
   showStateModal: boolean = false;
+  showRemoveFoodModal: boolean = false;
+  showRemoveServiceModal: boolean = false;
+
+  itemToRemove: string = '';
 
   stateOptions: SelectOption[] = [];
 
@@ -155,6 +183,23 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
             this.zipCode = r.endereco.cep;
           }
 
+          // Carregar comidas e serviços (somente visualização - não editáveis via API de update)
+          this.menuItems = (r.comidas ?? []).map(c => ({
+            id: c.id,
+            title: c.nome,
+            description: c.descricao,
+            imageUrl: c.imagemUrl || '',
+            quantity: 1
+          }));
+
+          this.services = (r.servicos ?? []).map(s => ({
+            id: s.id,
+            title: s.nome,
+            description: s.descricao,
+            imageUrl: s.imagemUrl || '',
+            quantity: 1
+          }));
+
           this.isLoading = false;
         },
         error: (err) => {
@@ -185,6 +230,100 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
 
   onBackClick() {
     this.navCtrl.back();
+  }
+
+  // Comidas (não editável via API de update - apenas visualização)
+  onAddFoods() {
+    this.navCtrl.navigateForward('/client/foods', {
+      queryParams: { fromEdit: 'reserve', editId: this.reserveId }
+    });
+  }
+
+  onFoodItemClick(item: MenuItem) {
+    if (item.id) {
+      this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
+        queryParams: {
+          name: item.title,
+          fromEdit: 'reserve',
+          editId: this.reserveId
+        }
+      });
+    }
+  }
+
+  onRemoveFood(title: string) {
+    this.itemToRemove = title;
+    this.showRemoveFoodModal = true;
+  }
+
+  onRemoveFoodModalClose() {
+    this.showRemoveFoodModal = false;
+    this.itemToRemove = '';
+  }
+
+  onRemoveFoodModalConfirm() {
+    this.menuItems = this.menuItems.filter(item => item.title !== this.itemToRemove);
+    this.showRemoveFoodModal = false;
+    this.itemToRemove = '';
+  }
+
+  onRemoveFoodModalCancel() {
+    this.showRemoveFoodModal = false;
+    this.itemToRemove = '';
+  }
+
+  onFoodQuantityChange(title: string, newQuantity: number) {
+    const item = this.menuItems.find(i => i.title === title);
+    if (item) {
+      item.quantity = newQuantity;
+    }
+  }
+
+  // Serviços (não editável via API de update - apenas visualização)
+  onAddServices() {
+    this.navCtrl.navigateForward('/client/services', {
+      queryParams: { fromEdit: 'reserve', editId: this.reserveId }
+    });
+  }
+
+  onServiceItemClick(item: ServiceItem) {
+    if (item.id) {
+      this.navCtrl.navigateForward(`/client/services/${item.id}`, {
+        queryParams: {
+          name: item.title,
+          fromEdit: 'reserve',
+          editId: this.reserveId
+        }
+      });
+    }
+  }
+
+  onRemoveService(title: string) {
+    this.itemToRemove = title;
+    this.showRemoveServiceModal = true;
+  }
+
+  onRemoveServiceModalClose() {
+    this.showRemoveServiceModal = false;
+    this.itemToRemove = '';
+  }
+
+  onRemoveServiceModalConfirm() {
+    this.services = this.services.filter(item => item.title !== this.itemToRemove);
+    this.showRemoveServiceModal = false;
+    this.itemToRemove = '';
+  }
+
+  onRemoveServiceModalCancel() {
+    this.showRemoveServiceModal = false;
+    this.itemToRemove = '';
+  }
+
+  onServiceQuantityChange(title: string, newQuantity: number) {
+    const item = this.services.find(i => i.title === title);
+    if (item) {
+      item.quantity = newQuantity;
+    }
   }
 
   // Calendário
