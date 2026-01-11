@@ -17,8 +17,9 @@ import {
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { EventoService } from '../../../../features/events/api/evento.api.service';
+import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
 import { SessionService } from '../../../../core/services/session.service';
-import { Subscription } from 'rxjs';
+import { Subscription, switchMap } from 'rxjs';
 import { EventoUpdateRequest, EnumStatusEvento, EnumStatus } from '../../../../features/events/model/events.models';
 
 interface MenuItem {
@@ -137,6 +138,7 @@ export class EventEditComponent implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private themeService: ThemeService,
     private eventoService: EventoService,
+    private reservationsApi: ReservationsApiService,
     private sessionService: SessionService
   ) {}
 
@@ -158,11 +160,15 @@ export class EventEditComponent implements OnInit, OnDestroy {
   }
 
   private loadEvent() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
     this.isLoading = true;
 
     this.subs.add(
-      this.eventoService.getById(this.eventId).subscribe({
-        next: (event) => {
+      this.eventoService.getById(this.eventId).pipe(
+        switchMap((event) => {
+          // Carregar dados do evento
           this.eventName = event.nome;
           this.eventDescription = event.descricao || '';
           this.eventStatus = event.statusEvento as EnumStatusEvento;
@@ -187,31 +193,45 @@ export class EventEditComponent implements OnInit, OnDestroy {
             this.eventValue = String(event.valor);
           }
 
-          // Dados mocados (não retornados pela API de eventos)
-          this.peopleCount = '50';
-          this.menuItems = [
-            {
-              id: 1,
-              title: 'Bolo de Casamento',
-              description: 'Bolo tradicional de 3 andares',
-              imageUrl: '',
-              quantity: 1
-            }
-          ];
-          this.services = [
-            {
-              id: 1,
-              title: 'Decoração',
-              description: 'Decoração completa do salão',
-              imageUrl: '',
-              quantity: 1
-            }
-          ];
+          // Carregar comidas e serviços da reserva associada
+          return this.reservationsApi.getById(event.reservaId, event.clienteId);
+        })
+      ).subscribe({
+        next: (reserva) => {
+          // Carregar dados da reserva (endereço, qtd pessoas, comidas, serviços)
+          this.peopleCount = String(reserva.qtdPessoas);
+
+          if (reserva.endereco) {
+            this.street = reserva.endereco.rua;
+            this.number = reserva.endereco.numero;
+            this.complement = reserva.endereco.complemento || '';
+            this.neighborhood = reserva.endereco.bairro;
+            this.city = reserva.endereco.cidade;
+            this.state = reserva.endereco.estado;
+            this.zipCode = reserva.endereco.cep;
+          }
+
+          // Carregar comidas e serviços
+          this.menuItems = (reserva.comidas ?? []).map(c => ({
+            id: c.id,
+            title: c.nome,
+            description: c.descricao,
+            imageUrl: c.imagemUrl || '',
+            quantity: 1
+          }));
+
+          this.services = (reserva.servicos ?? []).map(s => ({
+            id: s.id,
+            title: s.nome,
+            description: s.descricao,
+            imageUrl: s.imagemUrl || '',
+            quantity: 1
+          }));
 
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Erro ao carregar evento', err);
+          console.error('Erro ao carregar evento/reserva', err);
           this.isLoading = false;
         }
       })
@@ -378,6 +398,10 @@ export class EventEditComponent implements OnInit, OnDestroy {
     const inicio = `${this.eventStartDate}T${this.eventStartTime}:00`;
     const fim = `${this.eventEndDate}T${this.eventEndTime}:00`;
 
+    // Extrair IDs das comidas e serviços
+    const comidaIds = this.menuItems.map(item => item.id).filter(id => id !== undefined) as number[];
+    const servicoIds = this.services.map(item => item.id).filter(id => id !== undefined) as number[];
+
     const body: EventoUpdateRequest = {
       nome: this.eventName,
       statusEvento: this.eventStatus,
@@ -385,7 +409,9 @@ export class EventEditComponent implements OnInit, OnDestroy {
       inicio,
       fim,
       valor: this.eventValue ? parseFloat(this.eventValue) : 0,
-      descricao: this.eventDescription || undefined
+      descricao: this.eventDescription || undefined,
+      comidaIds: comidaIds.length > 0 ? comidaIds : undefined,
+      servicoIds: servicoIds.length > 0 ? servicoIds : undefined
     };
 
     this.subs.add(

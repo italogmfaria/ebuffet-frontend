@@ -37,6 +37,8 @@ export interface EventoUpdateRequest {
   fim: string; // ISO datetime string
   valor: number;
   descricao?: string;
+  comidaIds?: number[];
+  servicoIds?: number[];
 }
 
 export function mapEventoStatusToUi(
