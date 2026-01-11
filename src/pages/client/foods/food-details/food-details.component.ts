@@ -60,6 +60,8 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(params => {
         this.foodName = params['name'] || 'Detalhes da Comida';
         this.isFromOrder = params['fromOrder'] === 'true';
+        this.fromEdit = params['fromEdit'] || '';
+        this.editId = params['editId'] || '';
       })
     );
 
