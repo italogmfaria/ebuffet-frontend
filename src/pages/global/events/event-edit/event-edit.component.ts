@@ -174,7 +174,7 @@ export class EventEditComponent implements OnInit, OnDestroy {
             id: item.id,
             title: item.title,
             description: item.description,
-            imageUrl: item.imageUrl,
+            imageUrl: item.imageUrl || '',
             quantity: item.quantity || 1
           });
         }
@@ -186,7 +186,7 @@ export class EventEditComponent implements OnInit, OnDestroy {
             id: item.id,
             title: item.title,
             description: item.description,
-            imageUrl: item.imageUrl,
+            imageUrl: item.imageUrl || '',
             quantity: item.quantity || 1
           });
         }
