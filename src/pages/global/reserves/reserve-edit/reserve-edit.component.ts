@@ -20,6 +20,7 @@ import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
 import { SessionService } from '../../../../core/services/session.service';
+import { OrderService } from '../../../../features/orders/services/order.service';
 import { Subscription, switchMap } from 'rxjs';
 import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
 
@@ -138,7 +139,8 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private themeService: ThemeService,
     private reservationsApi: ReservationsApiService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private orderService: OrderService
   ) {}
 
   ngOnInit() {
@@ -156,6 +158,44 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.unsubscribe();
+  }
+
+  ionViewWillEnter() {
+    // Captura itens adicionados ao carrinho durante a navegação
+    const orderItems = this.orderService.getOrderItems();
+
+    orderItems.forEach(item => {
+      if (item.type === 'food') {
+        // Verifica se a comida já não está na lista
+        const exists = this.menuItems.some(m => m.id === item.id);
+        if (!exists) {
+          this.menuItems.push({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            imageUrl: item.imageUrl,
+            quantity: item.quantity || 1
+          });
+        }
+      } else if (item.type === 'service') {
+        // Verifica se o serviço já não está na lista
+        const exists = this.services.some(s => s.id === item.id);
+        if (!exists) {
+          this.services.push({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            imageUrl: item.imageUrl,
+            quantity: item.quantity || 1
+          });
+        }
+      }
+    });
+
+    // Limpa o carrinho após capturar os itens
+    if (orderItems.length > 0) {
+      this.orderService.clearOrder();
+    }
   }
 
   private loadReserve() {
