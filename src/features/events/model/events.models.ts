@@ -41,6 +41,25 @@ export interface EventoUpdateRequest {
   servicoIds?: number[];
 }
 
+export interface EnderecoRequest {
+  rua: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  complemento?: string;
+}
+
+export interface ClienteEventoUpdateRequest {
+  comidaIds?: number[];
+  servicoIds?: number[];
+  qtdPessoas?: number;
+  inicio?: string; // ISO datetime string
+  fim?: string; // ISO datetime string
+  endereco?: EnderecoRequest;
+}
+
 export function mapEventoStatusToUi(
   status: 'PENDENTE' | 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO' | string
 ): UiStatus {

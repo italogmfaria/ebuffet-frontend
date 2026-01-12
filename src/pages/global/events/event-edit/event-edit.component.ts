@@ -434,28 +434,50 @@ export class EventEditComponent implements OnInit, OnDestroy {
 
     this.isSaving = true;
 
-    // Combina data e hora em ISO datetime string
-    const inicio = `${this.eventStartDate}T${this.eventStartTime}:00`;
-    const fim = `${this.eventEndDate}T${this.eventEndTime}:00`;
-
     // Extrair IDs das comidas e serviços
     const comidaIds = this.menuItems.map(item => item.id).filter(id => id !== undefined) as number[];
     const servicoIds = this.services.map(item => item.id).filter(id => id !== undefined) as number[];
 
-    const body: EventoUpdateRequest = {
-      nome: this.eventName,
-      statusEvento: this.eventStatus,
-      status: this.status,
-      inicio,
-      fim,
-      valor: this.eventValue ? parseFloat(this.eventValue) : 0,
-      descricao: this.eventDescription || undefined,
-      comidaIds: comidaIds.length > 0 ? comidaIds : undefined,
-      servicoIds: servicoIds.length > 0 ? servicoIds : undefined
-    };
+    const body: any = {};
+
+    // Comidas e serviços (sempre incluir, mesmo que vazio)
+    if (comidaIds.length > 0) {
+      body.comidaIds = comidaIds;
+    }
+    if (servicoIds.length > 0) {
+      body.servicoIds = servicoIds;
+    }
+
+    // Quantidade de pessoas (se foi alterado)
+    if (this.peopleCount) {
+      body.qtdPessoas = parseInt(this.peopleCount);
+    }
+
+    // Data e hora de início (se foi alterado)
+    if (this.eventStartDate && this.eventStartTime) {
+      body.inicio = `${this.eventStartDate}T${this.eventStartTime}:00`;
+    }
+
+    // Data e hora de fim (se foi alterado)
+    if (this.eventEndDate && this.eventEndTime) {
+      body.fim = `${this.eventEndDate}T${this.eventEndTime}:00`;
+    }
+
+    // Endereço (se foi alterado)
+    if (this.street && this.number && this.neighborhood && this.city && this.state && this.zipCode) {
+      body.endereco = {
+        rua: this.street,
+        numero: this.number,
+        bairro: this.neighborhood,
+        cidade: this.city,
+        estado: this.state,
+        cep: this.zipCode,
+        complemento: this.complement || undefined
+      };
+    }
 
     this.subs.add(
-      this.eventoService.update(this.eventId, body, user.id).subscribe({
+      this.eventoService.updateByCliente(this.eventId, body, user.id).subscribe({
         next: () => {
           this.isSaving = false;
           this.navCtrl.navigateBack('/events/event-details', {
