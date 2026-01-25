@@ -103,6 +103,11 @@ export class EventoService {
     return this.api.put<EventoResponse>(`${this.basePath}/${id}/cancelar`, {}, params);
   }
 
+  cancelarPeloCliente(id: number, clienteId: number): Observable<EventoResponse> {
+    const params = { clienteId: String(clienteId) };
+    return this.api.put<EventoResponse>(`${this.basePath}/${id}/cliente/cancelar`, {}, params);
+  }
+
   reverterCancelamento(id: number, ownerId: number): Observable<EventoResponse> {
     const params = { ownerId: String(ownerId) };
     return this.api.put<EventoResponse>(`${this.basePath}/${id}/reverter-cancelamento`, {}, params);

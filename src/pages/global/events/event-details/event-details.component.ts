@@ -310,10 +310,24 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           }
         })
       );
-    } else {
-      // Caso contrário, cancelar o evento
+    } else if (isBuffetOwner) {
+      // Caso contrário, buffet cancela o evento
       this.subs.add(
         this.eventoApi.cancelar(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+          },
+          error: (err) => {
+            console.error('Erro ao cancelar evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    } else {
+      // Cliente cancela o evento
+      this.subs.add(
+        this.eventoApi.cancelarPeloCliente(this.eventId, user.id).subscribe({
           next: (ev) => {
             this.showCancelModal = false;
             this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
