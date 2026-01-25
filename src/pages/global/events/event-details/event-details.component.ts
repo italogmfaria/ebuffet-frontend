@@ -293,18 +293,38 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
-    this.subs.add(
-      this.eventoApi.cancelar(this.eventId, user.id).subscribe({
-        next: (ev) => {
-          this.showCancelModal = false;
-          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
-        },
-        error: (err) => {
-          console.error('Erro ao cancelar/descancelar evento', err);
-          this.showCancelModal = false;
-        }
-      })
-    );
+    const isBuffetOwner = user.roles === 'BUFFET';
+
+    // Se o evento está cancelado e é o buffet, reverter cancelamento
+    if (this.eventStatus === 'canceled' && isBuffetOwner) {
+      this.subs.add(
+        this.eventoApi.reverterCancelamento(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+            this.loadEvento();
+          },
+          error: (err) => {
+            console.error('Erro ao reverter cancelamento do evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    } else {
+      // Caso contrário, cancelar o evento
+      this.subs.add(
+        this.eventoApi.cancelar(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+          },
+          error: (err) => {
+            console.error('Erro ao cancelar evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    }
   }
 
   onCancelModalCancel() {

@@ -256,20 +256,35 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
-    // Se for buffet owner, usa clienteId da reserva
-    // Se for cliente, usa o próprio user.id
     const isBuffetOwner = user.roles === 'BUFFET';
-    const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
 
-    this.subs.add(
-      this.reservationsApi.cancel(this.reserveId, clientIdToUse).subscribe({
-        next: (r) => {
-          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
-          this.loadReserve();
-        },
-        error: (err) => console.error('Erro ao cancelar reserva', err)
-      })
-    );
+    // Se a reserva está cancelada e é o buffet, reverter cancelamento
+    if (this.reserveStatus === 'canceled' && isBuffetOwner) {
+      this.subs.add(
+        this.reservationsApi.reverterCancelamento(this.reserveId, user.id).subscribe({
+          next: (r) => {
+            this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+            this.loadReserve();
+          },
+          error: (err) => console.error('Erro ao reverter cancelamento da reserva', err)
+        })
+      );
+    } else {
+      // Caso contrário, cancelar a reserva
+      // Se for buffet owner, usa clienteId da reserva
+      // Se for cliente, usa o próprio user.id
+      const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
+
+      this.subs.add(
+        this.reservationsApi.cancel(this.reserveId, clientIdToUse).subscribe({
+          next: (r) => {
+            this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+            this.loadReserve();
+          },
+          error: (err) => console.error('Erro ao cancelar reserva', err)
+        })
+      );
+    }
   }
 
   onApprove() {

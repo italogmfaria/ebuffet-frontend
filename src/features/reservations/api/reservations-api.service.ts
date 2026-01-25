@@ -63,4 +63,8 @@ export class ReservationsApiService {
     const body = valor ? { valor } : {};
     return this.api.put<ReservaResponse>(`/buffets/reservas/aprovar/${id}`, body, { ownerId });
   }
+
+  reverterCancelamento(id: number, ownerId: number): Observable<ReservaResponse> {
+    return this.api.put<ReservaResponse>(`/buffets/reservas/reverter-cancelamento/${id}`, {}, { ownerId });
+  }
 }
