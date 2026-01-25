@@ -207,26 +207,23 @@ export class EventEditComponent implements OnInit, OnDestroy {
 
     this.subs.add(
       this.eventoService.getById(this.eventId).pipe(
-        switchMap((event) => {
+        switchMap((event: any) => {
           // Carregar dados do evento
-          this.eventName = event.nome;
+          this.eventName = event.nome ?? event.titulo ?? '';
           this.eventDescription = event.descricao || '';
           this.eventStatus = event.statusEvento as EnumStatusEvento;
           this.status = event.status as EnumStatus;
 
+          const startFromEvento = this.parseDateTime(event.inicio);
+          const endFromEvento = this.parseDateTime(event.fim);
+
           // Parse início (ISO datetime string)
-          if (event.inicio) {
-            const [date, time] = event.inicio.split('T');
-            this.eventStartDate = date;
-            this.eventStartTime = time ? time.substring(0, 5) : '';
-          }
+          this.eventStartDate = startFromEvento.date || (event.dataDesejada ?? '');
+          this.eventStartTime = startFromEvento.time || this.parseTimeOnly(event.horarioDesejado);
 
           // Parse fim (ISO datetime string)
-          if (event.fim) {
-            const [date, time] = event.fim.split('T');
-            this.eventEndDate = date;
-            this.eventEndTime = time ? time.substring(0, 5) : '';
-          }
+          this.eventEndDate = endFromEvento.date || this.eventStartDate;
+          this.eventEndTime = endFromEvento.time || this.eventStartTime;
 
           // Parse valor
           if (event.valor != null && event.valor !== '') {
@@ -240,6 +237,30 @@ export class EventEditComponent implements OnInit, OnDestroy {
         next: (reserva) => {
           // Carregar dados da reserva (endereço, qtd pessoas, comidas, serviços)
           this.peopleCount = String(reserva.qtdPessoas);
+
+          if (!this.eventName) {
+            this.eventName = reserva.titulo || '';
+          }
+
+          if (!this.eventDescription) {
+            this.eventDescription = reserva.descricao || '';
+          }
+
+          if (!this.eventStartDate && reserva.dataDesejada) {
+            this.eventStartDate = reserva.dataDesejada;
+          }
+
+          if (!this.eventStartTime && reserva.horarioDesejado) {
+            this.eventStartTime = this.parseTimeOnly(reserva.horarioDesejado);
+          }
+
+          if (!this.eventEndDate) {
+            this.eventEndDate = this.eventStartDate;
+          }
+
+          if (!this.eventEndTime) {
+            this.eventEndTime = this.eventStartTime;
+          }
 
           if (reserva.endereco) {
             this.street = reserva.endereco.rua;
@@ -276,6 +297,27 @@ export class EventEditComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  private parseDateTime(value?: string | null): { date: string; time: string } {
+    if (!value) {
+      return { date: '', time: '' };
+    }
+
+    if (value.includes('T')) {
+      const [date, time] = value.split('T');
+      return {
+        date: date ?? '',
+        time: time ? time.substring(0, 5) : ''
+      };
+    }
+
+    return { date: value, time: '' };
+  }
+
+  private parseTimeOnly(value?: string | null): string {
+    if (!value) return '';
+    return value.length >= 5 ? value.substring(0, 5) : value;
   }
 
   onBackClick() {
