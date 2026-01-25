@@ -424,8 +424,8 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
              this.eventStatus === 'approved' ||
              this.eventStatus === 'canceled';
     } else {
-      // Cliente pode cancelar apenas se pendente (não pode descancelar)
-      return this.eventStatus === 'pending';
+      // Cliente pode cancelar se pendente ou agendado (não pode descancelar)
+      return this.eventStatus === 'pending' || this.eventStatus === 'approved';
     }
   }
 
