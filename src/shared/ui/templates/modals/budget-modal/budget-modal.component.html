@@ -14,16 +14,19 @@
 
       <div class="toggle-container" *ngIf="showBlockDayToggle">
         <div class="toggle-label-group">
-          <ion-label class="toggle-label">Bloquear dia no calendário</ion-label>
-          <ion-text class="toggle-description">
+          <label class="toggle-label" for="blockDayToggle">Bloquear dia no calendário</label>
+          <span class="toggle-description">
             Ao ativar, esta data ficará indisponível para novas reservas
-          </ion-text>
+          </span>
         </div>
-        <ion-toggle
-          [(ngModel)]="blockDay"
-          mode="ios"
-          class="toggle-switch">
-        </ion-toggle>
+        <label class="custom-toggle">
+          <input
+            type="checkbox"
+            id="blockDayToggle"
+            [(ngModel)]="blockDay"
+            class="toggle-checkbox">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController } from '@ionic/angular/standalone';
+import { NavController, ViewWillEnter } from '@ionic/angular/standalone';
 import {
   ModelPageComponent,
   LoadingSpinnerComponent,
@@ -43,7 +43,7 @@ interface Reserve {
     DefaultStatusComponent
   ]
 })
-export class ReservesComponent implements OnInit, OnDestroy {
+export class ReservesComponent implements OnInit, OnDestroy, ViewWillEnter {
   secondaryColor$ = this.themeService.secondaryColor$;
   isLoading = false;
   searchQuery = '';
@@ -66,6 +66,11 @@ export class ReservesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageTitle = this.titleService.getReservesTitle();
+    this.loadReserves();
+  }
+
+  ionViewWillEnter() {
+    // Reload reserves when returning to the page
     this.loadReserves();
   }
 

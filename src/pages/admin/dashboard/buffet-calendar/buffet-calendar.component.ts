@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonDatetime } from '@ionic/angular/standalone';
@@ -12,7 +12,7 @@ import { DetailBagdeComponent } from '../../../../shared/ui/templates/exports';
   standalone: true,
   imports: [CommonModule, FormsModule, IonDatetime, DetailBagdeComponent],
 })
-export class BuffetCalendarComponent implements OnInit {
+export class BuffetCalendarComponent implements OnInit, OnChanges {
   @Input() eventDates: string[] = [];
 
   selectedDate: string = '';
@@ -22,28 +22,43 @@ export class BuffetCalendarComponent implements OnInit {
   minDate: string = '2020-01-01';
   maxDate: string = '2030-12-31';
 
-  constructor(private themeService: ThemeService) {}
+  highlightedDates: (isoString: string) => any;
+
+  constructor(private themeService: ThemeService) {
+    // Inicializa a função de highlight
+    this.highlightedDates = this.createHighlightFn();
+  }
 
   ngOnInit() {
     // Event dates are now received as Input from parent component
+    this.highlightedDates = this.createHighlightFn();
   }
 
-  // Função para customizar a aparência de cada dia com evento
-  highlightedDates = (isoString: string) => {
-    // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
-    const dateOnly = isoString.split('T')[0];
-
-    if (this.eventDates.includes(dateOnly)) {
-      let color = '#8b5cf6'; // roxo padrão
-      this.secondaryColor$.subscribe((c) => (color = c)).unsubscribe();
-
-      return {
-        textColor: '#ffffff',
-        backgroundColor: color,
-      };
+  ngOnChanges(changes: SimpleChanges) {
+    // Recria a função de highlight quando eventDates mudar
+    if (changes['eventDates']) {
+      this.highlightedDates = this.createHighlightFn();
     }
+  }
 
-    return undefined;
-  };
+  // Função factory que cria uma nova função de highlight
+  private createHighlightFn() {
+    return (isoString: string) => {
+      // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
+      const dateOnly = isoString.split('T')[0];
+
+      if (this.eventDates.includes(dateOnly)) {
+        let color = '#8b5cf6'; // roxo padrão
+        this.secondaryColor$.subscribe((c) => (color = c)).unsubscribe();
+
+        return {
+          textColor: '#ffffff',
+          backgroundColor: color,
+        };
+      }
+
+      return undefined;
+    };
+  }
 }
 

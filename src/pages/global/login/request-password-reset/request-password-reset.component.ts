@@ -37,9 +37,17 @@ export class RequestPasswordResetComponent implements OnInit {
   ngOnInit() {}
 
   async onSubmit(): Promise<void> {
+    if (this.isLoading) return;
+
     const email = this.emailControl.value || '';
 
-    // Validar email
+    // Validar email vazio
+    if (!email.trim()) {
+      await this.toastService.warning('Por favor, digite seu e-mail.');
+      return;
+    }
+
+    // Validar formato do email
     const emailValidation = this.validationService.validateEmail(email);
     if (!emailValidation.isValid) {
       await this.toastService.warning(emailValidation.message!);
@@ -81,9 +89,5 @@ export class RequestPasswordResetComponent implements OnInit {
 
   onBackClick(): void {
     this.navCtrl.navigateBack('/login');
-  }
-
-  get isFormValid(): boolean {
-    return this.emailControl.valid;
   }
 }

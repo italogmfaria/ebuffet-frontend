@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
 import { ThemeService } from '../../../core/services/theme.service';
 import { SessionService } from '../../../core/services/session.service';
@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs';
   ],
   host: { class: 'ion-page' }
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, ViewWillEnter {
   primaryColor$ = this.themeService.primaryColor$;
   showExitModal = false;
 
@@ -40,6 +40,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.loadEventDates();
+  }
+
+  ionViewWillEnter() {
+    // Reload event dates when returning to dashboard
     this.loadEventDates();
   }
 

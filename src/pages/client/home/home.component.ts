@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import { FormPageComponent, ConfirmationModalComponent, ClientNavbarComponent } from '../../../shared/ui/templates/exports';
-import { IonGrid, NavController } from "@ionic/angular/standalone";
+import { IonGrid, NavController, ViewWillEnter } from "@ionic/angular/standalone";
 import { ThemeService } from '../../../core/services/theme.service';
 import {HomeCarouselComponent} from "./home-carousel/home-carousel.component";
 import {HomeCategoriesComponent} from "./home-categories/home-categories.component";
@@ -17,7 +17,7 @@ import { OrderService } from '../../../features/orders/services/order.service';
   imports: [CommonModule, FormPageComponent, IonGrid, ConfirmationModalComponent, ClientNavbarComponent, HomeCarouselComponent, HomeCategoriesComponent, HomeCalendarComponent],
   host: { class: 'ion-page' }
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, ViewWillEnter {
   @Input() cartItemCount = 0;
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
@@ -41,6 +41,12 @@ export class HomeComponent implements OnInit {
       this.cartItemCount = this.orderService.getTotalItems();
     });
 
+    this.loadUserData();
+  }
+
+  ionViewWillEnter() {
+    // Reload cart count when returning to home
+    this.cartItemCount = this.orderService.getTotalItems();
     this.loadUserData();
   }
 

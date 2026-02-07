@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController } from '@ionic/angular/standalone';
+import { NavController, ViewWillEnter } from '@ionic/angular/standalone';
 import {
   ModelPageComponent,
   LoadingSpinnerComponent,
@@ -43,7 +43,7 @@ interface Event {
     DefaultStatusComponent
   ]
 })
-export class EventsComponent implements OnInit, OnDestroy {
+export class EventsComponent implements OnInit, OnDestroy, ViewWillEnter {
   secondaryColor$ = this.themeService.secondaryColor$;
   isLoading = false;
   searchQuery = '';
@@ -67,6 +67,11 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageTitle = this.titleService.getEventsTitle();
+    this.loadEvents();
+  }
+
+  ionViewWillEnter() {
+    // Reload events when returning to the page
     this.loadEvents();
   }
 
