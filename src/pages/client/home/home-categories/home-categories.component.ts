@@ -16,9 +16,9 @@ import {
 export class HomeCategoriesComponent implements OnInit {
   categories = [
     { name: 'Almoço', image: 'assets/images/categories-images/categories-image-1.png', route: '/almoco' },
-    { name: 'Café da manhã', image: 'assets/images/categories-images/categories-image-2.png', route: '/cafe' },
-    { name: 'Happy Hour', image: 'assets/images/categories-images/categories-image-3.png', route: '/happy-hour' },
-    { name: 'Jantar', image: 'assets/images/categories-images/categories-image-4.png', route: '/jantar' }
+    { name: 'Jantar', image: 'assets/images/categories-images/categories-image-4.png', route: '/jantar' },
+    { name: 'Casamento', image: 'assets/images/categories-images/categories-image-2.png', route: '/casamento' },
+    { name: 'Aniversário', image: 'assets/images/categories-images/categories-image-3.png', route: '/aniversario' }
   ];
 
   secondaryColor$ = this.themeService.secondaryColor$;

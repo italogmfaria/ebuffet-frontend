@@ -86,6 +86,7 @@
       font-weight: 700 !important;
       color: var(--secondary-color) !important;
       background: transparent !important;
+      text-transform: uppercase !important; // Meses em MAIÚSCULA
     }
 
     ::part(calendar-next-button),

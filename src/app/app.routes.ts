@@ -7,6 +7,7 @@ import {
 } from "../pages/global/register/register-confirmation/register-confirmation.component";
 import {TermsComponent} from "../pages/global/register/terms/terms.component";
 import {LoginComponent} from "../pages/global/login/login.component";
+import {RequestPasswordResetComponent} from "../pages/global/login/request-password-reset/request-password-reset.component";
 import {ForgotPasswordComponent} from "../pages/global/login/forgot-password/forgot-password.component";
 import {NewPasswordComponent} from "../pages/global/login/forgot-password/new-password/new-password.component";
 import {HomeComponent} from "../pages/client/home/home.component";
@@ -66,6 +67,10 @@ export const routes: Routes = [
     component: LoginComponent
   },
   {
+    path: 'request-password-reset',
+    component: RequestPasswordResetComponent
+  },
+  {
     path: 'forgot-password',
     component: ForgotPasswordComponent
   },
@@ -109,6 +114,16 @@ export const routes: Routes = [
   {
     path: 'events/event-edit',
     component: EventEditComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'foods/:id',
+    component: FoodDetailsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'services/:id',
+    component: ServiceDetailsComponent,
     canActivate: [AuthGuard]
   },
 

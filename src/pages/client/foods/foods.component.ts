@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../../core/services/theme.service';
 import { OrderService } from '../../../features/orders/services/order.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { EditStateService } from '../../../core/services/edit-state.service';
 import { ComidaListDTO } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../core/enums/categoria.enum';
 import {Subscription} from "rxjs";
@@ -69,7 +70,8 @@ export class FoodsComponent implements OnInit, OnDestroy {
     private orderService: OrderService,
     private toastService: ToastService,
     private foodsApiService: FoodsApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private editStateService: EditStateService
   ) {}
 
   ngOnInit() {
@@ -133,7 +135,18 @@ export class FoodsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.navigateBack('/client/home');
+    // Se veio de edição de reserva ou evento, volta para lá
+    if (this.fromEdit === 'reserve' && this.editId) {
+      this.navCtrl.navigateBack('/reserves/reserve-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else if (this.fromEdit === 'event' && this.editId) {
+      this.navCtrl.navigateBack('/events/event-edit', {
+        queryParams: { id: this.editId }
+      });
+    } else {
+      this.navCtrl.navigateBack('/client/home');
+    }
   }
 
   onNotificationClick() {
@@ -151,7 +164,8 @@ export class FoodsComponent implements OnInit, OnDestroy {
   }
 
   private applyFilters() {
-    let filtered = [...this.foods];
+    // Primeiro, filtrar apenas itens ATIVOS
+    let filtered = this.foods.filter(f => f.status === 'ATIVO');
 
     if (this.searchQuery) {
       const term = this.searchQuery.toLowerCase();
@@ -218,24 +232,46 @@ export class FoodsComponent implements OnInit, OnDestroy {
   }
 
   onAddToOrder(item: ComidaListDTO) {
-    this.orderService.addItem({
-      id: item.id,
-      title: item.nome,
-      description: item.descricao,
-      imageUrl: item.imageUrl || '',
-      type: 'food'
-    });
-    this.toastService.success(`${item.nome} adicionado ao pedido!`);
+    // Determina o contexto baseado no fromEdit
+    if (this.fromEdit === 'reserve' || this.fromEdit === 'event') {
+      const context = this.fromEdit === 'reserve' ? 'reserve-edit' : 'event-edit';
 
-    // Redireciona para a página de edição se vier de lá
-    if (this.fromEdit === 'reserve') {
-      this.navCtrl.navigateForward('/reserves/reserve-edit', {
+      // Usa EditStateService para gerenciar estado
+      const wasAdded = this.editStateService.addItem(context, {
+        id: item.id,
+        title: item.nome,
+        description: item.descricao,
+        imageUrl: item.imageUrl || '',
+        type: 'food'
+      });
+
+      if (wasAdded) {
+        this.toastService.success(`${item.nome} adicionado!`);
+      } else {
+        const entityType = context === 'reserve-edit' ? 'reserva' : 'evento';
+        this.toastService.warning(`${item.nome} já foi adicionado à ${entityType}!`);
+      }
+
+      // Redireciona de volta
+      const route = context === 'reserve-edit' ? '/reserves/reserve-edit' : '/events/event-edit';
+      this.navCtrl.navigateForward(route, {
         queryParams: { id: this.editId }
       });
-    } else if (this.fromEdit === 'event') {
-      this.navCtrl.navigateForward('/events/event-edit', {
-        queryParams: { id: this.editId }
-      });
+    } else {
+      // Contexto 'order' (carrinho normal)
+      const wasAdded = this.orderService.addItem({
+        id: item.id,
+        title: item.nome,
+        description: item.descricao,
+        imageUrl: item.imageUrl || '',
+        type: 'food'
+      }, 'order');
+
+      if (wasAdded) {
+        this.toastService.success(`${item.nome} adicionado ao pedido!`);
+      } else {
+        this.toastService.warning(`${item.nome} já foi adicionado ao pedido!`);
+      }
     }
   }
 
@@ -245,6 +281,9 @@ export class FoodsComponent implements OnInit, OnDestroy {
     if (this.fromEdit) {
       queryParams.fromEdit = this.fromEdit;
       queryParams.editId = this.editId;
+    } else {
+      // Se não vem de edição, marca que vem da página de foods
+      queryParams.fromPage = 'foods';
     }
 
     this.navCtrl.navigateForward(`/client/foods/${food.id}`, { queryParams });

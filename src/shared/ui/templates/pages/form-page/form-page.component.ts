@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject, Injector} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {IonContent, IonIcon, NavController} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -30,23 +30,30 @@ export class FormPageComponent implements OnInit, OnDestroy {
   hasNewNotification = false;
 
   private notificationSubscription?: Subscription;
+  private notificationService?: NotificationService;
+  private injector = inject(Injector);
 
   constructor(
     private navCtrl: NavController,
-    private themeService: ThemeService,
-    private notificationService: NotificationService
+    private themeService: ThemeService
   ) {
     addIcons({ arrowBack });
   }
 
   ngOnInit() {
-    // Verifica imediatamente se há novas notificações
-    this.notificationService.checkForNewNotifications();
+    // Só carrega NotificationService se showNotification for true (lazy loading)
+    if (this.showNotification) {
+      // Injeta o serviço de forma lazy para evitar dependência circular
+      this.notificationService = this.injector.get(NotificationService);
 
-    // Observa mudanças no estado de notificações
-    this.notificationSubscription = this.notificationService.hasNewNotification$.subscribe(hasNew => {
-      this.hasNewNotification = hasNew;
-    });
+      // Verifica imediatamente se há novas notificações
+      this.notificationService.checkForNewNotifications();
+
+      // Observa mudanças no estado de notificações
+      this.notificationSubscription = this.notificationService.hasNewNotification$.subscribe(hasNew => {
+        this.hasNewNotification = hasNew;
+      });
+    }
   }
 
   ngOnDestroy() {

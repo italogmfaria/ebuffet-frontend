@@ -10,10 +10,8 @@
             [title]="item.title"
             [description]="item.description"
             [imageUrl]="item.imageUrl || ''"
-            [quantity]="item.quantity"
             (cardClick)="onFoodItemClick(item)"
-            (removeClick)="onRemoveFood(item.title)"
-            (quantityChange)="onFoodQuantityChange(item.title, $event)">
+            (removeClick)="onRemoveFood(item.title)">
           </app-order-item-card>
         </div>
 
@@ -34,10 +32,8 @@
             [title]="service.title"
             [description]="service.description"
             [imageUrl]="service.imageUrl || ''"
-            [quantity]="service.quantity"
             (cardClick)="onServiceItemClick(service)"
-            (removeClick)="onRemoveService(service.title)"
-            (quantityChange)="onServiceQuantityChange(service.title, $event)">
+            (removeClick)="onRemoveService(service.title)">
           </app-order-item-card>
         </div>
 

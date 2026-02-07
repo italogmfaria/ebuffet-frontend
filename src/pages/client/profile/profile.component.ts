@@ -192,23 +192,28 @@ export class ProfileComponent implements OnInit {
 
   onReserveClick(reserve: ReserveItem) {
     this.navCtrl.navigateForward('/reserves/reserve-details', {
-      queryParams: {id: reserve.id}
+      queryParams: {
+        id: reserve.id,
+        fromProfile: 'true' // Indica que veio direto do profile
+      }
     });
   }
 
   onEventClick(event: EventItem) {
     this.navCtrl.navigateForward('/events/event-details', {
-      queryParams: {id: event.id, reservaId: event.reservaId}
+      queryParams: {
+        id: event.id,
+        reservaId: event.reservaId,
+        fromProfile: 'true' // Indica que veio direto do profile
+      }
     });
   }
 
   onViewAllReserves() {
-    console.log('View all reserves');
     this.navCtrl.navigateForward('/reserves');
   }
 
   onViewAllEvents() {
-    console.log('View all events');
     this.navCtrl.navigateForward('/events');
   }
 }

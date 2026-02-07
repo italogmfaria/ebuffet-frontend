@@ -69,16 +69,14 @@ export class DefaultStatusComponent implements OnInit, OnChanges, AfterViewInit 
       { id: 'todos', name: 'TODOS', selected: this.selectedStatusId === 'todos' }
     ];
 
-    // Status comuns a ambos
-    this.statusItems.push({
-      id: 'pending',
-      name: 'PENDENTE',
-      selected: this.selectedStatusId === 'pending'
-    });
-
     if (this.type === 'reserva') {
-      // Status específicos de RESERVA
+      // Status específicos de RESERVA (com PENDENTE)
       this.statusItems.push(
+        {
+          id: 'pending',
+          name: 'PENDENTE',
+          selected: this.selectedStatusId === 'pending'
+        },
         {
           id: 'approved',
           name: 'APROVADA',
@@ -91,7 +89,7 @@ export class DefaultStatusComponent implements OnInit, OnChanges, AfterViewInit 
         }
       );
     } else {
-      // Status específicos de EVENTO
+      // Status específicos de EVENTO (sem PENDENTE)
       this.statusItems.push(
         {
           id: 'approved',

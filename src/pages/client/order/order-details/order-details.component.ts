@@ -14,6 +14,7 @@ import { ThemeService } from '../../../../core/services/theme.service';
 import { ValidationService } from '../../../../core/services/validation.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import {ReservationFlowService} from "../../../../features/reservations/services/reservation-flow.service";
+import {EventoService} from "../../../../features/events/api/evento.api.service";
 
 @Component({
   selector: 'app-order-details',
@@ -39,6 +40,7 @@ export class OrderDetailsComponent implements OnInit {
   desiredDate = '';
 
   showCalendarModal = false;
+  unavailableDates: string[] = [];
 
   primaryColor$ = this.themeService.primaryColor$;
   secondaryColor$ = this.themeService.secondaryColor$;
@@ -48,10 +50,13 @@ export class OrderDetailsComponent implements OnInit {
     private navCtrl: NavController,
     private validationService: ValidationService,
     private toastService: ToastService,
-    private reservationFlow: ReservationFlowService
+    private reservationFlow: ReservationFlowService,
+    private eventoService: EventoService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadUnavailableDates();
+  }
 
   get isFormValid(): boolean {
     return !!(
@@ -69,6 +74,8 @@ export class OrderDetailsComponent implements OnInit {
 
   onCalendarInputClick() {
     this.showCalendarModal = true;
+    // Recarrega datas indisponíveis ao abrir o modal
+    this.loadUnavailableDates();
   }
 
   onCalendarModalClose() {
@@ -76,8 +83,48 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   onDateSelected(date: string) {
+    // Validar se a data selecionada não está indisponível
+    const dateISO = this.convertToISO(date);
+    if (this.unavailableDates.includes(dateISO)) {
+      this.toastService.warning('Esta data não está disponível. Por favor, escolha outra data.');
+      return;
+    }
+
     this.desiredDate = date;
     this.showCalendarModal = false;
+  }
+
+  private loadUnavailableDates() {
+    // Busca datas indisponíveis dos próximos 6 meses
+    const today = new Date();
+    const sixMonthsLater = new Date();
+    sixMonthsLater.setMonth(today.getMonth() + 6);
+
+    const dataInicio = this.formatToISO(today);
+    const dataFim = this.formatToISO(sixMonthsLater);
+
+    this.eventoService.getDatasIndisponiveis(dataInicio, dataFim).subscribe({
+      next: (response) => {
+        this.unavailableDates = response.datas || [];
+      },
+      error: (err) => {
+        console.error('Erro ao carregar datas indisponíveis', err);
+        this.unavailableDates = [];
+      }
+    });
+  }
+
+  private formatToISO(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private convertToISO(datePtBr: string): string {
+    // Converte DD/MM/YYYY para YYYY-MM-DD
+    const [day, month, year] = datePtBr.split('/');
+    return `${year}-${month}-${day}`;
   }
 
   async onContinue() {

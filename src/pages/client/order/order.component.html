@@ -13,10 +13,8 @@
             [title]="item.title"
             [description]="item.description"
             [imageUrl]="item.imageUrl || ''"
-            [quantity]="item.quantity"
             (cardClick)="onFoodItemClick(item)"
-            (removeClick)="onRemoveFromOrder(item.title)"
-            (quantityChange)="onQuantityChange(item.title, $event)">
+            (removeClick)="onRemoveFromOrder(item.title)">
           </app-order-item-card>
         </div>
       </div>
@@ -33,10 +31,8 @@
             [title]="item.title"
             [description]="item.description"
             [imageUrl]="item.imageUrl || ''"
-            [quantity]="item.quantity"
             (cardClick)="onServiceItemClick(item)"
-            (removeClick)="onRemoveFromOrder(item.title)"
-            (quantityChange)="onQuantityChange(item.title, $event)">
+            (removeClick)="onRemoveFromOrder(item.title)">
           </app-order-item-card>
         </div>
       </div>

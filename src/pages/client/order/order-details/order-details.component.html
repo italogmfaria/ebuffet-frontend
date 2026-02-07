@@ -59,6 +59,7 @@
 <!-- Modal do Calendário -->
 <app-calendar-modal
   *ngIf="showCalendarModal"
+  [unavailableDates]="unavailableDates"
   (close)="onCalendarModalClose()"
   (dateSelected)="onDateSelected($event)">
 </app-calendar-modal>

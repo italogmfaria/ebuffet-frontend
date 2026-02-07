@@ -16,19 +16,21 @@ import {
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
+import { BRAZILIAN_STATES } from '../../../../core/constants/brazilian-states.constant';
 import { EventoService } from '../../../../features/events/api/evento.api.service';
 import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
 import { SessionService } from '../../../../core/services/session.service';
 import { OrderService } from '../../../../features/orders/services/order.service';
 import { Subscription, switchMap } from 'rxjs';
 import { EventoUpdateRequest, EnumStatusEvento, EnumStatus } from '../../../../features/events/model/events.models';
+import { ToastService } from '../../../../core/services/toast.service';
+import { EditStateService } from '../../../../core/services/edit-state.service';
 
 interface MenuItem {
   id?: number;
   title: string;
   description: string;
   imageUrl: string;
-  quantity: number;
 }
 
 interface ServiceItem {
@@ -36,7 +38,6 @@ interface ServiceItem {
   title: string;
   description: string;
   imageUrl: string;
-  quantity: number;
 }
 
 @Component({
@@ -61,6 +62,8 @@ interface ServiceItem {
 })
 export class EventEditComponent implements OnInit, OnDestroy {
   eventId: number = 0;
+  reservaId: number = 0;
+  clienteId: number = 0;
   eventTitle: string = 'Editar Evento';
 
   // Dados do evento
@@ -71,7 +74,7 @@ export class EventEditComponent implements OnInit, OnDestroy {
   eventEndDate: string = ''; // YYYY-MM-DD
   eventEndTime: string = ''; // HH:MM
   eventValue: string = '';
-  eventStatus: EnumStatusEvento = 'PENDENTE';
+  eventStatus: EnumStatusEvento = 'AGENDADO';
   status: EnumStatus = 'ATIVO';
 
   // Dados não salvos pela API (apenas visualização)
@@ -101,36 +104,6 @@ export class EventEditComponent implements OnInit, OnDestroy {
 
   private subs = new Subscription();
 
-  // Lista de estados do Brasil
-  private readonly BRAZILIAN_STATES: SelectOption[] = [
-    { value: 'AC', label: 'AC - Acre' },
-    { value: 'AL', label: 'AL - Alagoas' },
-    { value: 'AP', label: 'AP - Amapá' },
-    { value: 'AM', label: 'AM - Amazonas' },
-    { value: 'BA', label: 'BA - Bahia' },
-    { value: 'CE', label: 'CE - Ceará' },
-    { value: 'DF', label: 'DF - Distrito Federal' },
-    { value: 'ES', label: 'ES - Espírito Santo' },
-    { value: 'GO', label: 'GO - Goiás' },
-    { value: 'MA', label: 'MA - Maranhão' },
-    { value: 'MT', label: 'MT - Mato Grosso' },
-    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
-    { value: 'MG', label: 'MG - Minas Gerais' },
-    { value: 'PA', label: 'PA - Pará' },
-    { value: 'PB', label: 'PB - Paraíba' },
-    { value: 'PR', label: 'PR - Paraná' },
-    { value: 'PE', label: 'PE - Pernambuco' },
-    { value: 'PI', label: 'PI - Piauí' },
-    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
-    { value: 'RN', label: 'RN - Rio Grande do Norte' },
-    { value: 'RS', label: 'RS - Rio Grande do Sul' },
-    { value: 'RO', label: 'RO - Rondônia' },
-    { value: 'RR', label: 'RR - Roraima' },
-    { value: 'SC', label: 'SC - Santa Catarina' },
-    { value: 'SP', label: 'SP - São Paulo' },
-    { value: 'SE', label: 'SE - Sergipe' },
-    { value: 'TO', label: 'TO - Tocantins' }
-  ];
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -141,15 +114,38 @@ export class EventEditComponent implements OnInit, OnDestroy {
     private eventoService: EventoService,
     private reservationsApi: ReservationsApiService,
     private sessionService: SessionService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private toastService: ToastService,
+    private editStateService: EditStateService
   ) {}
 
   ngOnInit() {
-    this.stateOptions = this.BRAZILIAN_STATES;
+    this.stateOptions = BRAZILIAN_STATES;
+
+    // Subscreve ao estado do EditStateService
+    this.subs.add(
+      this.editStateService.getState$('event-edit').subscribe(state => {
+        this.menuItems = state.foods.map(f => ({
+          id: f.id,
+          title: f.title,
+          description: f.description,
+          imageUrl: f.imageUrl
+        }));
+
+        this.services = state.services.map(s => ({
+          id: s.id,
+          title: s.title,
+          description: s.description,
+          imageUrl: s.imageUrl
+        }));
+      })
+    );
 
     this.subs.add(
       this.route.queryParams.subscribe(params => {
         this.eventId = Number(params['id'] || 0);
+        this.reservaId = Number(params['reservaId'] || 0);
+        this.clienteId = Number(params['clienteId'] || 0);
         if (this.eventId) {
           this.loadEvent();
         }
@@ -158,45 +154,10 @@ export class EventEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Limpa o estado ao destruir o componente
+    this.editStateService.clearState('event-edit');
+    this.orderService.clearOrder('event-edit');
     this.subs.unsubscribe();
-  }
-
-  ionViewWillEnter() {
-    // Captura itens adicionados ao carrinho durante a navegação
-    const orderItems = this.orderService.getOrderItems();
-
-    orderItems.forEach(item => {
-      if (item.type === 'food') {
-        // Verifica se a comida já não está na lista
-        const exists = this.menuItems.some(m => m.id === item.id);
-        if (!exists) {
-          this.menuItems.push({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            imageUrl: item.imageUrl || '',
-            quantity: item.quantity || 1
-          });
-        }
-      } else if (item.type === 'service') {
-        // Verifica se o serviço já não está na lista
-        const exists = this.services.some(s => s.id === item.id);
-        if (!exists) {
-          this.services.push({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            imageUrl: item.imageUrl || '',
-            quantity: item.quantity || 1
-          });
-        }
-      }
-    });
-
-    // Limpa o carrinho após capturar os itens
-    if (orderItems.length > 0) {
-      this.orderService.clearOrder();
-    }
   }
 
   private loadEvent() {
@@ -272,22 +233,27 @@ export class EventEditComponent implements OnInit, OnDestroy {
             this.zipCode = reserva.endereco.cep;
           }
 
-          // Carregar comidas e serviços
-          this.menuItems = (reserva.comidas ?? []).map(c => ({
-            id: c.id,
-            title: c.nome,
-            description: c.descricao,
-            imageUrl: c.imagemUrl || '',
-            quantity: 1
-          }));
+          // Carregar comidas e serviços no EditStateService (primeira carga)
+          const currentState = this.editStateService.getState('event-edit');
+          if (currentState.foods.length === 0 && currentState.services.length === 0) {
+            const foods = (reserva.comidas ?? []).map(c => ({
+              id: c.id,
+              title: c.nome,
+              description: c.descricao,
+              imageUrl: c.imagemUrl || '',
+              type: 'food' as const
+            }));
 
-          this.services = (reserva.servicos ?? []).map(s => ({
-            id: s.id,
-            title: s.nome,
-            description: s.descricao,
-            imageUrl: s.imagemUrl || '',
-            quantity: 1
-          }));
+            const services = (reserva.servicos ?? []).map(s => ({
+              id: s.id,
+              title: s.nome,
+              description: s.descricao,
+              imageUrl: s.imagemUrl || '',
+              type: 'service' as const
+            }));
+
+            this.editStateService.setState('event-edit', { foods, services });
+          }
 
           this.isLoading = false;
         },
@@ -321,10 +287,22 @@ export class EventEditComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.orderService.clearOrder('event-edit');
+
+    if (this.eventId && this.reservaId) {
+      this.navCtrl.navigateBack('/events/event-details', {
+        queryParams: {
+          id: this.eventId,
+          reservaId: this.reservaId,
+          clienteId: this.clienteId
+        }
+      });
+    } else {
+      this.navCtrl.navigateBack('/events');
+    }
   }
 
-  // Comidas (não editável via API de update - apenas visualização)
+  // Comidas
   onAddFoods() {
     this.navCtrl.navigateForward('/client/foods', {
       queryParams: { fromEdit: 'event', editId: this.eventId }
@@ -354,7 +332,10 @@ export class EventEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveFoodModalConfirm() {
-    this.menuItems = this.menuItems.filter(item => item.title !== this.itemToRemove);
+    const itemToRemoveObj = this.menuItems.find(item => item.title === this.itemToRemove);
+    if (itemToRemoveObj?.id) {
+      this.editStateService.removeItem('event-edit', itemToRemoveObj.id, 'food');
+    }
     this.showRemoveFoodModal = false;
     this.itemToRemove = '';
   }
@@ -364,14 +345,7 @@ export class EventEditComponent implements OnInit, OnDestroy {
     this.itemToRemove = '';
   }
 
-  onFoodQuantityChange(title: string, newQuantity: number) {
-    const item = this.menuItems.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
-  // Serviços (não editável via API de update - apenas visualização)
+  // Serviços
   onAddServices() {
     this.navCtrl.navigateForward('/client/services', {
       queryParams: { fromEdit: 'event', editId: this.eventId }
@@ -401,7 +375,10 @@ export class EventEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveServiceModalConfirm() {
-    this.services = this.services.filter(item => item.title !== this.itemToRemove);
+    const itemToRemoveObj = this.services.find(item => item.title === this.itemToRemove);
+    if (itemToRemoveObj?.id) {
+      this.editStateService.removeItem('event-edit', itemToRemoveObj.id, 'service');
+    }
     this.showRemoveServiceModal = false;
     this.itemToRemove = '';
   }
@@ -409,13 +386,6 @@ export class EventEditComponent implements OnInit, OnDestroy {
   onRemoveServiceModalCancel() {
     this.showRemoveServiceModal = false;
     this.itemToRemove = '';
-  }
-
-  onServiceQuantityChange(title: string, newQuantity: number) {
-    const item = this.services.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
   }
 
   // Estado
@@ -476,9 +446,14 @@ export class EventEditComponent implements OnInit, OnDestroy {
 
     this.isSaving = true;
 
-    // Extrair IDs das comidas e serviços
-    const comidaIds = this.menuItems.map(item => item.id).filter(id => id !== undefined) as number[];
-    const servicoIds = this.services.map(item => item.id).filter(id => id !== undefined) as number[];
+    // Extrair IDs das comidas e serviços (apenas IDs únicos)
+    const comidaIds = this.menuItems
+      .map(item => item.id)
+      .filter(id => id !== undefined) as number[];
+
+    const servicoIds = this.services
+      .map(item => item.id)
+      .filter(id => id !== undefined) as number[];
 
     const body: any = {};
 

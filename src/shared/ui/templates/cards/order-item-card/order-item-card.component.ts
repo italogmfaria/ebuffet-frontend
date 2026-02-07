@@ -16,10 +16,8 @@ export class OrderItemCardComponent implements OnInit {
   @Input() title: string = '';
   @Input() description: string = '';
   @Input() imageUrl: string = '';
-  @Input() quantity: number = 1;
   @Output() cardClick = new EventEmitter<void>();
   @Output() removeClick = new EventEmitter<void>();
-  @Output() quantityChange = new EventEmitter<number>();
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -34,20 +32,6 @@ export class OrderItemCardComponent implements OnInit {
   onRemoveClick(event: Event) {
     event.stopPropagation();
     this.removeClick.emit();
-  }
-
-  onDecrease(event: Event) {
-    event.stopPropagation();
-    if (this.quantity > 1) {
-      this.quantity--;
-      this.quantityChange.emit(this.quantity);
-    }
-  }
-
-  onIncrease(event: Event) {
-    event.stopPropagation();
-    this.quantity++;
-    this.quantityChange.emit(this.quantity);
   }
 }
 

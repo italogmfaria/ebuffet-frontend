@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
 import {
@@ -52,6 +51,7 @@ import {SessionService} from "../../../../core/services/session.service";
 export class ReserveDetailsComponent implements OnInit, OnDestroy {
   reserveId: number = 0;
   clienteId: number = 0; // ID do cliente da reserva
+  fromProfile: boolean = false; // Se veio direto do profile
 
   reserveTitle: string = 'Reserva';
   reserveStatus: UiStatus = 'pending';
@@ -76,7 +76,6 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location,
     private themeService: ThemeService,
     private navCtrl: NavController,
     private reservationsApi: ReservationsApiService,
@@ -97,6 +96,7 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
         this.reserveId = Number(params['id'] || 0);
         this.clienteId = Number(params['clienteId'] || 0);
         this.reserveTitle = params['title'] || 'Reserva';
+        this.fromProfile = params['fromProfile'] === 'true';
 
         if (this.reserveId) {
           this.loadReserve();
@@ -176,7 +176,13 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.location.back();
+    // Se o cliente veio direto do profile, volta para o profile
+    if (this.isClient && this.fromProfile) {
+      this.navCtrl.navigateBack('/client/profile');
+    } else {
+      // Senão, volta para a lista de reservas
+      this.navCtrl.navigateBack('/reserves');
+    }
   }
 
   get isCanceled(): boolean {
@@ -295,17 +301,23 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
     this.showApproveModal = false;
   }
 
-  onApproveModalConfirm(budgetValue: string) {
+  onApproveModalConfirm(data: {value: string, blockDay: boolean}) {
     this.showApproveModal = false;
 
     const user = this.sessionService.getUser();
     if (!user?.id) return;
 
     // Converte o valor do orçamento para número
-    const valor = budgetValue ? parseFloat(budgetValue.replace(',', '.')) : undefined;
+    const valor = data.value ? parseFloat(data.value.replace(',', '.')) : undefined;
 
+    // Aprovar reserva com opção de bloquear dia
     this.subs.add(
-      this.reservationsApi.approve(this.reserveId, user.id, valor).subscribe({
+      this.reservationsApi.approve(
+        this.reserveId,
+        user.id,
+        valor,
+        data.blockDay
+      ).subscribe({
         next: (r) => {
           this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
           this.loadReserve();
@@ -321,16 +333,42 @@ export class ReserveDetailsComponent implements OnInit, OnDestroy {
 
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'reserves', // Indica que vem da página de reserves
+        fromDetailsId: this.reserveId // ID da reserva para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: { name: item.title, fromOrder: 'true' }
+        queryParams: queryParams
       });
     }
   }
 
   onServiceItemClick(item: ServiceItem) {
     if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'reserves', // Indica que vem da página de reserves
+        fromDetailsId: this.reserveId // ID da reserva para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
       this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: { name: item.title, fromOrder: 'true' }
+        queryParams: queryParams
       });
     }
   }

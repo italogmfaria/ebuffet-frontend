@@ -89,6 +89,7 @@
       max-width: 100% !important;
     }
 
+
     ::part(calendar-day-highlighted) {
       background: var(--secondary-color) !important;
       color: var(--accent-color) !important;
@@ -123,6 +124,7 @@
       font-weight: 700 !important;
       color: var(--secondary-color) !important;
       background: transparent !important;
+      text-transform: uppercase !important; // Meses em MAIÚSCULA
     }
 
     ::part(calendar-next-button),

@@ -22,7 +22,7 @@ export interface ServicoResumoResponse {
   imagemUrl?: string;
 }
 
-export type EnumStatusReserva = 'PENDENTE' | 'APROVADA' | 'CANCELADA' | 'CONCLUIDA' | string;
+export type EnumStatusReserva = 'PENDENTE' | 'APROVADA' | 'CANCELADA' | string;
 export type EnumStatus = 'ATIVO' | 'INATIVO' | string;
 
 export interface ReservaResponse {

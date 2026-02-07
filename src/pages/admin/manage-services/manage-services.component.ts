@@ -14,7 +14,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { SessionService } from '../../../core/services/session.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
-import { ServicoListDTO } from '../../../features/services/model/services.model';
+import { EnumStatus, ServicoListDTO } from '../../../features/services/model/services.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
@@ -97,9 +97,9 @@ export class ManageServicesComponent implements OnInit, OnDestroy, ViewWillEnter
   private fetchServices(buffetId: number) {
     this.isLoading = true;
     this.subscriptions.add(
-      this.servicesApiService.getAll(buffetId).subscribe({
-        next: services => {
-          this.services = services;
+      this.servicesApiService.listByBuffet(buffetId, { status: EnumStatus.ATIVO }).subscribe({
+        next: page => {
+          this.services = page.content.map((s: any) => ({...s, imageUrl: s.imagemUrl}));
           this.applyFilters();
           this.isLoading = false;
         },
@@ -235,7 +235,7 @@ export class ManageServicesComponent implements OnInit, OnDestroy, ViewWillEnter
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/admin/dashboard');
   }
 }
 

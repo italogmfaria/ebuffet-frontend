@@ -174,7 +174,7 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/admin/manage-services');
   }
 
   onSubmit() {

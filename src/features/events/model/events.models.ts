@@ -4,7 +4,7 @@ export interface DatasIndisponiveisResponse {
 
 export type UiStatus = 'pending' | 'approved' | 'completed' | 'canceled';
 
-export type EnumStatusEvento = 'PENDENTE' | 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO';
+export type EnumStatusEvento = 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO';
 export type EnumStatus = 'ATIVO' | 'INATIVO';
 
 export interface EventoResponse {
@@ -61,11 +61,9 @@ export interface ClienteEventoUpdateRequest {
 }
 
 export function mapEventoStatusToUi(
-  status: 'PENDENTE' | 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO' | string
+  status: 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO' | string
 ): UiStatus {
   switch (status) {
-    case 'PENDENTE':
-      return 'pending';
     case 'AGENDADO':
       return 'approved';
     case 'CONCLUIDO':
@@ -73,6 +71,6 @@ export function mapEventoStatusToUi(
     case 'CANCELADO':
       return 'canceled';
     default:
-      return 'pending';
+      return 'approved'; // Default para AGENDADO
   }
 }

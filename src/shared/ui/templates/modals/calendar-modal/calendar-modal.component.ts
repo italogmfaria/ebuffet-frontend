@@ -24,17 +24,10 @@ export class CalendarModalComponent implements OnInit {
   @Input() initialDate?: string;
   @Input() minDate?: string;
   @Input() maxDate?: string;
-  @Input() unavailableDates?: string[];
+  @Input() unavailableDates?: string[] = [];
 
   @Output() close = new EventEmitter<void>();
   @Output() dateSelected = new EventEmitter<string>();
-
-  defaultUnavailableDates: string[] = [
-    '2025-10-11',
-    '2025-10-15',
-    '2025-10-19',
-    '2025-10-31',
-  ];
 
   constructor(private themeService: ThemeService) {}
 
@@ -42,21 +35,23 @@ export class CalendarModalComponent implements OnInit {
     if (this.initialDate) {
       this.selectedDate = this.initialDate;
     }
+
+    // Define data mínima como hoje se não foi fornecida
+    if (!this.minDate) {
+      const today = new Date();
+      this.minDate = today.toISOString();
+    }
   }
 
   highlightedDates = (isoString: string) => {
     const date = new Date(isoString);
     const dateOnly = date.toISOString().split('T')[0];
 
-    const unavailableList = this.unavailableDates || this.defaultUnavailableDates;
-
-    if (unavailableList.includes(dateOnly)) {
-      let color = '#3880ff'; // fallback
-      this.secondaryColor$.subscribe((c) => (color = c)).unsubscribe();
-
+    // Verificar se a data está na lista de indisponíveis
+    if (this.unavailableDates && this.unavailableDates.includes(dateOnly)) {
       return {
         textColor: '#ffffff',
-        backgroundColor: color
+        backgroundColor: '#ff4444' // Vermelho para datas bloqueadas
       };
     }
 
@@ -67,9 +62,8 @@ export class CalendarModalComponent implements OnInit {
     const date = new Date(isoString);
     const dateOnly = date.toISOString().split('T')[0];
 
-    const unavailableList = this.unavailableDates || this.defaultUnavailableDates;
-
-    return !unavailableList.includes(dateOnly);
+    // Bloquear datas indisponíveis
+    return !(this.unavailableDates && this.unavailableDates.includes(dateOnly));
   };
 
   onClose() {

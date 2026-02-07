@@ -1,4 +1,4 @@
-<app-form-page title="Crie sua conta" class="ion-page">
+<app-form-page title="Crie sua conta" class="ion-page" (backClick)="onBackClick()">
   <div class="register-page">
     <form [formGroup]="registerForm" class="register-form">
       <ion-grid>

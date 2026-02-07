@@ -61,7 +61,6 @@ export class NewPasswordComponent implements OnInit {
     }
 
     // Se passou por todas as validações
-    console.log('Nova senha definida:', password);
     // TODO: Enviar para o backend
 
     this.navCtrl.navigateForward('/login');

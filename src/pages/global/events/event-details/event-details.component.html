@@ -65,7 +65,6 @@
             [title]="item.title"
             [description]="item.description"
             [imageUrl]="item.imageUrl"
-            [quantity]="item.quantity"
             [circleType]="'none'"
             (cardClick)="onFoodItemClick(item)">
           </app-default-item-card>
@@ -81,7 +80,6 @@
             [title]="service.title"
             [description]="service.description"
             [imageUrl]="service.imageUrl"
-            [quantity]="service.quantity"
             [circleType]="'none'"
             (cardClick)="onServiceItemClick(service)">
           </app-default-item-card>
@@ -166,6 +164,7 @@
   *ngIf="showBudgetModal"
   [title]="'Editar Valor Orçado'"
   [subtitle]="'Defina o novo valor orçado para este evento'"
+  [initialValue]="budgetValueNumeric > 0 ? budgetValueNumeric.toFixed(2) : ''"
   (close)="onBudgetModalClose()"
   (confirm)="onBudgetModalConfirm($event)"
   (cancel)="onBudgetModalCancel()">

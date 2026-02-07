@@ -188,6 +188,10 @@ export class RegisterComponent implements OnInit {
     this.registerForm.patchValue({ phone: formatted }, { emitEvent: false });
   }
 
+  onBackClick() {
+    this.navCtrl.navigateBack('/welcome');
+  }
+
   get isFormValid(): boolean {
     const name = this.registerForm.get('name')?.value;
     const surname = this.registerForm.get('surname')?.value;

@@ -14,9 +14,9 @@ export class NavigationService {
    */
   async navigateToHome(): Promise<void> {
     const user = this.sessionService.getUser();
-    const roles = user?.roles || [];
+    const roles = user?.roles || '';
 
-    if (roles.includes('BUFFET') || roles.includes('ADMIN')) {
+    if (roles === 'BUFFET' || roles === 'ADMIN') {
       await this.navCtrl.navigateRoot('/admin/dashboard', { animated: true });
     } else {
       await this.navCtrl.navigateRoot('/client/home', { animated: true });

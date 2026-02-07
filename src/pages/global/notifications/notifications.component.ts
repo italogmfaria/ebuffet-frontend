@@ -89,17 +89,37 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   onModalClose() {
     if (this.selectedNotification && this.selectedNotification.isNew) {
-      // Marca a notificação como lida via API
+      const notificationId = this.selectedNotification.id;
+
+      // Atualiza localmente IMEDIATAMENTE para feedback visual instantâneo
+      const index = this.notifications.findIndex(n => n.id === notificationId);
+      if (index !== -1) {
+        // Cria novo array para forçar detecção de mudança
+        this.notifications = [
+          ...this.notifications.slice(0, index),
+          { ...this.notifications[index], isNew: false },
+          ...this.notifications.slice(index + 1)
+        ];
+      }
+
+      // Marca como lida no backend (em segundo plano)
       this.subs.add(
-        this.notificacoesApi.markAsRead(this.selectedNotification.id).subscribe({
+        this.notificacoesApi.markAsRead(notificationId).subscribe({
           next: () => {
-            // Atualiza localmente
-            const index = this.notifications.findIndex(n => n.id === this.selectedNotification!.id);
-            if (index !== -1) {
-              this.notifications[index].isNew = false;
-            }
+            // Sucesso - já atualizamos localmente
           },
-          error: (err) => console.error('Erro ao marcar notificação como lida', err)
+          error: (err) => {
+            console.error('Erro ao marcar notificação como lida', err);
+            // Em caso de erro, reverte a mudança local
+            const idx = this.notifications.findIndex(n => n.id === notificationId);
+            if (idx !== -1) {
+              this.notifications = [
+                ...this.notifications.slice(0, idx),
+                { ...this.notifications[idx], isNew: true },
+                ...this.notifications.slice(idx + 1)
+              ];
+            }
+          }
         })
       );
     }

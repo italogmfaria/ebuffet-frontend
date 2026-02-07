@@ -11,6 +11,7 @@ export interface UserResponse {
   email: string;
   telefone?: string | null;
   roles: string[];
+  fotoUrl?: string | null;
 }
 
 export interface AuthRequest {
@@ -29,4 +30,5 @@ export interface MeResponse {
   email: string;
   telefone?: string | null;
   roles: string[];
+  fotoUrl?: string | null;
 }

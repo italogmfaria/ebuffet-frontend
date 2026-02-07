@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 import {CodeInputComponent, ModelPageComponent, PrimaryButtonComponent} from "../../../../shared/ui/templates/exports";
 import { ToastService } from '../../../../core/services/toast.service';
 import { ValidationService } from '../../../../core/services/validation.service';
@@ -27,13 +28,21 @@ export class ForgotPasswordComponent  implements OnInit {
     Validators.maxLength(6)
   ]);
 
+  email: string = '';
+
   constructor(
     private navCtrl: NavController,
+    private route: ActivatedRoute,
     private toastService: ToastService,
     private validationService: ValidationService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Captura o email passado via queryParams
+    this.route.queryParams.subscribe(params => {
+      this.email = params['email'] || '';
+    });
+  }
 
   async onConfirm(): Promise<void> {
     const code = this.codeControl.value || '';
@@ -53,7 +62,10 @@ export class ForgotPasswordComponent  implements OnInit {
       return;
     }
 
-    this.navCtrl.navigateForward('/new-password');
+    // Navega para new-password passando email e código
+    this.navCtrl.navigateForward('/new-password', {
+      queryParams: { email: this.email, code }
+    });
   }
 
   private async validateCode(code: string): Promise<boolean> {
@@ -63,7 +75,14 @@ export class ForgotPasswordComponent  implements OnInit {
   }
 
   async onResendCode(): Promise<void> {
-    // TODO: Implementar lógica de reenvio
+    if (!this.email) {
+      await this.toastService.error('Email não encontrado. Tente novamente.');
+      this.navCtrl.navigateBack('/request-password-reset');
+      return;
+    }
+
+    // TODO: Implementar lógica de reenvio para o email
+    await this.toastService.success('Código reenviado para seu email!');
   }
 
   get isCodeComplete(): boolean {

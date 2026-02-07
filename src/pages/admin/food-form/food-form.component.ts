@@ -174,7 +174,7 @@ export class FoodFormComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/admin/manage-foods');
   }
 
   onSubmit() {

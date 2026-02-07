@@ -225,6 +225,15 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   async onBackClick() {
-    await this.navigationService.navigateToHome();
+    const user = this.sessionService.getUser();
+    const isClient = user?.roles === 'CLIENTE';
+
+    if (isClient) {
+      // Cliente volta para o perfil
+      this.navCtrl.navigateBack('/client/profile');
+    } else {
+      // Buffet volta para home/dashboard
+      await this.navigationService.navigateToHome();
+    }
   }
 }

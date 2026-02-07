@@ -73,9 +73,6 @@ export class OrderComponent implements OnInit {
     this.itemToRemove = '';
   }
 
-  onQuantityChange(title: string, newQuantity: number) {
-    this.orderService.updateQuantity(title, newQuantity);
-  }
 
   onFoodItemClick(item: OrderItem) {
     if (item.id) {

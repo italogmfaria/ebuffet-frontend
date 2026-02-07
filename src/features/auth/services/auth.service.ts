@@ -22,7 +22,8 @@ export class AuthService {
         nome: me.nome,
         email: me.email,
         telefone: me.telefone,
-        roles: me.roles
+        roles: me.roles,
+        fotoUrl: me.fotoUrl
       });
 
       return { success: true, roles: me.roles };

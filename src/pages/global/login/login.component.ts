@@ -97,7 +97,11 @@ export class LoginComponent implements OnInit {
 
   goToForgotPassword(event: any) {
     event.target.blur();
-    this.navCtrl.navigateForward('/forgot-password');
+    this.navCtrl.navigateForward('/request-password-reset');
+  }
+
+  onBackClick() {
+    this.navCtrl.navigateBack('/welcome');
   }
 
   get isFormValid(): boolean {

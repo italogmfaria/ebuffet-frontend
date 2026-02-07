@@ -18,7 +18,6 @@ export function mapReservaStatusToUi(status: string): UiStatus {
     case 'PENDENTE': return 'pending';
     case 'APROVADA': return 'approved';
     case 'CANCELADA': return 'canceled';
-    case 'CONCLUIDA': return 'completed';
     default: return 'pending';
   }
 }

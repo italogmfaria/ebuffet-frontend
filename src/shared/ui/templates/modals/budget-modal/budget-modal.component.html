@@ -11,6 +11,20 @@
         [placeholder]="'0,00'"
         [(ngModel)]="budgetValue">
       </app-budget-input>
+
+      <div class="toggle-container" *ngIf="showBlockDayToggle">
+        <div class="toggle-label-group">
+          <ion-label class="toggle-label">Bloquear dia no calendário</ion-label>
+          <ion-text class="toggle-description">
+            Ao ativar, esta data ficará indisponível para novas reservas
+          </ion-text>
+        </div>
+        <ion-toggle
+          [(ngModel)]="blockDay"
+          mode="ios"
+          class="toggle-switch">
+        </ion-toggle>
+      </div>
     </div>
 
     <div class="modal-footer">

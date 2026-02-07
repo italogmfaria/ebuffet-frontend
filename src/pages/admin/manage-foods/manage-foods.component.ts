@@ -13,7 +13,7 @@ import { IonInfiniteScroll, IonInfiniteScrollContent, NavController, ViewWillEnt
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { SessionService } from '../../../core/services/session.service';
-import { ComidaListDTO } from '../../../features/foods/model/foods.model';
+import { ComidaListDTO, EnumStatus } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
@@ -97,9 +97,9 @@ export class ManageFoodsComponent implements OnInit, OnDestroy, ViewWillEnter {
   private fetchFoods(buffetId: number) {
     this.isLoading = true;
     this.subscriptions.add(
-      this.foodsApiService.getAll(buffetId).subscribe({
-        next: foods => {
-          this.foods = foods;
+      this.foodsApiService.listByBuffet(buffetId, { status: EnumStatus.ATIVO }).subscribe({
+        next: page => {
+          this.foods = page.content.map((c: any) => ({...c, imageUrl: c.imagemUrl}));
           this.applyFilters();
           this.isLoading = false;
         },
@@ -235,7 +235,7 @@ export class ManageFoodsComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/admin/dashboard');
   }
 }
 

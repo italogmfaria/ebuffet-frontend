@@ -18,18 +18,21 @@ import {
 } from '../../../../shared/ui/templates/exports';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { SelectOption } from '../../../../shared/ui/templates/inputs/selected-input/selected-input.component';
+import { BRAZILIAN_STATES } from '../../../../core/constants/brazilian-states.constant';
 import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
+import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
 import { SessionService } from '../../../../core/services/session.service';
 import { OrderService } from '../../../../features/orders/services/order.service';
 import { Subscription, switchMap } from 'rxjs';
-import { ReservaUpdateRequest } from '../../../../features/reservations/model/reservation.models';
+import { EventoService } from '../../../../features/events/api/evento.api.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { EditStateService } from '../../../../core/services/edit-state.service';
 
 interface MenuItem {
   id?: number;
   title: string;
   description: string;
   imageUrl: string;
-  quantity: number;
 }
 
 interface ServiceItem {
@@ -37,7 +40,6 @@ interface ServiceItem {
   title: string;
   description: string;
   imageUrl: string;
-  quantity: number;
 }
 
 @Component({
@@ -64,6 +66,7 @@ interface ServiceItem {
 })
 export class ReserveEditComponent implements OnInit, OnDestroy {
   reserveId: number = 0;
+  clienteId: number = 0;
   reserveTitle: string = 'Editar Reserva';
 
   // Dados da reserva
@@ -92,6 +95,7 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   showRemoveFoodModal: boolean = false;
   showRemoveServiceModal: boolean = false;
 
+  unavailableDates: string[] = [];
   itemToRemove: string = '';
 
   stateOptions: SelectOption[] = [];
@@ -101,36 +105,6 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
 
   private subs = new Subscription();
 
-  // Lista de estados do Brasil
-  private readonly BRAZILIAN_STATES: SelectOption[] = [
-    { value: 'AC', label: 'AC - Acre' },
-    { value: 'AL', label: 'AL - Alagoas' },
-    { value: 'AP', label: 'AP - Amapá' },
-    { value: 'AM', label: 'AM - Amazonas' },
-    { value: 'BA', label: 'BA - Bahia' },
-    { value: 'CE', label: 'CE - Ceará' },
-    { value: 'DF', label: 'DF - Distrito Federal' },
-    { value: 'ES', label: 'ES - Espírito Santo' },
-    { value: 'GO', label: 'GO - Goiás' },
-    { value: 'MA', label: 'MA - Maranhão' },
-    { value: 'MT', label: 'MT - Mato Grosso' },
-    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
-    { value: 'MG', label: 'MG - Minas Gerais' },
-    { value: 'PA', label: 'PA - Pará' },
-    { value: 'PB', label: 'PB - Paraíba' },
-    { value: 'PR', label: 'PR - Paraná' },
-    { value: 'PE', label: 'PE - Pernambuco' },
-    { value: 'PI', label: 'PI - Piauí' },
-    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
-    { value: 'RN', label: 'RN - Rio Grande do Norte' },
-    { value: 'RS', label: 'RS - Rio Grande do Sul' },
-    { value: 'RO', label: 'RO - Rondônia' },
-    { value: 'RR', label: 'RR - Roraima' },
-    { value: 'SC', label: 'SC - Santa Catarina' },
-    { value: 'SP', label: 'SP - São Paulo' },
-    { value: 'SE', label: 'SE - Sergipe' },
-    { value: 'TO', label: 'TO - Tocantins' }
-  ];
 
   secondaryColor$ = this.themeService.secondaryColor$;
 
@@ -140,15 +114,39 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private reservationsApi: ReservationsApiService,
     private sessionService: SessionService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private eventoService: EventoService,
+    private toastService: ToastService,
+    private editStateService: EditStateService
   ) {}
 
   ngOnInit() {
-    this.stateOptions = this.BRAZILIAN_STATES;
+    this.stateOptions = BRAZILIAN_STATES;
+    this.loadUnavailableDates();
+
+    // Subscreve ao estado do EditStateService
+    this.subs.add(
+      this.editStateService.getState$('reserve-edit').subscribe(state => {
+        this.menuItems = state.foods.map(f => ({
+          id: f.id,
+          title: f.title,
+          description: f.description,
+          imageUrl: f.imageUrl
+        }));
+
+        this.services = state.services.map(s => ({
+          id: s.id,
+          title: s.title,
+          description: s.description,
+          imageUrl: s.imageUrl
+        }));
+      })
+    );
 
     this.subs.add(
       this.route.queryParams.subscribe(params => {
         this.reserveId = Number(params['id'] || 0);
+        this.clienteId = Number(params['clienteId'] || 0);
         if (this.reserveId) {
           this.loadReserve();
         }
@@ -157,45 +155,10 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Limpa o estado ao destruir o componente
+    this.editStateService.clearState('reserve-edit');
+    this.orderService.clearOrder('reserve-edit');
     this.subs.unsubscribe();
-  }
-
-  ionViewWillEnter() {
-    // Captura itens adicionados ao carrinho durante a navegação
-    const orderItems = this.orderService.getOrderItems();
-
-    orderItems.forEach(item => {
-      if (item.type === 'food') {
-        // Verifica se a comida já não está na lista
-        const exists = this.menuItems.some(m => m.id === item.id);
-        if (!exists) {
-          this.menuItems.push({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            imageUrl: item.imageUrl || '',
-            quantity: item.quantity || 1
-          });
-        }
-      } else if (item.type === 'service') {
-        // Verifica se o serviço já não está na lista
-        const exists = this.services.some(s => s.id === item.id);
-        if (!exists) {
-          this.services.push({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            imageUrl: item.imageUrl || '',
-            quantity: item.quantity || 1
-          });
-        }
-      }
-    });
-
-    // Limpa o carrinho após capturar os itens
-    if (orderItems.length > 0) {
-      this.orderService.clearOrder();
-    }
   }
 
   private loadReserve() {
@@ -223,22 +186,27 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
             this.zipCode = r.endereco.cep;
           }
 
-          // Carregar comidas e serviços (somente visualização - não editáveis via API de update)
-          this.menuItems = (r.comidas ?? []).map(c => ({
-            id: c.id,
-            title: c.nome,
-            description: c.descricao,
-            imageUrl: c.imagemUrl || '',
-            quantity: 1
-          }));
+          // Carregar comidas e serviços no EditStateService (primeira carga)
+          const currentState = this.editStateService.getState('reserve-edit');
+          if (currentState.foods.length === 0 && currentState.services.length === 0) {
+            const foods = (r.comidas ?? []).map(c => ({
+              id: c.id,
+              title: c.nome,
+              description: c.descricao,
+              imageUrl: c.imagemUrl || '',
+              type: 'food' as const
+            }));
 
-          this.services = (r.servicos ?? []).map(s => ({
-            id: s.id,
-            title: s.nome,
-            description: s.descricao,
-            imageUrl: s.imagemUrl || '',
-            quantity: 1
-          }));
+            const services = (r.servicos ?? []).map(s => ({
+              id: s.id,
+              title: s.nome,
+              description: s.descricao,
+              imageUrl: s.imagemUrl || '',
+              type: 'service' as const
+            }));
+
+            this.editStateService.setState('reserve-edit', { foods, services });
+          }
 
           this.isLoading = false;
         },
@@ -269,10 +237,21 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.navCtrl.back();
+    this.orderService.clearOrder('reserve-edit');
+
+    if (this.reserveId) {
+      this.navCtrl.navigateBack('/reserves/reserve-details', {
+        queryParams: {
+          id: this.reserveId,
+          clienteId: this.clienteId
+        }
+      });
+    } else {
+      this.navCtrl.navigateBack('/reserves');
+    }
   }
 
-  // Comidas (não editável via API de update - apenas visualização)
+  // Comidas
   onAddFoods() {
     this.navCtrl.navigateForward('/client/foods', {
       queryParams: { fromEdit: 'reserve', editId: this.reserveId }
@@ -302,7 +281,10 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveFoodModalConfirm() {
-    this.menuItems = this.menuItems.filter(item => item.title !== this.itemToRemove);
+    const itemToRemoveObj = this.menuItems.find(item => item.title === this.itemToRemove);
+    if (itemToRemoveObj?.id) {
+      this.editStateService.removeItem('reserve-edit', itemToRemoveObj.id, 'food');
+    }
     this.showRemoveFoodModal = false;
     this.itemToRemove = '';
   }
@@ -312,14 +294,7 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
     this.itemToRemove = '';
   }
 
-  onFoodQuantityChange(title: string, newQuantity: number) {
-    const item = this.menuItems.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
-  // Serviços (não editável via API de update - apenas visualização)
+  // Serviços
   onAddServices() {
     this.navCtrl.navigateForward('/client/services', {
       queryParams: { fromEdit: 'reserve', editId: this.reserveId }
@@ -349,7 +324,10 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveServiceModalConfirm() {
-    this.services = this.services.filter(item => item.title !== this.itemToRemove);
+    const itemToRemoveObj = this.services.find(item => item.title === this.itemToRemove);
+    if (itemToRemoveObj?.id) {
+      this.editStateService.removeItem('reserve-edit', itemToRemoveObj.id, 'service');
+    }
     this.showRemoveServiceModal = false;
     this.itemToRemove = '';
   }
@@ -359,16 +337,11 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
     this.itemToRemove = '';
   }
 
-  onServiceQuantityChange(title: string, newQuantity: number) {
-    const item = this.services.find(i => i.title === title);
-    if (item) {
-      item.quantity = newQuantity;
-    }
-  }
-
   // Calendário
   onCalendarInputClick() {
     this.showCalendarModal = true;
+    // Recarrega datas indisponíveis ao abrir o modal
+    this.loadUnavailableDates();
   }
 
   onCalendarModalClose() {
@@ -376,8 +349,48 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
   }
 
   onDateSelected(date: string) {
+    // Validar se a data selecionada não está indisponível
+    const dateISO = this.convertToISO(date);
+    if (this.unavailableDates.includes(dateISO)) {
+      this.toastService.warning('Esta data não está disponível. Por favor, escolha outra data.');
+      return;
+    }
+
     this.reserveDate = date;
     this.showCalendarModal = false;
+  }
+
+  private loadUnavailableDates() {
+    // Busca datas indisponíveis dos próximos 6 meses
+    const today = new Date();
+    const sixMonthsLater = new Date();
+    sixMonthsLater.setMonth(today.getMonth() + 6);
+
+    const dataInicio = this.formatToISO(today);
+    const dataFim = this.formatToISO(sixMonthsLater);
+
+    this.eventoService.getDatasIndisponiveis(dataInicio, dataFim).subscribe({
+      next: (response) => {
+        this.unavailableDates = response.datas || [];
+      },
+      error: (err) => {
+        console.error('Erro ao carregar datas indisponíveis', err);
+        this.unavailableDates = [];
+      }
+    });
+  }
+
+  private formatToISO(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private convertToISO(datePtBr: string): string {
+    // Converte DD/MM/YYYY para YYYY-MM-DD
+    const [day, month, year] = datePtBr.split('/');
+    return `${year}-${month}-${day}`;
   }
 
   // Estado
@@ -465,9 +478,9 @@ export class ReserveEditComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.reservationsApi.update(this.reserveId, user.id, body).pipe(
         switchMap(() => {
-          // Atualizar comidas e serviços
-          const comidaIds = this.menuItems.map(item => item.id).filter(id => id !== undefined) as number[];
-          const servicoIds = this.services.map(item => item.id).filter(id => id !== undefined) as number[];
+          // Obter IDs do EditStateService (única fonte da verdade)
+          const comidaIds = this.editStateService.getFoodIds('reserve-edit');
+          const servicoIds = this.editStateService.getServiceIds('reserve-edit');
 
           return this.reservationsApi.updateItems(this.reserveId, user.id, {
             comidaIds,

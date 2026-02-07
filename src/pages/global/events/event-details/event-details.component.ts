@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular/standalone';
@@ -67,6 +67,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   eventId = 0;
   reservaId = 0;
   clienteId = 0; // ID do cliente do evento
+  fromProfile: boolean = false; // Se veio direto do profile
 
   eventTitle = 'Nome do Evento';
   eventStatus: 'pending' | 'approved' | 'canceled' | 'completed' = 'pending';
@@ -80,6 +81,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
 
   date = '';
   budgetValue = '';
+  budgetValueNumeric: number = 0; // Valor numérico para edição
   description = '';
   address = '';
   time = '';
@@ -97,7 +99,6 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location,
     private themeService: ThemeService,
     private navCtrl: NavController,
     private eventoApi: EventoService,
@@ -118,10 +119,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(params => {
         this.eventId = Number(params['id'] ?? 0);
         this.reservaId = Number(params['reservaId'] ?? 0);
+        this.fromProfile = params['fromProfile'] === 'true';
         this.clienteId = Number(params['clienteId'] ?? 0);
 
-        if (this.eventId) this.loadEvento();
-        if (this.reservaId) this.loadReserve();
+        if (this.eventId) {
+          this.loadEvento();
+        }
+
+        if (this.reservaId) {
+          this.loadReserve();
+        }
       })
     );
   }
@@ -137,9 +144,18 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           this.eventTitle = ev.nome || `Evento #${ev.id}`;
           this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
 
-          this.budgetValue = ev.valor != null && ev.valor !== ''
-            ? `R$ ${ev.valor}`
-            : '';
+          // Armazena valor numérico e formata para exibição
+          if (ev.valor != null && ev.valor !== '') {
+            // Se vier como string, remove formatação antes de converter
+            const numericValue = typeof ev.valor === 'string'
+              ? parseFloat(ev.valor.replace(',', '.'))
+              : ev.valor;
+            this.budgetValueNumeric = numericValue;
+            this.budgetValue = this.formatCurrency(numericValue);
+          } else {
+            this.budgetValueNumeric = 0;
+            this.budgetValue = '';
+          }
 
           if (ev.inicio) {
             this.date = this.formatDatePtBr(ev.inicio);
@@ -223,6 +239,11 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     );
   }
 
+  private formatCurrency(value: number): string {
+    if (!value || value === 0) return '';
+    return `R$ ${value.toFixed(2).replace('.', ',')}`;
+  }
+
   private formatDatePtBr(isoDateTime: string) {
     if (!isoDateTime) return '';
     // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
@@ -244,7 +265,13 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   onBackClick() {
-    this.location.back();
+    // Se o cliente veio direto do profile, volta para o profile
+    if (this.isClient && this.fromProfile) {
+      this.navCtrl.navigateBack('/client/profile');
+    } else {
+      // Senão, volta para a lista de eventos
+      this.navCtrl.navigateBack('/events');
+    }
   }
 
   onEdit() {
@@ -383,9 +410,12 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     this.showBudgetModal = false;
   }
 
-  onBudgetModalConfirm(value: string) {
+  onBudgetModalConfirm(data: {value: string, blockDay: boolean} | string) {
     const user = this.sessionService.getUser();
     if (!user?.id) return;
+
+    // Suporta tanto o formato antigo (string) quanto o novo (objeto)
+    const value = typeof data === 'string' ? data : data.value;
 
     // Converte string para número, removendo formatação
     const numericValue = parseFloat(value.replace(/[^\d,.-]/g, '').replace(',', '.'));
@@ -394,7 +424,18 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       this.eventoApi.updateValor(this.eventId, numericValue, user.id).subscribe({
         next: (ev) => {
           this.showBudgetModal = false;
-          this.budgetValue = ev.valor != null && ev.valor !== '' ? `R$ ${ev.valor}` : '';
+          // Atualiza e formata o valor corretamente
+          if (ev.valor != null && ev.valor !== '') {
+            // Se vier como string, remove formatação antes de converter
+            const updatedValue = typeof ev.valor === 'string'
+              ? parseFloat(ev.valor.replace(',', '.'))
+              : ev.valor;
+            this.budgetValueNumeric = updatedValue;
+            this.budgetValue = this.formatCurrency(updatedValue);
+          } else {
+            this.budgetValueNumeric = 0;
+            this.budgetValue = '';
+          }
           this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
         },
         error: (err) => {
@@ -460,16 +501,42 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
 
   onFoodItemClick(item: MenuItem) {
     if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'events', // Indica que vem da página de events
+        fromDetailsId: this.eventId // ID do evento para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
       this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
-        queryParams: { name: item.title, fromOrder: 'true' }
+        queryParams: queryParams
       });
     }
   }
 
   onServiceItemClick(item: ServiceItem) {
     if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'events', // Indica que vem da página de events
+        fromDetailsId: this.eventId // ID do evento para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
       this.navCtrl.navigateForward(`/client/services/${item.id}`, {
-        queryParams: { name: item.title, fromOrder: 'true' }
+        queryParams: queryParams
       });
     }
   }

@@ -59,8 +59,15 @@ export class ReservationsApiService {
     return this.api.put<ReservaResponse>(`/clientes/reservas/${id}/cancelar`, body, { clienteId });
   }
 
-  approve(id: number, ownerId: number, valor?: number): Observable<ReservaResponse> {
-    const body = valor ? { valor } : {};
+  // Aprovar reserva com opção de bloquear dia no calendário
+  approve(id: number, ownerId: number, valor?: number, blockDay?: boolean): Observable<ReservaResponse> {
+    const body: any = {};
+    if (valor !== undefined) {
+      body.valor = valor;
+    }
+    if (blockDay !== undefined) {
+      body.blockDay = blockDay;
+    }
     return this.api.put<ReservaResponse>(`/buffets/reservas/aprovar/${id}`, body, { ownerId });
   }
 
