@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 import { ModelPageComponent, PasswordInputComponent, PrimaryButtonComponent } from "../../../../../shared/ui/templates/exports";
 import { ToastService } from '../../../../../core/services/toast.service';
 import { ValidationService } from '../../../../../core/services/validation.service';
+import { PasswordRecoveryApi } from '../../../../../features/auth/api/password-recovery.api';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-new-password',
@@ -20,6 +23,12 @@ import { ValidationService } from '../../../../../core/services/validation.servi
 })
 export class NewPasswordComponent implements OnInit {
   passwordForm: FormGroup;
+  isLoading = false;
+
+  private email = '';
+  private code = '';
+  private route = inject(ActivatedRoute);
+  private passwordRecoveryApi = inject(PasswordRecoveryApi);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -33,9 +42,16 @@ export class NewPasswordComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.email = params['email'] || '';
+      this.code = params['code'] || '';
+    });
+  }
 
   async onConfirm(): Promise<void> {
+    if (this.isLoading) return;
+
     const password = this.passwordForm.get('password')?.value;
     const confirmPassword = this.passwordForm.get('confirmPassword')?.value;
 
@@ -60,15 +76,28 @@ export class NewPasswordComponent implements OnInit {
       return;
     }
 
-    // Se passou por todas as validações
-    // TODO: Enviar para o backend
+    this.isLoading = true;
 
-    this.navCtrl.navigateForward('/login');
+    try {
+      await firstValueFrom(
+        this.passwordRecoveryApi.resetPassword({
+          email: this.email,
+          codigo: this.code,
+          novaSenha: password
+        })
+      );
+      await this.toastService.success('Senha redefinida com sucesso!');
+      this.navCtrl.navigateForward('/login');
+    } catch {
+      await this.toastService.error('Erro ao redefinir senha. Tente novamente.');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   get isFormValid(): boolean {
     const password = this.passwordForm.get('password')?.value;
     const confirmPassword = this.passwordForm.get('confirmPassword')?.value;
-    return !!(password && confirmPassword);
+    return !!(password && confirmPassword) && !this.isLoading;
   }
 }

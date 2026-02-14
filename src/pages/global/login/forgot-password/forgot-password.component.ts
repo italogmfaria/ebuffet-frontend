@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import {CodeInputComponent, ModelPageComponent, PrimaryButtonComponent} from "../../../../shared/ui/templates/exports";
 import { ToastService } from '../../../../core/services/toast.service';
 import { ValidationService } from '../../../../core/services/validation.service';
+import { PasswordRecoveryApi } from '../../../../features/auth/api/password-recovery.api';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-forgot-password',
@@ -22,13 +24,18 @@ import { ValidationService } from '../../../../core/services/validation.service'
     host: { class: 'ion-page' }
 })
 export class ForgotPasswordComponent  implements OnInit {
+  codeLength = 4;
+
   codeControl = new FormControl('', [
     Validators.required,
-    Validators.minLength(6),
-    Validators.maxLength(6)
+    Validators.minLength(4),
+    Validators.maxLength(4)
   ]);
 
   email: string = '';
+  isLoading = false;
+
+  private passwordRecoveryApi = inject(PasswordRecoveryApi);
 
   constructor(
     private navCtrl: NavController,
@@ -45,33 +52,38 @@ export class ForgotPasswordComponent  implements OnInit {
   }
 
   async onConfirm(): Promise<void> {
+    if (this.isLoading) return;
+
     const code = this.codeControl.value || '';
 
     // Validar código
-    const codeValidation = this.validationService.validateCode(code, 6);
+    const codeValidation = this.validationService.validateCode(code, this.codeLength);
     if (!codeValidation.isValid) {
       await this.toastService.warning(codeValidation.message!);
       return;
     }
 
-    // Validar código no backend
-    const isValid = await this.validateCode(code);
+    this.isLoading = true;
 
-    if (!isValid) {
-      await this.toastService.error('Código inválido ou expirado. Tente novamente.');
-      return;
+    try {
+      const { valido } = await firstValueFrom(
+        this.passwordRecoveryApi.verifyCode({ email: this.email, codigo: code })
+      );
+
+      if (!valido) {
+        await this.toastService.error('Código inválido ou expirado. Tente novamente.');
+        return;
+      }
+
+      // Navega para new-password passando email e código
+      this.navCtrl.navigateForward('/new-password', {
+        queryParams: { email: this.email, code }
+      });
+    } catch {
+      await this.toastService.error('Erro ao validar código. Tente novamente.');
+    } finally {
+      this.isLoading = false;
     }
-
-    // Navega para new-password passando email e código
-    this.navCtrl.navigateForward('/new-password', {
-      queryParams: { email: this.email, code }
-    });
-  }
-
-  private async validateCode(code: string): Promise<boolean> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // TODO: Substituir por chamada real ao backend
-    return true;
   }
 
   async onResendCode(): Promise<void> {
@@ -81,11 +93,15 @@ export class ForgotPasswordComponent  implements OnInit {
       return;
     }
 
-    // TODO: Implementar lógica de reenvio para o email
-    await this.toastService.success('Código reenviado para seu email!');
+    try {
+      await firstValueFrom(this.passwordRecoveryApi.forgotPassword({ email: this.email }));
+      await this.toastService.success('Código reenviado para seu email!');
+    } catch {
+      await this.toastService.error('Erro ao reenviar código. Tente novamente.');
+    }
   }
 
   get isCodeComplete(): boolean {
-    return this.codeControl.value?.length === 6;
+    return this.codeControl.value?.length === this.codeLength;
   }
 }

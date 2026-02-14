@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/standalone';
 import { ModelPageComponent, PrimaryButtonComponent, TextInputComponent } from '../../../../shared/ui/templates/exports';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ValidationService } from '../../../../core/services/validation.service';
+import { PasswordRecoveryApi } from '../../../../features/auth/api/password-recovery.api';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-request-password-reset',
@@ -27,6 +29,8 @@ export class RequestPasswordResetComponent implements OnInit {
   ]);
 
   isLoading = false;
+
+  private passwordRecoveryApi = inject(PasswordRecoveryApi);
 
   constructor(
     private navCtrl: NavController,
@@ -57,34 +61,16 @@ export class RequestPasswordResetComponent implements OnInit {
     this.isLoading = true;
 
     try {
-      // Enviar solicitação ao backend
-      const success = await this.requestPasswordReset(email);
-
-      if (success) {
-        await this.toastService.success('Código de verificação enviado para seu email!');
-        // Navega para a tela de inserir código, passando o email
-        this.navCtrl.navigateForward('/forgot-password', {
-          queryParams: { email }
-        });
-      } else {
-        await this.toastService.error('Erro ao enviar código. Verifique o email e tente novamente.');
-      }
-    } catch (error) {
-      await this.toastService.error('Erro ao processar solicitação. Tente novamente.');
+      await firstValueFrom(this.passwordRecoveryApi.forgotPassword({ email }));
+      await this.toastService.success('Código de verificação enviado para seu email!');
+      this.navCtrl.navigateForward('/forgot-password', {
+        queryParams: { email }
+      });
+    } catch {
+      await this.toastService.error('Erro ao enviar código. Verifique o email e tente novamente.');
     } finally {
       this.isLoading = false;
     }
-  }
-
-  private async requestPasswordReset(email: string): Promise<boolean> {
-    // Simula chamada ao backend
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // TODO: Implementar chamada real ao backend
-    // Exemplo:
-    // return this.authService.requestPasswordReset(email).toPromise();
-
-    return true;
   }
 
   onBackClick(): void {

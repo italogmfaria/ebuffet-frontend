@@ -1,4 +1,4 @@
-import { Component, OnInit, forwardRef, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, forwardRef, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -16,17 +16,11 @@ import { CommonModule } from '@angular/common';
     }
   ]
 })
-export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAccessor {
+export class CodeInputComponent implements OnInit, OnChanges, AfterViewInit, ControlValueAccessor {
   @ViewChildren('codeInput') codeInputs!: QueryList<ElementRef>;
+  @Input() length = 6;
 
-  inputs = [
-    { index: 0, value: '' },
-    { index: 1, value: '' },
-    { index: 2, value: '' },
-    { index: 3, value: '' },
-    { index: 4, value: '' },
-    { index: 5, value: '' }
-  ];
+  inputs: { index: number; value: string }[] = [];
 
   disabled = false;
   private isProcessing = false;
@@ -36,9 +30,21 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
 
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.buildInputs();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['length']) {
+      this.buildInputs();
+    }
+  }
 
   ngAfterViewInit() {}
+
+  private buildInputs(): void {
+    this.inputs = Array.from({ length: this.length }, (_, i) => ({ index: i, value: '' }));
+  }
 
   trackByIndex(index: number): number {
     return index;
@@ -46,11 +52,11 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
 
   writeValue(value: string): void {
     if (value) {
-      const digits = value.split('').slice(0, 6);
+      const digits = value.split('').slice(0, this.length);
       digits.forEach((digit, idx) => {
         this.inputs[idx].value = digit;
       });
-      for (let i = digits.length; i < 6; i++) {
+      for (let i = digits.length; i < this.length; i++) {
         this.inputs[i].value = '';
       }
     } else {
@@ -116,7 +122,9 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
 
     this.emitValue();
 
-    if (index < 5) {
+    const lastIndex = this.length - 1;
+
+    if (index < lastIndex) {
       setTimeout(() => {
         const inputElements = this.codeInputs.toArray();
         if (inputElements[index + 1]) {
@@ -132,6 +140,7 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
   onInputKeyDown(event: KeyboardEvent, index: number): void {
     const input = event.target as HTMLInputElement;
     const inputElements = this.codeInputs.toArray();
+    const lastIndex = this.length - 1;
 
     if (event.key === 'Backspace') {
       event.preventDefault();
@@ -163,7 +172,7 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
       return;
     }
 
-    if (event.key === 'ArrowRight' && index < 5) {
+    if (event.key === 'ArrowRight' && index < lastIndex) {
       event.preventDefault();
       inputElements[index + 1].nativeElement.focus();
       return;
@@ -175,7 +184,7 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
       input.value = event.key;
       this.emitValue();
 
-      if (index < 5) {
+      if (index < lastIndex) {
         setTimeout(() => {
           inputElements[index + 1].nativeElement.focus();
         }, 50);
@@ -187,12 +196,13 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
   onInputPaste(event: ClipboardEvent, index: number): void {
     event.preventDefault();
     const pastedData = event.clipboardData?.getData('text') || '';
-    const digits = pastedData.replace(/\D/g, '').slice(0, 6 - index).split('');
+    const digits = pastedData.replace(/\D/g, '').slice(0, this.length - index).split('');
+    const lastIndex = this.length - 1;
 
     if (digits.length > 0) {
       digits.forEach((digit, offset) => {
         const targetIndex = index + offset;
-        if (targetIndex < 6) {
+        if (targetIndex < this.length) {
           this.inputs[targetIndex].value = digit;
         }
       });
@@ -200,7 +210,7 @@ export class CodeInputComponent implements OnInit, AfterViewInit, ControlValueAc
       this.syncInputElements();
 
       const nextEmptyIndex = this.inputs.findIndex((inp, idx) => idx > index && !inp.value);
-      const focusIndex = nextEmptyIndex === -1 ? Math.min(index + digits.length, 5) : nextEmptyIndex;
+      const focusIndex = nextEmptyIndex === -1 ? Math.min(index + digits.length, lastIndex) : nextEmptyIndex;
 
       setTimeout(() => {
         const inputElements = this.codeInputs.toArray();
