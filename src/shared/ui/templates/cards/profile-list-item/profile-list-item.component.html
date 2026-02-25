@@ -1,0 +1,17 @@
+<div class="profile-list-item" (click)="onItemClick()">
+  <div class="item-content">
+    <ion-text [style.color]="secondaryColor$ | async">
+      <h3 class="item-title">{{ title }}</h3>
+    </ion-text>
+
+    <div class="item-right">
+      <app-pending-status *ngIf="status === 'pending'"></app-pending-status>
+      <app-approved-status *ngIf="status === 'approved'" [type]="type"></app-approved-status>
+      <app-canceled-status *ngIf="status === 'canceled'" [type]="type"></app-canceled-status>
+      <app-completed-status *ngIf="status === 'completed'"></app-completed-status>
+
+      <ion-icon [icon]="chevronIcon" [style.color]="secondaryColor$ | async"></ion-icon>
+    </div>
+  </div>
+</div>
+

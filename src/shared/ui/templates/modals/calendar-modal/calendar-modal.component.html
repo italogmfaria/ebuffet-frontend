@@ -1,0 +1,39 @@
+<div class="modal-overlay" (click)="onClose()"></div>
+<div class="calendar-modal-container">
+  <div class="close-btn-wrapper">
+    <app-close-circle
+      size="large"
+      (buttonClick)="onClose()"
+      [customColor]="getSecondaryColor()"
+      aria-label="Fechar"
+    ></app-close-circle>
+  </div>
+
+  <div class="content-wrapper">
+    <h2 class="title">Escolha a data</h2>
+
+    <div class="calendar-wrapper"
+         [style.--secondary-color]="secondaryColor$ | async"
+         [style.--accent-color]="accentColor$ | async">
+      <ion-datetime
+        presentation="date"
+        [value]="selectedDate"
+        [min]="minDate"
+        [max]="maxDate"
+        [highlightedDates]="highlightedDates"
+        [isDateEnabled]="isDateEnabled"
+        (ionChange)="onDateChange($event)"
+        locale="pt-BR"
+        [preferWheel]="false">
+      </ion-datetime>
+    </div>
+  </div>
+
+  <div class="buttons-wrapper">
+    <app-primary-button
+      [text]="'Confirmar'"
+      (buttonClick)="onConfirm()"
+      [customColor]="getSecondaryColor()"
+    ></app-primary-button>
+  </div>
+</div>

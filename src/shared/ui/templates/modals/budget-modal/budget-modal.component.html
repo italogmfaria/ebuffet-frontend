@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ title }}</h2>
+      <p *ngIf="subtitle" class="modal-subtitle" [innerHTML]="subtitle"></p>
+    </div>
+
+    <div class="modal-body">
+      <app-budget-input
+        [label]="'Valor Orçado:'"
+        [placeholder]="'0,00'"
+        [(ngModel)]="budgetValue">
+      </app-budget-input>
+
+      <div class="toggle-container" *ngIf="showBlockDayToggle">
+        <div class="toggle-label-group">
+          <label class="toggle-label" for="blockDayToggle">Bloquear dia no calendário</label>
+          <span class="toggle-description">
+            Ao ativar, esta data ficará indisponível para novas reservas
+          </span>
+        </div>
+        <label class="custom-toggle">
+          <input
+            type="checkbox"
+            id="blockDayToggle"
+            [(ngModel)]="blockDay"
+            class="toggle-checkbox">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <app-outline-button
+        [text]="'Cancelar'"
+        (buttonClick)="onCancel()">
+      </app-outline-button>
+
+      <app-primary-button
+        [text]="'Confirmar'"
+        [disabled]="!isValid"
+        (buttonClick)="onConfirm()">
+      </app-primary-button>
+    </div>
+  </div>
+</div>
+

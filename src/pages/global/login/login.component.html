@@ -1,0 +1,51 @@
+<app-form-page title="Login" class="ion-page" (backClick)="onBackClick()">
+  <div class="login-page">
+    <form [formGroup]="loginForm" class="login-form">
+      <ion-grid>
+          <ion-row>
+              <ion-col>
+                  <app-text-input
+                          label="Email:"
+                          placeholder="Digite seu email"
+                          formControlName="email">
+                  </app-text-input>
+              </ion-col>
+          </ion-row>
+
+          <ion-row>
+              <ion-col>
+                  <app-password-input
+                          label="Senha:"
+                          placeholder="Digite sua senha"
+                          formControlName="password">
+                  </app-password-input>
+              </ion-col>
+          </ion-row>
+
+          <ion-row>
+              <ion-col>
+                  <p class="forgot"><span class="link" (click)="goToForgotPassword($event)">Esqueceu sua senha?</span></p>
+                  <app-primary-button
+                          text="Entrar"
+                          type="submit"
+                          [disabled]="!isFormValid"
+                          (buttonClick)="toDoLogin($event)">
+                  </app-primary-button>
+              </ion-col>
+          </ion-row>
+
+          <ion-row class="center-row">
+              <ion-col>
+                  <p class="subtitle">Não possui uma conta?</p>
+                  <app-outline-button
+                          text="Criar Conta"
+                          type="submit"
+                          (buttonClick)="createAccount($event)">
+                  </app-outline-button>
+              </ion-col>
+          </ion-row>
+
+      </ion-grid>
+    </form>
+  </div>
+</app-form-page>

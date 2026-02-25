@@ -1,0 +1,25 @@
+<app-form-page [title]="'Bem vindo, ' + userName + '!'" [hasNavbar]="true" [showNotification]="true" class="ion-page" (backClick)="onBackClick()" (notificationClick)="onNotificationClick()">
+  <div class="home-page">
+    <form class="home-form">
+      <ion-grid>
+          <app-home-carousel></app-home-carousel>
+          <app-home-calendar></app-home-calendar>
+          <app-home-categories></app-home-categories>
+      </ion-grid>
+    </form>
+  </div>
+</app-form-page>
+
+<app-confirmation-modal
+  *ngIf="showExitModal"
+  [title]="'Deseja sair?'"
+  [subtitle]="'Você será redirecionado <br> para a tela inicial.'"
+  [icon]="'log-out'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (confirm)="onCancelExit()"
+  (cancel)="onConfirmExit()"
+  (close)="onCloseModal()"
+></app-confirmation-modal>
+
+<app-client-navbar></app-client-navbar>

@@ -1,0 +1,568 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { NavController } from '@ionic/angular/standalone';
+import { Subscription } from 'rxjs';
+
+import {
+  ModelPageComponent,
+  DefaultItemCardComponent,
+  PrimaryButtonComponent,
+  CancelButtonComponent,
+  WhatsappButtonComponent,
+  PendingStatusComponent,
+  ApprovedStatusComponent,
+  CanceledStatusComponent,
+  CompletedStatusComponent,
+  ConfirmationModalComponent, BudgetModalComponent
+} from '../../../../shared/ui/templates/exports';
+
+import { ThemeService } from '../../../../core/services/theme.service';
+import { EventoService } from '../../../../features/events/api/evento.api.service';
+import { ReservationsApiService } from '../../../../features/reservations/api/reservations-api.service';
+import { mapEventoStatusToUi } from '../../../../features/events/model/events.models';
+import {SessionService} from "../../../../core/services/session.service";
+import {mapReservaStatusToUi, UiStatus} from "../../../../features/cliente-profile/model/cliente-profile.model";
+
+interface MenuItem {
+  id?: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  quantity: number;
+}
+
+interface ServiceItem {
+  id?: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  quantity: number;
+}
+
+@Component({
+  selector: 'app-event-details',
+  templateUrl: './event-details.component.html',
+  styleUrls: ['./event-details.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    ModelPageComponent,
+    DefaultItemCardComponent,
+    PrimaryButtonComponent,
+    CancelButtonComponent,
+    WhatsappButtonComponent,
+    PendingStatusComponent,
+    ApprovedStatusComponent,
+    CanceledStatusComponent,
+    CompletedStatusComponent,
+    ConfirmationModalComponent,
+    BudgetModalComponent
+  ],
+  host: { class: 'ion-page' }
+})
+export class EventDetailsComponent implements OnInit, OnDestroy {
+  eventId = 0;
+  reservaId = 0;
+  clienteId = 0; // ID do cliente do evento
+  fromProfile: boolean = false; // Se veio direto do profile
+
+  eventTitle = 'Nome do Evento';
+  eventStatus: 'pending' | 'approved' | 'canceled' | 'completed' = 'pending';
+
+  reserveTitle: string = 'Reserva';
+  reserveStatus: UiStatus = 'pending';
+
+  showCancelModal = false;
+  showBudgetModal = false;
+  showCompleteModal = false;
+
+  date = '';
+  budgetValue = '';
+  budgetValueNumeric: number = 0; // Valor numérico para edição
+  description = '';
+  address = '';
+  time = '';
+  peopleCount = '';
+  clientName = '';
+  clientEmail = '';
+  clientPhone = '';
+
+  menuItems: MenuItem[] = [];
+  services: ServiceItem[] = [];
+
+  secondaryColor$ = this.themeService.secondaryColor$;
+
+  private subs = new Subscription();
+
+  constructor(
+    private route: ActivatedRoute,
+    private themeService: ThemeService,
+    private navCtrl: NavController,
+    private eventoApi: EventoService,
+    private reservasApi: ReservationsApiService,
+    private sessionService: SessionService
+  ) {}
+
+  get isAdmin(): boolean {
+    return this.sessionService.isAdmin();
+  }
+
+  get isClient(): boolean {
+    return !this.isAdmin;
+  }
+
+  ngOnInit() {
+    this.subs.add(
+      this.route.queryParams.subscribe(params => {
+        this.eventId = Number(params['id'] ?? 0);
+        this.reservaId = Number(params['reservaId'] ?? 0);
+        this.fromProfile = params['fromProfile'] === 'true';
+        this.clienteId = Number(params['clienteId'] ?? 0);
+
+        if (this.eventId) {
+          this.loadEvento();
+        }
+
+        if (this.reservaId) {
+          this.loadReserve();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private loadEvento() {
+    this.subs.add(
+      this.eventoApi.getById(this.eventId).subscribe({
+        next: (ev) => {
+          this.eventTitle = ev.nome || `Evento #${ev.id}`;
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+
+          // Armazena valor numérico e formata para exibição
+          if (ev.valor != null && ev.valor !== '') {
+            // Se vier como string, remove formatação antes de converter
+            const numericValue = typeof ev.valor === 'string'
+              ? parseFloat(ev.valor.replace(',', '.'))
+              : ev.valor;
+            this.budgetValueNumeric = numericValue;
+            this.budgetValue = this.formatCurrency(numericValue);
+          } else {
+            this.budgetValueNumeric = 0;
+            this.budgetValue = '';
+          }
+
+          if (ev.inicio) {
+            this.date = this.formatDatePtBr(ev.inicio);
+            this.time = this.formatTimePtBr(ev.inicio);
+          }
+
+          // TODO: Backend precisa retornar objeto 'cliente' com nome e email
+          // Carrega nome do cliente (para admin)
+          // if (ev.cliente) {
+          //   this.clientName = ev.cliente.nome || ev.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = ev.cliente.email || '';
+          //   this.clientPhone = ev.cliente.telefone || '';
+          // } else if (ev.reserva?.cliente) {
+          //   this.clientName = ev.reserva.cliente.nome || ev.reserva.cliente.email || 'Cliente não identificado';
+          //   this.clientEmail = ev.reserva.cliente.email || '';
+          //   this.clientPhone = ev.reserva.cliente.telefone || '';
+          // }
+          // Por enquanto, usar clienteId como fallback
+          if (this.isAdmin) {
+            this.clientName = `Cliente ID: ${ev.clienteId}`;
+            this.clientEmail = 'Email não disponível';
+            this.clientPhone = 'Telefone não disponível';
+          }
+        },
+        error: (err) => console.error('Erro ao carregar evento', err)
+      })
+    );
+  }
+
+  private loadReserve() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    // Se for buffet owner, usa clienteId da reserva
+    // Se for cliente, usa o próprio user.id
+    const isBuffetOwner = user.roles === 'BUFFET';
+    const clientIdToUse = isBuffetOwner ? this.clienteId : user.id;
+
+    this.subs.add(
+      this.reservasApi.getById(this.reservaId, clientIdToUse).subscribe({
+        next: (r) => {
+          this.reserveStatus = mapReservaStatusToUi(r.statusReserva);
+
+          this.date = this.formatDatePtBr(r.dataDesejada);
+          this.time = this.formatTimePtBr(r.horarioDesejado);
+          this.peopleCount = `${r.qtdPessoas} pessoa${r.qtdPessoas === 1 ? '' : 's'}`;
+
+          this.reserveTitle = r.titulo || `Reserva #${r.id}`;
+
+          this.description = r.descricao || '';
+
+          this.address = r.endereco
+            ? this.formatAddress(r.endereco)
+            : '';
+
+          // Carrega informações do cliente (disponível para buffet owners)
+          if (this.isAdmin) {
+            this.clientName = r.nomeCliente || `Cliente ID: ${r.clienteId}`;
+            this.clientEmail = r.emailCliente || 'Email não disponível';
+            this.clientPhone = r.telefoneCliente ? this.formatPhonePtBr(r.telefoneCliente) : 'Telefone não disponível';
+          }
+
+          this.menuItems = (r.comidas ?? []).map(c => ({
+            id: c.id,
+            title: c.nome,
+            description: c.descricao,
+            imageUrl: c.imagemUrl || '',
+            quantity: 1
+          }));
+
+          this.services = (r.servicos ?? []).map(s => ({
+            id: s.id,
+            title: s.nome,
+            description: s.descricao,
+            imageUrl: s.imagemUrl || '',
+            quantity: 1
+          }));
+        },
+        error: (err) => console.error('Erro ao carregar reserva', err)
+      })
+    );
+  }
+
+  private formatCurrency(value: number): string {
+    if (!value || value === 0) return '';
+    return `R$ ${value.toFixed(2).replace('.', ',')}`;
+  }
+
+  private formatDatePtBr(isoDateTime: string) {
+    if (!isoDateTime) return '';
+    // Extrai apenas a parte da data (YYYY-MM-DD) sem conversão de timezone
+    const dateOnly = isoDateTime.split('T')[0];
+    const [y, m, d] = dateOnly.split('-');
+    if (!y || !m || !d) return isoDateTime;
+    return `${d}/${m}/${y}`;
+  }
+
+  private formatTimePtBr(timeString: string) {
+    // Se for apenas hora (HH:MM:SS ou HH:MM), formatar diretamente
+    if (timeString && !timeString.includes('T') && timeString.match(/^\d{2}:\d{2}/)) {
+      const parts = timeString.split(':');
+      return `${parts[0]}:${parts[1]} horas`;
+    }
+    // Caso contrário, tratar como ISO datetime
+    const d = new Date(timeString);
+    return `${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} horas`;
+  }
+
+  onBackClick() {
+    // Se o cliente veio direto do profile, volta para o profile
+    if (this.isClient && this.fromProfile) {
+      this.navCtrl.navigateBack('/client/profile');
+    } else {
+      // Senão, volta para a lista de eventos
+      this.navCtrl.navigateBack('/events');
+    }
+  }
+
+  onEdit() {
+    this.navCtrl.navigateForward('/events/event-edit', {
+      queryParams: {
+        id: this.eventId,
+        title: this.eventTitle,
+        status: this.eventStatus,
+        reservaId: this.reservaId
+      }
+    });
+  }
+
+  onContact() {
+    if (this.isAdmin) {
+      // Admin entra em contato com o cliente
+      if (this.clientPhone && this.clientPhone !== 'Telefone não disponível') {
+        const phoneNumber = this.clientPhone.replace(/\D/g, ''); // Remove caracteres não numéricos
+        const message = encodeURIComponent(`Olá! Sobre seu evento "${this.eventTitle}"`);
+        window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      } else {
+        console.warn('Telefone do cliente não disponível');
+      }
+    } else {
+      // Cliente entra em contato com o buffet
+      // TODO: Implementar quando backend retornar telefone do buffet
+      console.warn('Funcionalidade de contato com buffet ainda não implementada');
+      // const buffetPhone = this.themeService.getBuffetPhone();
+      // if (buffetPhone) {
+      //   const phoneNumber = buffetPhone.replace(/\D/g, '');
+      //   const message = encodeURIComponent(`Olá! Tenho dúvidas sobre o evento "${this.eventTitle}"`);
+      //   window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
+      // }
+    }
+  }
+
+  onCancel() {
+    this.showCancelModal = true;
+  }
+
+  onCancelModalClose() {
+    this.showCancelModal = false;
+  }
+
+  onCancelModalConfirm() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    const isBuffetOwner = user.roles === 'BUFFET';
+
+    // Se o evento está cancelado e é o buffet, reverter cancelamento
+    if (this.eventStatus === 'canceled' && isBuffetOwner) {
+      this.subs.add(
+        this.eventoApi.reverterCancelamento(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+            this.loadEvento();
+          },
+          error: (err) => {
+            console.error('Erro ao reverter cancelamento do evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    } else if (isBuffetOwner) {
+      // Caso contrário, buffet cancela o evento
+      this.subs.add(
+        this.eventoApi.cancelar(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+          },
+          error: (err) => {
+            console.error('Erro ao cancelar evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    } else {
+      // Cliente cancela o evento
+      this.subs.add(
+        this.eventoApi.cancelarPeloCliente(this.eventId, user.id).subscribe({
+          next: (ev) => {
+            this.showCancelModal = false;
+            this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+          },
+          error: (err) => {
+            console.error('Erro ao cancelar evento', err);
+            this.showCancelModal = false;
+          }
+        })
+      );
+    }
+  }
+
+  onCancelModalCancel() {
+    this.showCancelModal = false;
+  }
+
+  onComplete() {
+    this.showCompleteModal = true;
+  }
+
+  onCompleteModalClose() {
+    this.showCompleteModal = false;
+  }
+
+  onCompleteModalConfirm() {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    this.subs.add(
+      this.eventoApi.concluir(this.eventId, user.id).subscribe({
+        next: (ev) => {
+          this.showCompleteModal = false;
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+        },
+        error: (err) => {
+          console.error('Erro ao concluir evento', err);
+          this.showCompleteModal = false;
+        }
+      })
+    );
+  }
+
+  onCompleteModalCancel() {
+    this.showCompleteModal = false;
+  }
+
+  onEditBudget() {
+    this.showBudgetModal = true;
+  }
+
+  onBudgetModalClose() {
+    this.showBudgetModal = false;
+  }
+
+  onBudgetModalConfirm(data: {value: string, blockDay: boolean} | string) {
+    const user = this.sessionService.getUser();
+    if (!user?.id) return;
+
+    // Suporta tanto o formato antigo (string) quanto o novo (objeto)
+    const value = typeof data === 'string' ? data : data.value;
+
+    // Converte string para número, removendo formatação
+    const numericValue = parseFloat(value.replace(/[^\d,.-]/g, '').replace(',', '.'));
+
+    this.subs.add(
+      this.eventoApi.updateValor(this.eventId, numericValue, user.id).subscribe({
+        next: (ev) => {
+          this.showBudgetModal = false;
+          // Atualiza e formata o valor corretamente
+          if (ev.valor != null && ev.valor !== '') {
+            // Se vier como string, remove formatação antes de converter
+            const updatedValue = typeof ev.valor === 'string'
+              ? parseFloat(ev.valor.replace(',', '.'))
+              : ev.valor;
+            this.budgetValueNumeric = updatedValue;
+            this.budgetValue = this.formatCurrency(updatedValue);
+          } else {
+            this.budgetValueNumeric = 0;
+            this.budgetValue = '';
+          }
+          this.eventStatus = mapEventoStatusToUi(ev.statusEvento);
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar valor do evento', err);
+          this.showBudgetModal = false;
+        }
+      })
+    );
+  }
+
+  onBudgetModalCancel() {
+    this.showBudgetModal = false;
+  }
+
+  get isCanceled(): boolean {
+    return this.eventStatus === 'canceled';
+  }
+
+  get cancelButtonText(): string {
+    return this.isCanceled ? 'Descancelar' : 'Cancelar';
+  }
+
+  get cancelModalTitle(): string {
+    return this.isCanceled ? 'Descancelar evento?' : 'Cancelar evento?';
+  }
+
+  get cancelModalSubtitle(): string {
+    return this.isCanceled
+      ? 'Tem certeza que deseja<br>descancelar este evento?'
+      : 'Tem certeza que deseja<br>cancelar este evento?';
+  }
+
+  get canEdit(): boolean {
+    return this.eventStatus === 'pending' || this.eventStatus === 'approved';
+  }
+
+  get canCancel(): boolean {
+    if (this.isAdmin) {
+      // Admin pode cancelar/descancelar se pendente, agendado ou cancelado
+      return this.eventStatus === 'pending' ||
+             this.eventStatus === 'approved' ||
+             this.eventStatus === 'canceled';
+    } else {
+      // Cliente pode cancelar se pendente ou agendado (não pode descancelar)
+      return this.eventStatus === 'pending' || this.eventStatus === 'approved';
+    }
+  }
+
+  get canComplete(): boolean {
+    // Apenas admin pode concluir, se pendente ou aprovado
+    return this.isAdmin && (this.eventStatus === 'pending' || this.eventStatus === 'approved');
+  }
+
+  get showEditBudget(): boolean {
+    // Admin vê botão de editar valor orçado
+    return this.isAdmin && this.canEdit;
+  }
+
+  get showEditEvent(): boolean {
+    // Cliente vê botão de editar evento
+    return this.isClient && this.canEdit;
+  }
+
+  onFoodItemClick(item: MenuItem) {
+    if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'events', // Indica que vem da página de events
+        fromDetailsId: this.eventId // ID do evento para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
+      this.navCtrl.navigateForward(`/client/foods/${item.id}`, {
+        queryParams: queryParams
+      });
+    }
+  }
+
+  onServiceItemClick(item: ServiceItem) {
+    if (item.id) {
+      const queryParams: any = {
+        name: item.title,
+        fromPage: 'events', // Indica que vem da página de events
+        fromDetailsId: this.eventId // ID do evento para voltar corretamente
+      };
+
+      // Se for buffet/admin, adiciona flag viewOnly para esconder botão de adicionar
+      if (this.isAdmin) {
+        queryParams.viewOnly = 'true';
+      } else {
+        queryParams.fromOrder = 'true';
+      }
+
+      this.navCtrl.navigateForward(`/client/services/${item.id}`, {
+        queryParams: queryParams
+      });
+    }
+  }
+
+  private formatAddress(e: any): string {
+    const parts = [
+      `${e.rua ?? ''}${e.numero ? ', ' + e.numero : ''}`.trim(),
+      e.bairro,
+      `${e.cidade ?? ''}${e.estado ? ', ' + e.estado : ''}`.trim(),
+      e.cep,
+      e.complemento
+    ].filter(Boolean);
+
+    return parts.join(' - ');
+  }
+
+  private formatPhonePtBr(phone: string): string {
+    if (!phone) return '';
+    // Remove todos os caracteres não numéricos
+    const numbers = phone.replace(/\D/g, '');
+    // Formato brasileiro: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    if (numbers.length === 11) {
+      return `(${numbers.substring(0, 2)}) ${numbers.substring(2, 7)}-${numbers.substring(7)}`;
+    } else if (numbers.length === 10) {
+      return `(${numbers.substring(0, 2)}) ${numbers.substring(2, 6)}-${numbers.substring(6)}`;
+    }
+    return phone; // Retorna sem formatação se não for válido
+  }
+}

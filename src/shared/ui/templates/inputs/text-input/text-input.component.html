@@ -1,0 +1,19 @@
+<div class="input-container">
+  <div class="label-container">
+    <label *ngIf="label" class="field-label">{{ label }}</label>
+    <span *ngIf="showCounter && maxlength" class="character-counter">{{ characterCount }}</span>
+  </div>
+  <ion-item lines="none" class="input-outline">
+    <ion-input
+      [type]="type"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value"
+      [maxlength]="maxlength"
+      [inputmode]="inputmode"
+      (ionInput)="onInputChange($event)"
+      (keypress)="onKeyPress($event)"
+      (ionBlur)="onBlur()">
+    </ion-input>
+  </ion-item>
+</div>

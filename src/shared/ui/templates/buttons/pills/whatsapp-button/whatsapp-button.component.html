@@ -1,0 +1,10 @@
+<ion-button
+  expand="block"
+  class="btn-whatsapp"
+  [disabled]="disabled"
+  [type]="type"
+  (click)="onClick($event)">
+  <ion-icon *ngIf="showIcon" name="logo-whatsapp" slot="end"></ion-icon>
+  {{ text }}
+</ion-button>
+

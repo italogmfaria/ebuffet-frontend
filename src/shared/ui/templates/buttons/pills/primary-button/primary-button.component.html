@@ -1,0 +1,9 @@
+<ion-button
+  expand="block"
+  class="btn-primary"
+  [disabled]="disabled"
+  [type]="type"
+  [style.--background]="customColor || 'var(--ion-color-secondary)'"
+  (click)="onClick($event)">
+  {{ text }}
+</ion-button>

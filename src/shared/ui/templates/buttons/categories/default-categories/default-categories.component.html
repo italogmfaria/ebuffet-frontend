@@ -1,0 +1,12 @@
+<div class="categories-container" #categoriesContainer>
+  <ion-chip
+    *ngFor="let category of categories"
+    [id]="'category-' + category.id"
+    [style.--background]="category.selected ? (secondaryColor$ | async) : (primaryColor$ | async)"
+    [style.--color]="'white'"
+    class="category-chip"
+    [class.selected]="category.selected"
+    (click)="onCategoryClick(category.id, $event)">
+    {{ category.name }}
+  </ion-chip>
+</div>

@@ -1,0 +1,25 @@
+<ion-content [style.--background]="primaryColor$ | async">
+  <div class="form-page-container">
+
+    <div [style.color]="accentColor$ | async" class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+
+    <div class="notification-button" [hidden]="!showNotification">
+      <app-notification-circle
+        [size]="'medium'"
+        [hasNewNotification]="hasNewNotification"
+        (buttonClick)="onNotificationClick($event)">
+      </app-notification-circle>
+    </div>
+
+    <div class="header-section">
+      <img [src]="banner$ | async" alt="Logo do Buffet" class="buffet-banner" />
+    </div>
+
+    <main class="content" [class.has-navbar]="hasNavbar">
+      <h4 class="page-title">{{ title }}</h4>
+        <ng-content></ng-content>
+    </main>
+  </div>
+</ion-content>

@@ -1,0 +1,74 @@
+<app-model-page [title]="'Gerenciar Comidas'" class="ion-page" (backClick)="onBackClick()">
+  <div class="manage-foods-page">
+    <form class="manage-foods-form">
+      <app-search-input
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Pesquise comidas'"
+        name="food-search"
+        (searchChange)="onSearch($event)">
+      </app-search-input>
+      <app-default-categories
+        [selectedCategoryId]="selectedCategory"
+        (categorySelected)="onCategorySelect($event)">
+      </app-default-categories>
+
+      <!-- Loading spinner -->
+      <app-loading-spinner
+        *ngIf="isLoading"
+        [color]="(secondaryColor$ | async) || '#8b5cf6'"
+        size="medium"
+        text="Carregando comidas...">
+      </app-loading-spinner>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && displayedFoods.length === 0" class="empty-section">
+        <p class="empty-text">Nenhuma comida encontrada</p>
+      </div>
+
+      <!-- Foods grid -->
+      <div *ngIf="!isLoading && displayedFoods.length > 0" class="foods-grid">
+        <app-manage-item-card
+          *ngFor="let food of displayedFoods"
+          [title]="food.nome"
+          [description]="food.descricao"
+          [imageUrl]="food.imageUrl || ''"
+          (cardClick)="onFoodClick(food)"
+          (editClick)="onEditFood(food)"
+          (deleteClick)="onDeleteFood(food)">
+        </app-manage-item-card>
+      </div>
+
+      <!-- Infinite scroll -->
+      <ion-infinite-scroll
+        *ngIf="displayedFoods.length > 0"
+        threshold="100px"
+        (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content
+          loadingSpinner="bubbles"
+          loadingText="Carregando mais comidas...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </form>
+
+    <!-- Add button -->
+    <app-add-circle
+      size="large"
+      [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+      (buttonClick)="onAddFood()">
+    </app-add-circle>
+  </div>
+</app-model-page>
+
+<app-confirmation-modal
+  *ngIf="showDeleteModal"
+  [title]="'Excluir Comida?'"
+  [subtitle]="'Tem certeza que deseja excluir<br>&quot;' + (foodToDelete?.nome || '') + '&quot;?'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onDeleteModalClose()"
+  (confirm)="onDeleteModalConfirm()"
+  (cancel)="onDeleteModalCancel()">
+</app-confirmation-modal>
+

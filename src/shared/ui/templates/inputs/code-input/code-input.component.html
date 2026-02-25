@@ -1,0 +1,17 @@
+<div class="code-input-container">
+  <input
+    #codeInput
+    *ngFor="let item of inputs; trackBy: trackByIndex"
+    type="text"
+    inputmode="numeric"
+    maxlength="1"
+    class="code-digit"
+    [disabled]="disabled"
+    [value]="item.value"
+    (input)="onInputChange($event, item.index)"
+    (keydown)="onInputKeyDown($event, item.index)"
+    (paste)="onInputPaste($event, item.index)"
+    (focus)="onInputFocus($event)"
+    autocomplete="off"
+  />
+</div>

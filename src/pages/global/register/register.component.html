@@ -1,0 +1,90 @@
+<app-form-page title="Crie sua conta" class="ion-page" (backClick)="onBackClick()">
+  <div class="register-page">
+    <form [formGroup]="registerForm" class="register-form">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Nome:"
+              placeholder="Digite seu nome"
+              formControlName="name">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Sobrenome:"
+              placeholder="Digite seu sobrenome"
+              formControlName="surname">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Email:"
+              type="email"
+              placeholder="Digite seu email"
+              formControlName="email">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-text-input
+              label="Telefone:"
+              type="tel"
+              placeholder="(XX) XXXXX-XXXX"
+              formControlName="phone"
+              [maxlength]="15"
+              (inputChange)="onPhoneInput($event)">
+            </app-text-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-password-input
+              label="Senha:"
+              placeholder="Digite sua senha"
+              formControlName="password">
+            </app-password-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <p class="terms">
+              Ao prosseguir, você concorda com os <span class="link" (click)="goToTerms($event)">Termos e Condições de Uso do Aplicativo</span>
+            </p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-primary-button
+              text="Criar Conta"
+              type="submit"
+              [disabled]="!isFormValid"
+              (buttonClick)="createAccount($event)">
+            </app-primary-button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="center-row">
+          <ion-col>
+            <p class="subtitle">Já tem uma conta?</p>
+            <app-outline-button
+              text="Entrar"
+              (buttonClick)="goToLogin($event)">
+            </app-outline-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
+</app-form-page>

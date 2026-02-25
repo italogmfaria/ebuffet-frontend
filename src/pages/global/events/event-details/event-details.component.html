@@ -1,0 +1,171 @@
+<app-model-page [title]="eventTitle" class="ion-page" (backClick)="onBackClick()">
+  <div class="event-details-page">
+    <ion-grid>
+      <!-- Status Section -->
+      <div class="section">
+        <h3 class="section-title">Status:</h3>
+        <div class="status-container">
+          <app-pending-status *ngIf="eventStatus === 'pending'"></app-pending-status>
+          <app-approved-status *ngIf="eventStatus === 'approved'" [type]="'evento'"></app-approved-status>
+          <app-canceled-status *ngIf="eventStatus === 'canceled'" [type]="'evento'"></app-canceled-status>
+          <app-completed-status *ngIf="eventStatus === 'completed'"></app-completed-status>
+        </div>
+      </div>
+
+      <!-- Client Section (only for admin) -->
+      <div class="section" *ngIf="isAdmin">
+        <h3 class="section-title">Cliente:</h3>
+        <p class="section-text">{{ clientName || 'Carregando...' }}</p>
+        <p class="section-text" *ngIf="clientEmail">{{ clientEmail }}</p>
+        <p class="section-text" *ngIf="clientPhone">{{ clientPhone }}</p>
+      </div>
+
+      <!-- Data Section -->
+      <div class="section">
+        <h3 class="section-title">Data:</h3>
+        <p class="section-text">{{ date }}</p>
+      </div>
+
+      <!-- Valor Orçado Section -->
+      <div class="section">
+        <h3 class="section-title">Valor Orçado:</h3>
+        <p class="section-text">{{ budgetValue }}</p>
+      </div>
+
+      <!-- Descrição Section -->
+      <div class="section">
+        <h3 class="section-title">Descrição:</h3>
+        <p class="section-text">{{ description }}</p>
+      </div>
+
+      <!-- Endereço Section -->
+      <div class="section">
+        <h3 class="section-title">Endereço:</h3>
+        <p class="section-text">{{ address }}</p>
+      </div>
+
+      <!-- Horário Section -->
+      <div class="section">
+        <h3 class="section-title">Horário:</h3>
+        <p class="section-text">{{ time }}</p>
+      </div>
+
+      <!-- Quantidade de pessoas Section -->
+      <div class="section">
+        <h3 class="section-title">Quantidade de pessoas:</h3>
+        <p class="section-text">{{ peopleCount }}</p>
+      </div>
+
+      <!-- Cardápio Section -->
+      <div class="section">
+        <h3 class="section-title">Comidas:</h3>
+        <div class="items-list">
+          <app-default-item-card
+            *ngFor="let item of menuItems"
+            [title]="item.title"
+            [description]="item.description"
+            [imageUrl]="item.imageUrl"
+            [circleType]="'none'"
+            (cardClick)="onFoodItemClick(item)">
+          </app-default-item-card>
+        </div>
+      </div>
+
+      <!-- Serviços Section -->
+      <div class="section last-section">
+        <h3 class="section-title">Serviços:</h3>
+        <div class="items-list">
+          <app-default-item-card
+            *ngFor="let service of services"
+            [title]="service.title"
+            [description]="service.description"
+            [imageUrl]="service.imageUrl"
+            [circleType]="'none'"
+            (cardClick)="onServiceItemClick(service)">
+          </app-default-item-card>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="actions-container">
+        <!-- Cliente: Editar evento completo -->
+        <app-primary-button
+          *ngIf="showEditEvent"
+          [text]="'Editar'"
+          [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+          (buttonClick)="onEdit()">
+        </app-primary-button>
+
+        <!-- Admin: Editar apenas valor orçado -->
+        <app-primary-button
+          *ngIf="showEditBudget"
+          [text]="'Editar Valor Orçado'"
+          [customColor]="(secondaryColor$ | async) || '#8b5cf6'"
+          (buttonClick)="onEditBudget()">
+        </app-primary-button>
+
+        <!-- Admin: Concluir evento -->
+        <app-primary-button
+          *ngIf="canComplete"
+          [text]="'Concluir'"
+          [customColor]="'#10b981'"
+          (buttonClick)="onComplete()">
+        </app-primary-button>
+
+        <app-whatsapp-button
+          [text]="'Entrar em Contato'"
+          (buttonClick)="onContact()">
+        </app-whatsapp-button>
+
+        <app-cancel-button
+          *ngIf="!isCanceled && canCancel"
+          [text]="'Cancelar'"
+          (buttonClick)="onCancel()">
+        </app-cancel-button>
+
+        <app-primary-button
+          *ngIf="isCanceled && canCancel"
+          [text]="'Descancelar'"
+          [customColor]="'#3b82f6'"
+          (buttonClick)="onCancel()">
+        </app-primary-button>
+      </div>
+    </ion-grid>
+  </div>
+</app-model-page>
+
+<app-confirmation-modal
+  *ngIf="showCancelModal"
+  [title]="cancelModalTitle"
+  [subtitle]="cancelModalSubtitle"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onCancelModalClose()"
+  (confirm)="onCancelModalCancel()"
+  (cancel)="onCancelModalConfirm()">
+</app-confirmation-modal>
+
+<app-confirmation-modal
+  *ngIf="showCompleteModal"
+  [title]="'Concluir Evento?'"
+  [subtitle]="'Tem certeza que deseja<br>marcar este evento como concluído?'"
+  [icon]="'help'"
+  [iconColor]="'#fff'"
+  [outlineButtonText]="'Sim'"
+  [primaryButtonText]="'Não'"
+  (close)="onCompleteModalClose()"
+  (confirm)="onCompleteModalCancel()"
+  (cancel)="onCompleteModalConfirm()">
+</app-confirmation-modal>
+
+<app-budget-modal
+  *ngIf="showBudgetModal"
+  [title]="'Editar Valor Orçado'"
+  [subtitle]="'Defina o novo valor orçado para este evento'"
+  [initialValue]="budgetValueNumeric > 0 ? budgetValueNumeric.toFixed(2) : ''"
+  (close)="onBudgetModalClose()"
+  (confirm)="onBudgetModalConfirm($event)"
+  (cancel)="onBudgetModalCancel()">
+</app-budget-modal>

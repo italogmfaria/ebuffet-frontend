@@ -1,0 +1,16 @@
+<div class="notification-modal-backdrop" (click)="onBackdropClick()">
+  <div class="notification-modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title" [style.color]="secondaryColor$ | async">{{ title }}</h2>
+      <app-close-circle
+        size="small"
+        (buttonClick)="onClose()">
+      </app-close-circle>
+    </div>
+
+    <div class="modal-content">
+      <p class="modal-description">{{ description }}</p>
+    </div>
+  </div>
+</div>
+

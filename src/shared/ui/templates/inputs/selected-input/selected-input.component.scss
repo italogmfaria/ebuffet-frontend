@@ -1,0 +1,77 @@
+.input-container {
+  margin-bottom: 5px;
+}
+
+.field-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.input-outline {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 100px;
+  padding: 0;
+  box-shadow: none;
+  border: 2px solid var(--ion-color-secondary, #8a3bf1);
+  height: 50px;
+  margin: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:active:not(.disabled) {
+    opacity: 0.8;
+  }
+}
+
+.input-outline ion-input {
+  --padding-start: 0px;
+  --padding-end: 0px;
+  --color: #333 !important;
+  --placeholder-color: rgba(0, 0, 0, 0.45) !important;
+  font-size: 15px;
+  color: #333 !important;
+  width: 100%;
+  font-weight: 500;
+  cursor: pointer;
+  pointer-events: none;
+
+  &.input-disabled {
+    color: #333 !important;
+    opacity: 1 !important;
+  }
+}
+
+.input-outline ion-input::part(native) {
+  font-size: 15px;
+  color: #333 !important;
+  font-weight: 500;
+  opacity: 1 !important;
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.45) !important;
+    font-weight: 500;
+  }
+
+  &:disabled {
+    color: #333 !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #333 !important;
+  }
+}
+
+.dropdown-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+

@@ -1,0 +1,75 @@
+@use 'shared/ui/styles/toast';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
+@import '@ionic/angular/css/display.css';
+
+:root {
+  --black: #000;
+  --white: #eee;
+}
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
+body {
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+.theme-loading {
+  --ion-color-primary: #3dc2ff;
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #36abe0;
+  --ion-color-primary-tint: #50c8ff;
+
+  --ion-color-secondary: #3880ff;
+  --ion-color-secondary-rgb: 61, 194, 255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #3171e0;
+  --ion-color-secondary-tint: #4c8dff;
+}
+
+app-root {
+  display: block !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+ion-app {
+  background-color: transparent !important;
+}
+
+ion-card {
+  margin: 0 !important;
+  box-shadow: none !important;
+  --box-shadow: none !important;
+}
+
+ion-card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}

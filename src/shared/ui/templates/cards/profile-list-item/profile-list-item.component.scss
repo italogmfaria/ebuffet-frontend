@@ -1,0 +1,58 @@
+.profile-list-item {
+  background-color: #fafafa;
+  border: 1px solid #eeeeee;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    background-color: #f5f5f5;
+    transform: scale(0.98);
+  }
+
+  .item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+
+    ion-text {
+      flex: 1;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      display: block;
+    }
+
+    .item-title {
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.2;
+      width: 100%;
+    }
+
+    .item-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
