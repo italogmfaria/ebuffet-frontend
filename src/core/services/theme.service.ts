@@ -10,6 +10,7 @@ export interface ThemeConfig {
   logo: string;
   banner: string;
   buffetId?: number;
+  carouselImages?: string[];
 }
 
 @Injectable({
@@ -25,6 +26,7 @@ export class ThemeService {
   private logoSubject = new BehaviorSubject<string>('');
   private bannerSubject = new BehaviorSubject<string>('');
   private buffetIdSubject = new BehaviorSubject<number | null>(null);
+  private carouselImagesSubject = new BehaviorSubject<string[]>([]);
 
   // Observables públicos
   public primaryColor$ = this.primaryColorSubject.asObservable();
@@ -33,6 +35,7 @@ export class ThemeService {
   public logo$ = this.logoSubject.asObservable();
   public banner$ = this.bannerSubject.asObservable();
   public buffetId$ = this.buffetIdSubject.asObservable();
+  public carouselImages$ = this.carouselImagesSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -92,6 +95,7 @@ export class ThemeService {
     this.accentColorSubject.next(theme.accentColor);
     this.logoSubject.next(theme.logo);
     this.bannerSubject.next(theme.banner);
+    this.carouselImagesSubject.next(theme.carouselImages ?? []);
   }
 
   private showThemeError(): void {

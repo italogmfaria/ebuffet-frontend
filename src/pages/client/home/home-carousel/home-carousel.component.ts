@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule } from "@ionic/angular";
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-home-carousel',
@@ -13,13 +15,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeCarouselComponent implements OnInit, OnDestroy {
 
-  carouselImages = [
-    'assets/images/carousel-images/carousel-image-1.png',
-    'assets/images/carousel-images/carousel-image-2.png',
-    'assets/images/carousel-images/carousel-image-3.png',
-    'assets/images/carousel-images/carousel-image-4.png'
-  ];
-
+  carouselImages: string[] = [];
   extendedImages: string[] = [];
 
   currentIndex = 0;
@@ -31,9 +27,21 @@ export class HomeCarouselComponent implements OnInit, OnDestroy {
   touchEndX = 0;
   dragThreshold = 50;
 
-  constructor() { }
+  private carouselSubscription?: Subscription;
+
+  constructor(private themeService: ThemeService) { }
 
   ngOnInit() {
+    this.carouselSubscription = this.themeService.carouselImages$.subscribe(images => {
+      if (images.length > 0) {
+        this.stopAutoPlay();
+        this.carouselImages = images;
+        this.setupCarousel();
+      }
+    });
+  }
+
+  private setupCarousel() {
     this.extendedImages = [
       this.carouselImages[this.carouselImages.length - 1],
       ...this.carouselImages,
@@ -41,12 +49,14 @@ export class HomeCarouselComponent implements OnInit, OnDestroy {
     ];
 
     this.currentIndex = 1;
+    this.isTransitioning = false;
 
     this.startAutoPlay();
   }
 
   ngOnDestroy() {
     this.stopAutoPlay();
+    this.carouselSubscription?.unsubscribe();
   }
 
   startAutoPlay() {
