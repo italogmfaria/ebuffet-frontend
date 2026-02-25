@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { OrderService } from '../../features/orders/services/order.service';
+import { environment } from '../../environments/environment';
 
 interface SessionData {
   loggedIn: boolean;
   user?: any;
   timestamp?: number;
+  buffetId?: number;
 }
 
 @Injectable({
@@ -24,7 +26,14 @@ export class SessionService {
     try {
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
-        this.session = JSON.parse(stored) as SessionData;
+        const parsed = JSON.parse(stored) as SessionData;
+
+        if (parsed.loggedIn && parsed.buffetId !== environment.buffetId) {
+          this.clearSessionAndToken();
+          return;
+        }
+
+        this.session = parsed;
       } else {
         this.session = { loggedIn: false };
       }
@@ -37,6 +46,14 @@ export class SessionService {
     }
   }
 
+  private clearSessionAndToken(): void {
+    this.orderService.clearOrder();
+    this.session = { loggedIn: false };
+    localStorage.removeItem(this.storageKey);
+    localStorage.removeItem('access_token');
+    this._isAuthenticated$.next(false);
+  }
+
   public login(user?: any): void {
     // Clear cart when user logs in to prevent cart items from previous users
     this.orderService.clearOrder();
@@ -44,7 +61,8 @@ export class SessionService {
     this.session = {
       loggedIn: true,
       user,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      buffetId: environment.buffetId
     };
 
     try {
