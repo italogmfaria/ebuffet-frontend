@@ -11,7 +11,6 @@ export class FoodsApiService {
   private readonly basePath = '/comidas';
 
   listByBuffet(
-    buffetId: number,
     opts?: {
       categoria?: EnumCategoria;
       status?: EnumStatus;
@@ -34,13 +33,13 @@ export class FoodsApiService {
     );
   }
 
-  getAll(buffetId: number): Observable<ComidaListDTO[]> {
-    return this.listByBuffet(buffetId).pipe(
+  getAll(): Observable<ComidaListDTO[]> {
+    return this.listByBuffet().pipe(
       map(page => page.content.map((c: ComidaResponse) => ({...c, imageUrl: c.imagemUrl})))
     );
   }
 
-  getById(buffetId: number, id: number): Observable<ComidaDetailDTO> {
+  getById(id: number): Observable<ComidaDetailDTO> {
     return this.api
       .get<ComidaResponse>(`${this.basePath}/${id}`)
       .pipe(map(c => ({...c, imageUrl: c.imagemUrl})));

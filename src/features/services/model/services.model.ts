@@ -26,7 +26,6 @@ export interface ServicoResponse {
   descricao: string;
   imagemUrl?: string;
   categoria: EnumCategoria;
-  buffetId: number;
   dataCriacao: string;
   dataAtualizacao: string;
   status: EnumStatus;

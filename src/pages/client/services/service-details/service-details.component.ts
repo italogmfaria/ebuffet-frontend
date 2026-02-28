@@ -12,7 +12,6 @@ import { ServicoDetailDTO } from '../../../../features/services/model/services.m
 import { CategoriasLabels } from '../../../../core/enums/categoria.enum';
 import { ToastService } from '../../../../core/services/toast.service';
 import { EditStateService } from '../../../../core/services/edit-state.service';
-import {filter} from "rxjs/operators";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -81,22 +80,12 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadServiceDetails() {
-    const buffetIdSync = this.themeService.getBuffetIdSync?.() ?? null;
-    if (buffetIdSync) {
-      this.fetchDetails(buffetIdSync, this.serviceId);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(buffetId => this.fetchDetails(buffetId, this.serviceId))
-    );
+    this.fetchDetails(this.serviceId);
   }
 
-  private fetchDetails(buffetId: number, id: number) {
+  private fetchDetails(id: number) {
     this.subs.add(
-      this.servicesApiService.getById(buffetId, id).subscribe({
+      this.servicesApiService.getById(id).subscribe({
         next: service => {
           this.serviceDetails = service;
           this.serviceName = service?.nome || this.serviceName;

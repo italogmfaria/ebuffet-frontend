@@ -17,7 +17,6 @@ import { ServicesApiService } from '../../../features/services/api/services.api'
 import { EnumStatus, ServicoListDTO } from '../../../features/services/model/services.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
 import { Subscription } from "rxjs";
-import { filter } from "rxjs/operators";
 
 @Component({
   selector: 'app-manage-services',
@@ -81,23 +80,13 @@ export class ManageServicesComponent implements OnInit, OnDestroy, ViewWillEnter
   }
 
   loadServices() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchServices(buffetIdSync);
-      return;
-    }
-
-    this.subscriptions.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchServices(id))
-    );
+    this.fetchServices();
   }
 
-  private fetchServices(buffetId: number) {
+  private fetchServices() {
     this.isLoading = true;
     this.subscriptions.add(
-      this.servicesApiService.listByBuffet(buffetId, { status: EnumStatus.ATIVO }).subscribe({
+      this.servicesApiService.listByBuffet({ status: EnumStatus.ATIVO }).subscribe({
         next: page => {
           this.services = page.content.map((s: any) => ({...s, imageUrl: s.imagemUrl}));
           this.applyFilters();
@@ -238,4 +227,3 @@ export class ManageServicesComponent implements OnInit, OnDestroy, ViewWillEnter
     this.navCtrl.navigateBack('/admin/dashboard');
   }
 }
-

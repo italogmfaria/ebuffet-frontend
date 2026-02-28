@@ -35,7 +35,6 @@ import { AppComponent } from './app/app.component';
 import { ThemeService } from './core/services/theme.service';
 import {SessionService} from "./core/services/session.service";
 import {authInterceptor} from "./core/interceptors/auth-interceptor";
-import {buffetIdInterceptor} from "./core/interceptors/buffet-id.interceptor";
 import {userIdInterceptor} from "./core/interceptors/user-id.interceptor";
 
 addIcons({
@@ -90,7 +89,6 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(
       withInterceptors([
         authInterceptor,
-        buffetIdInterceptor,
         userIdInterceptor
       ])
     ),

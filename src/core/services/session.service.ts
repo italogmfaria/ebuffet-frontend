@@ -1,13 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { OrderService } from '../../features/orders/services/order.service';
-import { environment } from '../../environments/environment';
 
 interface SessionData {
   loggedIn: boolean;
   user?: any;
   timestamp?: number;
-  buffetId?: number;
 }
 
 @Injectable({
@@ -27,12 +25,6 @@ export class SessionService {
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         const parsed = JSON.parse(stored) as SessionData;
-
-        if (parsed.loggedIn && parsed.buffetId !== environment.buffetId) {
-          this.clearSessionAndToken();
-          return;
-        }
-
         this.session = parsed;
       } else {
         this.session = { loggedIn: false };
@@ -61,8 +53,7 @@ export class SessionService {
     this.session = {
       loggedIn: true,
       user,
-      timestamp: Date.now(),
-      buffetId: environment.buffetId
+      timestamp: Date.now()
     };
 
     try {

@@ -4,7 +4,6 @@
   "accentColor": "#FFFFFF",
   "logo": "assets/buffets/2/logo.png",
   "banner": "assets/buffets/2/banner.png",
-  "buffetId": 2,
   "nameBuffet": "eBuffet",
   "carouselImages": [
     "assets/buffets/2/carousel/carousel-image-1.png",

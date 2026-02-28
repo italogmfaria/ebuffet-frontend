@@ -11,7 +11,6 @@ import { EditStateService } from '../../../core/services/edit-state.service';
 import { ServicesApiService } from '../../../features/services/api/services.api';
 import { ServicoListDTO } from '../../../features/services/model/services.model';
 import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../core/enums/categoria.enum';
-import {filter} from "rxjs/operators";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -96,23 +95,13 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   loadServices() {
-    const buffetIdSync = this.themeService.getBuffetIdSync?.() ?? null;
-    if (buffetIdSync) {
-      this.fetchServices(buffetIdSync);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchServices(id))
-    );
+    this.fetchServices();
   }
 
-  private fetchServices(buffetId: number) {
+  private fetchServices() {
     this.isLoading = true;
     this.subs.add(
-      this.servicesApiService.getAll(buffetId).subscribe({
+      this.servicesApiService.getAll().subscribe({
         next: services => {
           this.services = services;
           this.applyFilters();

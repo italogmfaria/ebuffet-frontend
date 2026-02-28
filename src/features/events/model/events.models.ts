@@ -13,7 +13,6 @@ export interface EventoResponse {
   descricao?: string;
   statusEvento: string;
   status: string;
-  buffetId: number;
   reservaId: number;
   clienteId: number;
   inicio: string;

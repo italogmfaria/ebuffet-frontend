@@ -16,7 +16,6 @@ import { SessionService } from '../../../core/services/session.service';
 import { ComidaListDTO, EnumStatus } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping } from '../../../core/enums/categoria.enum';
 import { Subscription } from "rxjs";
-import { filter } from "rxjs/operators";
 import { FoodsApiService } from "../../../features/foods/services/food.service";
 
 @Component({
@@ -81,23 +80,13 @@ export class ManageFoodsComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   loadFoods() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchFoods(buffetIdSync);
-      return;
-    }
-
-    this.subscriptions.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchFoods(id))
-    );
+    this.fetchFoods();
   }
 
-  private fetchFoods(buffetId: number) {
+  private fetchFoods() {
     this.isLoading = true;
     this.subscriptions.add(
-      this.foodsApiService.listByBuffet(buffetId, { status: EnumStatus.ATIVO }).subscribe({
+      this.foodsApiService.listByBuffet({ status: EnumStatus.ATIVO }).subscribe({
         next: page => {
           this.foods = page.content.map((c: any) => ({...c, imageUrl: c.imagemUrl}));
           this.applyFilters();
@@ -238,4 +227,3 @@ export class ManageFoodsComponent implements OnInit, OnDestroy, ViewWillEnter {
     this.navCtrl.navigateBack('/admin/dashboard');
   }
 }
-

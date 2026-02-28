@@ -10,6 +10,5 @@ export interface UserResponse {
   email: string;
   telefone?: string | null;
   roles: string;
-  buffetId: number | null;
   fotoUrl?: string | null;
 }

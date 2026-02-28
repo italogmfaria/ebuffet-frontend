@@ -10,7 +10,6 @@ import { OrderService } from '../../../../features/orders/services/order.service
 import { ComidaDetailDTO } from '../../../../features/foods/model/foods.model';
 import { CategoriasLabels } from '../../../../core/enums/categoria.enum';
 import { EditStateService } from '../../../../core/services/edit-state.service';
-import {filter} from "rxjs/operators";
 import {FoodsApiService} from "../../../../features/foods/services/food.service";
 import {ToastService} from "../../../../core/services/toast.service";
 import {Subscription} from "rxjs";
@@ -81,22 +80,12 @@ export class FoodDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadFoodDetails() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchDetails(buffetIdSync, this.foodId);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(buffetId => this.fetchDetails(buffetId, this.foodId))
-    );
+    this.fetchDetails(this.foodId);
   }
 
-  private fetchDetails(buffetId: number, id: number) {
+  private fetchDetails(id: number) {
     this.subs.add(
-      this.foodsApiService.getById(buffetId, id).subscribe({
+      this.foodsApiService.getById(id).subscribe({
         next: (food) => {
           this.foodDetails = food;
           this.foodName = food?.nome || this.foodName;

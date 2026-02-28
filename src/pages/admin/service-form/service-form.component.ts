@@ -20,7 +20,6 @@ import { ServicesApiService } from '../../../features/services/api/services.api'
 import { ToastService } from '../../../core/services/toast.service';
 import { SessionService } from '../../../core/services/session.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { SelectOption } from '../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { EnumCategoria, CategoriasLabels } from '../../../core/enums/categoria.enum';
 import { EnumStatus } from '../../../features/services/model/services.model';
@@ -110,22 +109,12 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
   }
 
   loadService(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchService(buffetIdSync, id);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((buffetId): buffetId is number => buffetId !== null))
-        .subscribe(buffetId => this.fetchService(buffetId, id))
-    );
+    this.fetchService(id);
   }
 
-  private fetchService(buffetId: number, id: number) {
+  private fetchService(id: number) {
     this.subs.add(
-      this.servicesApiService.getById(buffetId, id).subscribe({
+      this.servicesApiService.getById(id).subscribe({
         next: (service) => {
           this.serviceName = service.nome;
           this.serviceDescription = service.descricao;
@@ -282,4 +271,3 @@ export class ServiceFormComponent implements OnInit, OnDestroy {
     );
   }
 }
-

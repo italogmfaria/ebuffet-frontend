@@ -19,7 +19,6 @@ import { FoodsApiService } from '../../../features/foods/services/food.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { SessionService } from '../../../core/services/session.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { SelectOption } from '../../../shared/ui/templates/inputs/selected-input/selected-input.component';
 import { EnumCategoria, CategoriasLabels } from '../../../core/enums/categoria.enum';
 
@@ -110,22 +109,12 @@ export class FoodFormComponent implements OnInit, OnDestroy {
   }
 
   loadFood(id: number) {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchFood(buffetIdSync, id);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((buffetId): buffetId is number => buffetId !== null))
-        .subscribe(buffetId => this.fetchFood(buffetId, id))
-    );
+    this.fetchFood(id);
   }
 
-  private fetchFood(buffetId: number, id: number) {
+  private fetchFood(id: number) {
     this.subs.add(
-      this.foodsApiService.getById(buffetId, id).subscribe({
+      this.foodsApiService.getById(id).subscribe({
         next: (food) => {
           this.foodName = food.nome;
           this.foodDescription = food.descricao;
@@ -280,4 +269,3 @@ export class FoodFormComponent implements OnInit, OnDestroy {
     );
   }
 }
-

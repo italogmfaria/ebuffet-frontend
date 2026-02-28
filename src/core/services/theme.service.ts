@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 export interface ThemeConfig {
   primaryColor: string;
@@ -9,7 +8,6 @@ export interface ThemeConfig {
   accentColor: string;
   logo: string;
   banner: string;
-  buffetId?: number;
   carouselImages?: string[];
 }
 
@@ -25,7 +23,6 @@ export class ThemeService {
   private accentColorSubject = new BehaviorSubject<string>('#ffffff');
   private logoSubject = new BehaviorSubject<string>('');
   private bannerSubject = new BehaviorSubject<string>('');
-  private buffetIdSubject = new BehaviorSubject<number | null>(null);
   private carouselImagesSubject = new BehaviorSubject<string[]>([]);
 
   // Observables públicos
@@ -34,14 +31,13 @@ export class ThemeService {
   public accentColor$ = this.accentColorSubject.asObservable();
   public logo$ = this.logoSubject.asObservable();
   public banner$ = this.bannerSubject.asObservable();
-  public buffetId$ = this.buffetIdSubject.asObservable();
   public carouselImages$ = this.carouselImagesSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
   async loadTheme(): Promise<void> {
     try {
-      const themePath = `assets/buffets/${environment.buffetId}/theme.json`;
+      const themePath = 'assets/buffets/1/theme.json';
 
       const theme = await this.http.get<ThemeConfig>(themePath).toPromise();
 
@@ -55,7 +51,6 @@ export class ThemeService {
 
       this.currentTheme = theme;
       this.updateColorSubjects(theme);
-      this.buffetIdSubject.next(theme.buffetId ?? null);
       this.applyTheme(theme);
 
       document.body.classList.remove('theme-loading');
@@ -63,14 +58,10 @@ export class ThemeService {
       console.error('Failed to load theme:', error);
       this.applyFallbackTheme();
       document.body.classList.remove('theme-loading');
-      if (!environment.production) {
+      if (!this.currentTheme) {
         this.showThemeError();
       }
     }
-  }
-
-  getBuffetIdSync(): number | null {
-    return this.currentTheme?.buffetId ?? null;
   }
 
   private applyFallbackTheme(): void {

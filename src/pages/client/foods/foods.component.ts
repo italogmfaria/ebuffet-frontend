@@ -18,7 +18,6 @@ import { EditStateService } from '../../../core/services/edit-state.service';
 import { ComidaListDTO } from '../../../features/foods/model/foods.model';
 import { CategoriaIdMapping, CategoriasLabels, EnumCategoria } from '../../../core/enums/categoria.enum';
 import {Subscription} from "rxjs";
-import {filter} from "rxjs/operators";
 import {FoodsApiService} from "../../../features/foods/services/food.service";
 
 @Component({
@@ -103,23 +102,13 @@ export class FoodsComponent implements OnInit, OnDestroy {
   }
 
   loadFoods() {
-    const buffetIdSync = this.themeService.getBuffetIdSync();
-    if (buffetIdSync) {
-      this.fetchFoods(buffetIdSync);
-      return;
-    }
-
-    this.subs.add(
-      this.themeService.buffetId$
-        .pipe(filter((id): id is number => id !== null))
-        .subscribe(id => this.fetchFoods(id))
-    );
+    this.fetchFoods();
   }
 
-  private fetchFoods(buffetId: number) {
+  private fetchFoods() {
     this.isLoading = true;
     this.subs.add(
-      this.foodsApiService.getAll(buffetId).subscribe({
+      this.foodsApiService.getAll().subscribe({
         next: foods => {
           this.foods = foods;
           this.applyFilters();
@@ -293,4 +282,3 @@ export class FoodsComponent implements OnInit, OnDestroy {
     return !!this.fromEdit;
   }
 }
-

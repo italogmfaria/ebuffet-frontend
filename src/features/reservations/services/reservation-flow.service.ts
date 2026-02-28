@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import {ThemeService} from "../../../core/services/theme.service";
 import {OrderService} from "../../orders/services/order.service";
 import {EnderecoRequest, ReservaRequest, ReservationDetails} from "../model/reservation.models";
 
@@ -14,7 +13,6 @@ export class ReservationFlowService {
   private state$ = new BehaviorSubject<FlowState>({});
 
   constructor(
-    private theme: ThemeService,
     private order: OrderService
   ) {}
 
@@ -39,9 +37,6 @@ export class ReservationFlowService {
   }
 
   buildReservaRequest(): ReservaRequest {
-    const buffetId = this.theme.getBuffetIdSync?.();
-    if (!buffetId) throw new Error('buffetId não encontrado');
-
     const details = this.state$.value.details;
     if (!details) throw new Error('Detalhes da reserva não informados');
 
@@ -56,7 +51,6 @@ export class ReservationFlowService {
     const servicoIds = Array.from(new Set(services.map(s => Number(s.id))));
 
     return {
-      buffetId,
       qtdPessoas: details.qtdPessoas,
       dataDesejada: toIsoDate(details.dataDesejada),
       horarioDesejado: toIsoTime(details.horarioDesejado),

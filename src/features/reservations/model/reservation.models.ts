@@ -30,7 +30,6 @@ export interface ReservaResponse {
   statusReserva: EnumStatusReserva;
   status: EnumStatus;
 
-  buffetId: number;
   clienteId: number;
   eventoId: number | null;
 
@@ -70,7 +69,6 @@ export interface EnderecoRequest {
 }
 
 export interface ReservaRequest {
-  buffetId: number;
   qtdPessoas: number;
   dataDesejada: string;
   horarioDesejado: string;
