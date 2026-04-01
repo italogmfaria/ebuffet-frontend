@@ -1,4 +1,4 @@
-# eBuffet — Sistema de Gerenciamento Centralizado de Buffets e Eventos (Front-end)
+# eBuffet - Sistema de Gerenciamento Centralizado de Buffets e Eventos (Front-end)
 
 O **eBuffet** é um aplicativo móvel para Android destinado ao gerenciamento centralizado de buffets e eventos, no qual clientes realizam reservas de forma estruturada e os responsáveis pelo buffet administram reservas, eventos, comidas, serviços e identidade visual em um único ambiente digital.
 O front-end foi desenvolvido com Angular e Ionic, utilizando o Capacitor para empacotamento nativo Android, e se comunica com o back-end por meio de uma API RESTful, com autenticação baseada em JWT.
